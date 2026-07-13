@@ -1,6 +1,7 @@
 import { Analytics } from '@vercel/analytics/next'
 import type { Metadata, Viewport } from 'next'
 import { Manrope } from 'next/font/google'
+import { Providers } from '@/lib/providers'
 import './globals.css'
 
 const manrope = Manrope({
@@ -34,7 +35,9 @@ export default function RootLayout({
   return (
     <html lang="es-MX" className={`dark ${manrope.variable}`}>
       <body className="mpho-bg antialiased font-sans">
-        {children}
+        <Providers>
+          {children}
+        </Providers>
         {process.env.NODE_ENV === 'production' && <Analytics />}
       </body>
     </html>

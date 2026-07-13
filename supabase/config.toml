@@ -20,10 +20,6 @@ major_version = 15
 
 [db.pooler]
 enabled = false
-port = 54329
-pool_mode = "transaction"
-default_pool_size = 20
-max_client_conn = 100
 
 [db.migrations]
 enabled = true
@@ -49,9 +45,6 @@ port = 54324
 enabled = true
 file_size_limit = "50MiB"
 
-[storage.s3_protocol]
-enabled = true
-
 [auth]
 enabled = true
 site_url = "http://127.0.0.1:3000"
@@ -71,10 +64,7 @@ enable_signup = false
 enable_confirmations = false
 
 [edge_runtime]
-enabled = true
-policy = "per_worker"
-inspector_port = 8083
-deno_version = 2
+enabled = false
 
 [analytics]
 enabled = false

@@ -6,7 +6,7 @@ export {
   getSupabaseBrowserClient,
   getSupabaseServerClient,
   getSupabaseMiddlewareClient,
-} from './client.ts';
+} from './client';
 
 export type {
   // Enums
@@ -48,4 +48,4 @@ export type {
   RecipientUpdate,
   AddressInsert,
   AddressUpdate,
-} from './types.ts';
+} from './types';
