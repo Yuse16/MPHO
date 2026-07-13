@@ -1,0 +1,56 @@
+# Dependencies
+node_modules/
+.pnpm-store/
+
+# Build output
+.next/
+out/
+dist/
+build/
+
+# Environment variables
+.env
+.env.*
+!.env.example
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
+
+# Testing
+coverage/
+.nyc_output/
+
+# Vercel
+.vercel/
+
+# v0 artifacts
+__v0_runtime_loader.js
+__v0_devtools.tsx
+__v0_jsx-dev-runtime.ts
+.snowflake/
+.v0-trash/
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+*.bak
+
+# Supabase local
+supabase/.temp/
+supabase/.env
