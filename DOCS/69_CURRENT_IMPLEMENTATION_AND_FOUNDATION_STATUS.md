@@ -27,15 +27,22 @@ MPHO currently has:
 - A basic in-memory cart prototype (starts empty).
 - Hardcoded catalog and city data (restricted to Saltillo active).
 - Three independent Next.js applications (customer, partner, central).
-- Five shared packages (design-tokens, types, config, validation, ui).
-- Shared TypeScript, Tailwind, and Prettier configuration.
-- Automated tests (11 passing).
+- Six shared packages (design-tokens, types, config, validation, ui, database).
+- Supabase local configuration and 9 versioned SQL migrations.
+- Identity model: profiles, user_roles, customers, auth signup trigger.
+- Geography model: cities (Saltillo active, Ramos Arizpe planned), zones.
+- Partner model: partners, capabilities, schedules, schedule exceptions, capacity.
+- Recipient and address models with polymorphic ownership.
+- Row-level security policies on all 12 private tables.
+- Database type definitions matching doc 25 conceptual schema.
+- Supabase client factory (browser, server, middleware).
+- Automated tests (23 passing — 11 customer + 12 database types).
 - CI/CD via GitHub Actions.
 - Loading, error, and not-found states.
-- `.env.example` with documented variables.
-- `.gitignore` excluding secrets and build artifacts.
+- `.env.example` with documented Supabase local variables.
+- `.gitignore` excluding Supabase temp files.
 
-The current code must be treated as a visual prototype and implementation starting point, not as a production-ready application.
+The current code must be treated as a visual prototype and implementation starting point, not as a production-ready application. The database layer is structurally complete but requires Docker to run locally.
 
 ---
 
@@ -52,7 +59,11 @@ MPHO/
 │   ├── types/             ← City, Product, Order, Partner, OrderStatus
 │   ├── config/            ← APP_CONFIG, CITY_CONFIG, ORDER_CONFIG
 │   ├── validation/        ← isValidCity, isValidProduct, transitions
-│   └── ui/                ← utility cn()
+│   ├── ui/                ← utility cn()
+│   └── database/          ← Supabase client, types (Phase 2)
+├── supabase/
+│   ├── config.toml        ← local Supabase configuration
+│   └── migrations/        ← 9 versioned SQL migrations
 ├── .github/workflows/ci.yml
 ├── pnpm-workspace.yaml
 ├── package.json root
@@ -409,7 +420,9 @@ apps/central/.next/ (build artifacts cleaned)
 
 ---
 
-## 12. Phase 1 completion checklist
+## 12. Phase completion checklists
+
+### Phase 1 — Repository Stabilization
 
 - [x] Git state was reviewed before migration.
 - [x] Existing customer visual design was preserved.
@@ -433,16 +446,46 @@ apps/central/.next/ (build artifacts cleaned)
 - [x] No destructive Git operation was used.
 - [x] No push was performed without explicit authorization.
 
+### Phase 2 — Database Foundation and Identity Model
+
+- [x] Supabase CLI available (v2.109.1 via npx).
+- [x] Supabase config created (`supabase/config.toml`).
+- [x] Extensions and enum types migration (profile_status, user_role, city_status, zone_status, partner_status, etc.).
+- [x] Helper functions migration (handle_updated_at, auth_uid, auth_roles, has_role, is_mpho_staff).
+- [x] Identity tables migration (profiles, user_roles, customers).
+- [x] Geography tables migration (cities, zones) with seed data.
+- [x] Address tables migration (polymorphic addresses).
+- [x] Partner tables migration (partners, capabilities, schedules, schedule exceptions, capacity).
+- [x] Recipient table migration.
+- [x] Auth signup trigger (auto-creates profile + customer + role on signup).
+- [x] RLS policies on all 12 private tables.
+- [x] packages/database created with Supabase client and types.
+- [x] Type definitions match doc 25 conceptual schema.
+- [x] Database types tests pass (12/12).
+- [x] .env.example updated with Supabase local variables.
+- [x] .gitignore includes Supabase temp files.
+- [x] Typecheck passes for all 3 apps.
+- [x] Customer tests pass (11/11).
+- [x] All three builds pass.
+- [x] Docker installed (Docker Desktop 4.82.0 for Intel Mac).
+- [x] `supabase db reset` verified — all 9 migrations + seed applied.
+- [x] All 12 tables created with RLS enabled.
+- [x] 51 RLS policies active.
+- [x] 10 custom enums verified.
+- [x] 7 database functions verified.
+- [x] Seed data verified: Saltillo (active), Ramos Arizpe (planned).
+- [x] RLS tested: anon sees only active cities/zones.
+- [x] Auto-generated types saved (`types.auto.ts`).
+- [x] `.env.local` created with local Supabase keys.
+
 ---
 
 ## 13. Remaining known risks
 
 ### Critical
 
-- No database.
-- No authentication.
-- No authorization.
-- No RLS.
+- Full Supabase stack (Kong, Auth, Realtime, Storage, Studio) health checks failing — DB-only mode works.
+- No authentication UI flows (signup, login, logout).
 - No payment validation.
 - No financial ledger.
 - No production security controls.
@@ -475,24 +518,20 @@ apps/central/.next/ (build artifacts cleaned)
 
 ## 14. Next recommended technical phase
 
-After repository stabilization:
+After database foundation:
 
-# Phase 2 — Local Supabase foundation and identity model
+# Phase 3 — Auth, profile flows, and protected routes
 
 Recommended scope:
 
-- Create local Supabase configuration.
-- Create versioned migrations.
-- Create identity and geography entities.
-- Create roles.
-- Create partner membership.
-- Create customer profile.
-- Create recipient model.
-- Define city and zone status.
-- Add initial RLS policies.
-- Add database tests.
-- Add generated database types.
-- Keep production credentials excluded.
+- Fix full Supabase stack health checks (Kong, Auth, Realtime, Storage).
+- Create Supabase Auth UI (signup, login, logout, password reset).
+- Create customer profile page.
+- Create partner login and onboarding flow.
+- Create route protection middleware.
+- Create initial RLS-backed data access layer.
+- Connect customer app to real Supabase data.
+- Begin catalog/product CRUD for partners.
 
 Do not start payment, refund, payout, or HADIA tool execution before identity, authorization, and audit foundations exist.
 
@@ -528,4 +567,51 @@ Known risks remaining:
   - No database, auth, payments, or integrations
   - ESLint shared config pending
   - Prettier not yet applied across codebase
+```
+
+### Phase 2 — Database Foundation and Identity Model
+
+```text
+Date: 2026-07-13
+Agent: OpenCode
+Phase: 2 — Database Foundation and Identity Model
+Summary:
+  - Installed Docker Desktop 4.82.0 (Intel Mac, 4 CPU, 8GB RAM)
+  - Created supabase/config.toml for local dev
+  - Created 9 versioned SQL migrations:
+    001: Extensions and enum types (10 custom enums)
+    002: Helper functions (handle_updated_at, auth_uid)
+    003: Identity tables (profiles, user_roles, customers) + auth functions (auth_roles, has_role, is_mpho_staff)
+    004: Geography tables (cities, zones) with seed data
+    005: Address tables (polymorphic addresses)
+    006: Partner tables (partners, capabilities, schedules, exceptions, capacity)
+    007: Recipient table
+    008: RLS policies (12 tables, 51 policies, GRANTs for anon/authenticated)
+    009: Auth signup trigger (auto-profile + customer + role)
+  - Created supabase/seed.sql with 6 Saltillo zones + 2 Ramos Arizpe zones
+  - Created packages/database with:
+    - Supabase client factory (browser, server, middleware)
+    - Full type definitions matching doc 25 schema
+    - Auto-generated types from live DB (types.auto.ts, 864 lines)
+    - Insert/Update types for all entities
+    - Vitest config and 12 passing type tests
+  - Updated .env.example with Supabase local variables
+  - Created .env.local with generated JWT keys
+  - Updated .gitignore for Supabase temp files
+  - Added @mpho/database to customer app dependencies and tsconfig paths
+Validation:
+  - supabase db reset: PASS (all 9 migrations + seed)
+  - 12 tables created with RLS enabled
+  - 51 RLS policies active
+  - 10 custom enums verified
+  - 7 database functions verified
+  - RLS tested: anon sees only active cities/zones
+  - Typecheck: PASS (all 3 apps)
+  - Tests: PASS (23/23 = 11 customer + 12 database)
+  - Build: PASS (all 3 apps)
+Known risks remaining:
+  - Full Supabase stack (Kong, Auth, etc.) health checks failing — DB-only mode
+  - Auth UI flows not implemented
+  - No integration between app and database yet
+  - ESLint shared config pending
 ```

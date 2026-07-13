@@ -37,6 +37,15 @@
       ],
       "@mpho/config": [
         "../../packages/config"
+      ],
+      "@mpho/database": [
+        "../../packages/database"
+      ],
+      "@mpho/database/client": [
+        "../../packages/database/client"
+      ],
+      "@mpho/database/types": [
+        "../../packages/database/types"
       ]
     }
   },

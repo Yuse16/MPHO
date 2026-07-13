@@ -7,6 +7,7 @@ node_modules/
 out/
 dist/
 build/
+*.tsbuildinfo
 
 # Environment variables
 .env
@@ -54,3 +55,6 @@ temp/
 # Supabase local
 supabase/.temp/
 supabase/.env
+
+# Auto-generated types (regenerate with: supabase gen types typescript --local)
+packages/database/types.auto.ts
