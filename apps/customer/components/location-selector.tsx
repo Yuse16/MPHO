@@ -2,8 +2,20 @@
 
 import { useEffect, useRef, useState } from 'react'
 import { MapPin, ChevronDown, Check } from 'lucide-react'
-import { CITIES, type City } from '@/lib/data'
 import { cn } from '@/lib/utils'
+
+type CityStatus = 'active' | 'planned'
+
+type City = {
+  id: string
+  name: string
+  status: CityStatus
+}
+
+const CITIES: City[] = [
+  { id: 'saltillo', name: 'Saltillo', status: 'active' },
+  { id: 'ramos-arizpe', name: 'Ramos Arizpe', status: 'planned' },
+]
 
 export function LocationSelector({ className }: { className?: string }) {
   const [open, setOpen] = useState(false)

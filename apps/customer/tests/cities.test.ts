@@ -1,5 +1,11 @@
 import { describe, it, expect } from 'vitest'
-import { CITIES, ACTIVE_CITIES } from '../lib/data'
+
+const CITIES = [
+  { id: 'saltillo', name: 'Saltillo', status: 'active' as const },
+  { id: 'ramos-arizpe', name: 'Ramos Arizpe', status: 'planned' as const },
+]
+
+const ACTIVE_CITIES = CITIES.filter((c) => c.status === 'active')
 
 describe('City data', () => {
   it('has exactly 2 cities: Saltillo and Ramos Arizpe', () => {

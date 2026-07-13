@@ -1,8 +1,23 @@
 import { Zap, ChevronRight } from 'lucide-react'
 import { ProductCarousel } from './product-carousel'
-import { MPHORA_PRODUCTS } from '@/lib/data'
+import { getFeaturedListings, formatPrice } from '@/lib/catalog'
+import type { Product } from '@/lib/data'
 
-export function MphoraSection() {
+export async function MphoraSection() {
+  const listings = await getFeaturedListings(5)
+
+  const products: Product[] = listings.map((item) => ({
+    id: item.listing.id,
+    name: item.listing.customer_title,
+    description: item.product.description?.slice(0, 60) ?? item.listing.customer_description?.slice(0, 60) ?? '',
+    price: item.listing.base_price_amount_minor / 100,
+    image: item.primary_media
+      ? `/images/${item.primary_media.storage_path}`
+      : '/placeholder.svg',
+    tag: 'Entrega hoy',
+    alt: item.primary_media?.alt_text ?? item.listing.customer_title,
+  }))
+
   return (
     <section id="mphora" aria-label="MPHORA, entrega rápida" className="space-y-4">
       <div className="mx-auto flex max-w-7xl items-end justify-between gap-3 px-4 lg:px-8">
@@ -30,7 +45,7 @@ export function MphoraSection() {
         </button>
       </div>
 
-      <ProductCarousel products={MPHORA_PRODUCTS} />
+      <ProductCarousel products={products} />
     </section>
   )
 }

@@ -4,7 +4,7 @@
 // Run `supabase gen types typescript --local > packages/database/types.ts`
 // after `supabase start` to get the latest auto-generated types.
 //
-// These manual types represent the Phase 2 identity/geography/partner schema.
+// These manual types represent the Phase 2-4 identity/geography/partner/catalog schema.
 // They serve as the source of truth until the auto-generator is available.
 // =============================================================================
 
@@ -28,6 +28,17 @@ export type PartnerStatus = 'pending_onboarding' | 'active' | 'paused' | 'suspen
 export type PartnerCapabilityStatus = 'active' | 'suspended' | 'revoked';
 export type RecipientSurpriseMode = 'none' | 'full_surprise' | 'partial_surprise';
 export type AddressOwnerType = 'customer' | 'recipient' | 'partner' | 'order_snapshot';
+export type CategoryType = 'product' | 'occasion' | 'recipient' | 'style';
+export type ProductStatus = 'active' | 'draft' | 'archived';
+export type ProductType = 'product' | 'service' | 'bundle' | 'add_on';
+export type TagType = 'style' | 'feature' | 'delivery' | 'seasonal';
+export type TagStatus = 'active' | 'archived';
+export type ListingStatus = 'draft' | 'submitted' | 'published' | 'changes_requested' | 'suspended' | 'archived';
+export type ListingSourceType = 'partner_local' | 'external_curated' | 'mpho_owned_future';
+export type AvailabilityMode = 'instant' | 'partner_confirmation' | 'by_order';
+export type MediaOwnerType = 'product' | 'listing' | 'partner' | 'order' | 'brand';
+export type MediaVisibility = 'public' | 'private' | 'restricted';
+export type MediaStatus = 'active' | 'archived';
 
 // ─── Row types ──────────────────────────────────────────────────────────────
 
@@ -197,6 +208,140 @@ export interface Recipient {
   archived_at: string | null;
 }
 
+// ─── Catalog types (Phase 4) ────────────────────────────────────────────────
+
+export interface Category {
+  id: string;
+  name: string;
+  slug: string;
+  type: CategoryType;
+  description: string | null;
+  parent_id: string | null;
+  sort_order: number;
+  status: ProductStatus;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface Tag {
+  id: string;
+  name: string;
+  slug: string;
+  type: TagType;
+  status: TagStatus;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface Product {
+  id: string;
+  name: string;
+  slug: string;
+  description: string | null;
+  product_type: ProductType;
+  category_id: string | null;
+  status: ProductStatus;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface ProductTag {
+  product_id: string;
+  tag_id: string;
+}
+
+export interface Listing {
+  id: string;
+  product_id: string;
+  partner_id: string | null;
+  source_type: ListingSourceType;
+  customer_title: string;
+  customer_description: string | null;
+  status: ListingStatus;
+  availability_mode: AvailabilityMode;
+  base_price_amount_minor: number;
+  currency: string;
+  preparation_minutes: number | null;
+  external_source_url: string | null;
+  external_observed_price_minor: number | null;
+  external_last_validated_at: string | null;
+  published_at: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface ListingZone {
+  listing_id: string;
+  zone_id: string;
+  status: ProductStatus;
+  created_at: string;
+}
+
+export interface ListingVariant {
+  id: string;
+  listing_id: string;
+  name: string;
+  slug: string;
+  sku: string | null;
+  price_amount_minor: number;
+  currency: string;
+  stock_quantity: number | null;
+  stock_mode: string;
+  status: TagStatus;
+  sort_order: number;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface ListingOption {
+  id: string;
+  listing_id: string;
+  name: string;
+  slug: string;
+  option_type: string;
+  values: Json;
+  default_value: string | null;
+  price_impact_minor: number;
+  required: boolean;
+  sort_order: number;
+  status: TagStatus;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface MediaAsset {
+  id: string;
+  owner_type: MediaOwnerType;
+  owner_id: string;
+  storage_bucket: string;
+  storage_path: string;
+  visibility: MediaVisibility;
+  mime_type: string;
+  alt_text: string | null;
+  sort_order: number;
+  status: MediaStatus;
+  created_at: string;
+  updated_at: string;
+}
+
+// ─── Composite query types ──────────────────────────────────────────────────
+// Types returned by catalog queries joining listings + products + media.
+
+export interface CatalogListing {
+  listing: Listing;
+  product: Product & { category: Category | null };
+  tags: Tag[];
+  primary_media: MediaAsset | null;
+  listing_zones: { zone: Zone }[];
+  min_price: number;
+  max_price: number;
+}
+
+export interface CatalogCategory {
+  category: Category;
+  listing_count: number;
+}
+
 // ─── Insert/Update types ────────────────────────────────────────────────────
 // Omits auto-generated fields (id, created_at, updated_at) for inserts.
 
@@ -220,3 +365,24 @@ export type RecipientUpdate = Partial<Omit<Recipient, 'id' | 'customer_id' | 'cr
 
 export type AddressInsert = Omit<Address, 'id' | 'created_at' | 'updated_at' | 'archived_at'>;
 export type AddressUpdate = Partial<Omit<Address, 'id' | 'created_at'>>;
+
+export type CategoryInsert = Omit<Category, 'id' | 'created_at' | 'updated_at'>;
+export type CategoryUpdate = Partial<Omit<Category, 'id' | 'created_at'>>;
+
+export type TagInsert = Omit<Tag, 'id' | 'created_at' | 'updated_at'>;
+export type TagUpdate = Partial<Omit<Tag, 'id' | 'created_at'>>;
+
+export type ProductInsert = Omit<Product, 'id' | 'created_at' | 'updated_at'>;
+export type ProductUpdate = Partial<Omit<Product, 'id' | 'created_at'>>;
+
+export type ListingInsert = Omit<Listing, 'id' | 'created_at' | 'updated_at' | 'published_at'>;
+export type ListingUpdate = Partial<Omit<Listing, 'id' | 'created_at'>>;
+
+export type ListingVariantInsert = Omit<ListingVariant, 'id' | 'created_at' | 'updated_at'>;
+export type ListingVariantUpdate = Partial<Omit<ListingVariant, 'id' | 'created_at'>>;
+
+export type ListingOptionInsert = Omit<ListingOption, 'id' | 'created_at' | 'updated_at'>;
+export type ListingOptionUpdate = Partial<Omit<ListingOption, 'id' | 'created_at'>>;
+
+export type MediaAssetInsert = Omit<MediaAsset, 'id' | 'created_at' | 'updated_at'>;
+export type MediaAssetUpdate = Partial<Omit<MediaAsset, 'id' | 'created_at'>>;

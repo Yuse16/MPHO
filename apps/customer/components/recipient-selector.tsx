@@ -1,10 +1,28 @@
 'use client'
 
 import { useState } from 'react'
-import { ChevronRight } from 'lucide-react'
+import { ChevronRight, Heart, Flower2, Briefcase, Users, Gift, Cake, GraduationCap, Baby } from 'lucide-react'
 import { GlassPanel } from './glass-panel'
-import { RECIPIENTS } from '@/lib/data'
 import { cn } from '@/lib/utils'
+import type { LucideIcon } from 'lucide-react'
+
+type RecipientItem = {
+  id: string
+  label: string
+  icon: LucideIcon
+  accent: 'lime' | 'cyan' | 'blue' | 'gold' | 'mphora'
+}
+
+const RECIPIENTS: RecipientItem[] = [
+  { id: 'pareja', label: 'Pareja', icon: Heart, accent: 'mphora' },
+  { id: 'mama', label: 'Mamá', icon: Flower2, accent: 'cyan' },
+  { id: 'papa', label: 'Papá', icon: Briefcase, accent: 'blue' },
+  { id: 'amistad', label: 'Amistad', icon: Users, accent: 'gold' },
+  { id: 'cumpleanos', label: 'Cumpleaños', icon: Cake, accent: 'lime' },
+  { id: 'graduacion', label: 'Graduación', icon: GraduationCap, accent: 'cyan' },
+  { id: 'bebe', label: 'Bebé', icon: Baby, accent: 'gold' },
+  { id: 'gracias', label: 'Gracias', icon: Gift, accent: 'lime' },
+]
 
 const ACCENT: Record<string, string> = {
   lime: 'text-[color:var(--color-lime)]',
