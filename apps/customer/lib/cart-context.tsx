@@ -17,27 +17,10 @@ const CartContext = createContext<CartState | null>(null)
 
 export function CartProvider({
   children,
-  initialCount = 2,
 }: {
   children: React.ReactNode
-  initialCount?: number
 }) {
-  // Seed with the "2" shown in the reference so the badge starts populated.
-  const [items, setItems] = useState<CartItem[]>(() =>
-    initialCount > 0
-      ? [
-          {
-            id: 'seed-1',
-            name: 'Regalo guardado',
-            description: 'En tu carrito',
-            price: 0,
-            image: '/images/product-roses.png',
-            alt: 'Regalo guardado',
-            qty: initialCount,
-          },
-        ]
-      : [],
-  )
+  const [items, setItems] = useState<CartItem[]>([])
   const [lastAddedId, setLastAddedId] = useState<string | null>(null)
 
   const addItem = useCallback((product: Product) => {

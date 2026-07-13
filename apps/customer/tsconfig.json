@@ -25,6 +25,18 @@
     "paths": {
       "@/*": [
         "./*"
+      ],
+      "@mpho/design-tokens": [
+        "../../packages/design-tokens"
+      ],
+      "@mpho/types": [
+        "../../packages/types"
+      ],
+      "@mpho/validation": [
+        "../../packages/validation"
+      ],
+      "@mpho/config": [
+        "../../packages/config"
       ]
     }
   },

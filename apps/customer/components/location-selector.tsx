@@ -2,12 +2,12 @@
 
 import { useEffect, useRef, useState } from 'react'
 import { MapPin, ChevronDown, Check } from 'lucide-react'
-import { CITIES } from '@/lib/data'
+import { CITIES, type City } from '@/lib/data'
 import { cn } from '@/lib/utils'
 
 export function LocationSelector({ className }: { className?: string }) {
   const [open, setOpen] = useState(false)
-  const [city, setCity] = useState<string | null>('Saltillo')
+  const [city, setCity] = useState<City | null>(CITIES[0])
   const ref = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -34,7 +34,7 @@ export function LocationSelector({ className }: { className?: string }) {
         <MapPin
           className={cn('size-4 shrink-0', city ? 'text-[color:var(--color-lime)]' : 'text-[color:var(--color-mphora)]')}
         />
-        <span className="max-w-[7.5rem] truncate">{city ?? 'Elige tu ciudad'}</span>
+        <span className="max-w-[7.5rem] truncate">{city?.name ?? 'Elige tu ciudad'}</span>
         <ChevronDown className={cn('size-4 shrink-0 text-faint transition-transform duration-200', open && 'rotate-180')} />
       </button>
 
@@ -45,9 +45,9 @@ export function LocationSelector({ className }: { className?: string }) {
           className="glass-elevated absolute left-0 top-[calc(100%+0.5rem)] z-50 w-52 overflow-hidden rounded-xl p-1.5"
         >
           {CITIES.map((c) => {
-            const active = c === city
+            const active = c.id === city?.id
             return (
-              <li key={c} role="option" aria-selected={active}>
+              <li key={c.id} role="option" aria-selected={active}>
                 <button
                   type="button"
                   onClick={() => {
@@ -63,7 +63,10 @@ export function LocationSelector({ className }: { className?: string }) {
                 >
                   <span className="flex items-center gap-2">
                     <MapPin className="size-4 text-[color:var(--color-lime)]" />
-                    {c}
+                    {c.name}
+                    {c.status === 'planned' && (
+                      <span className="text-xs text-faint">(próximamente)</span>
+                    )}
                   </span>
                   {active && <Check className="size-4 text-[color:var(--color-lime)]" />}
                 </button>

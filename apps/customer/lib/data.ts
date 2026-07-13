@@ -18,14 +18,20 @@ export type Recipient = {
   accent: 'lime' | 'cyan' | 'blue' | 'gold' | 'mphora'
 }
 
-export const CITIES = [
-  'Saltillo',
-  'Monterrey',
-  'Ciudad de México',
-  'Guadalajara',
-  'Querétaro',
-  'Torreón',
-] as const
+export type CityStatus = 'active' | 'planned'
+
+export type City = {
+  id: string
+  name: string
+  status: CityStatus
+}
+
+export const CITIES: City[] = [
+  { id: 'saltillo', name: 'Saltillo', status: 'active' },
+  { id: 'ramos-arizpe', name: 'Ramos Arizpe', status: 'planned' },
+]
+
+export const ACTIVE_CITIES = CITIES.filter((c) => c.status === 'active')
 
 export const RECIPIENTS: Recipient[] = [
   { id: 'pareja', label: 'Pareja', icon: Heart, accent: 'mphora' },

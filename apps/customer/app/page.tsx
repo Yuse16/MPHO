@@ -12,7 +12,7 @@ import { FloatingCartButton } from '@/components/floating-cart-button'
 
 export default function Home() {
   return (
-    <CartProvider initialCount={2}>
+    <CartProvider>
       <div className="mpho-bg min-h-screen">
         <MobileHeader />
         <DesktopHeader />

@@ -452,3 +452,15 @@ The customer shops from MPHO.
 
 Puntos MPHO are internal supply, receiving, preparation, personalization, storage, and distribution nodes, except when an approved legal or branded-collaboration disclosure applies.
 
+---
+
+## 18. Foundation status document
+
+| Order | File | Pack | Status | Purpose |
+|---:|---|---:|---|---|
+| 72 | `docs/69_CURRENT_IMPLEMENTATION_AND_FOUNDATION_STATUS.md` | 01 | Complete | Real implementation status after Phase 1 monorepo migration |
+
+### Purpose
+
+This document records what actually exists in code versus what is documented, tracks defects corrected, validation results, and remaining risks. It must be updated after every foundation milestone.
+
