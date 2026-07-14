@@ -7,12 +7,12 @@ import { cn } from '@/lib/utils'
 
 export function FloatingCartButton() {
   const { count, lastAddedId } = useCart()
-  const [visible, setVisible] = useState(false)
+  const [dismissedId, setDismissedId] = useState<string | null>(null)
+  const visible = lastAddedId !== null && lastAddedId !== dismissedId
 
   useEffect(() => {
     if (lastAddedId) {
-      setVisible(true)
-      const t = window.setTimeout(() => setVisible(false), 1600)
+      const t = window.setTimeout(() => setDismissedId(lastAddedId), 1600)
       return () => window.clearTimeout(t)
     }
   }, [lastAddedId])

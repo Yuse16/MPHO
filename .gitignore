@@ -56,5 +56,4 @@ temp/
 supabase/.temp/
 supabase/.env
 
-# Auto-generated types (regenerate with: supabase gen types typescript --local)
-packages/database/types.auto.ts
+# Generated database types are intentionally tracked so CI can detect drift.

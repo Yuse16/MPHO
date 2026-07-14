@@ -1,5 +1,8 @@
 name: CI
 
+permissions:
+  contents: read
+
 on:
   push:
     branches: [main]
@@ -10,17 +13,29 @@ jobs:
   ci:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v4
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+      - uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1 # v4.3.0
         with:
           version: 9
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version: 22
           cache: 'pnpm'
 
       - run: pnpm install --frozen-lockfile
+      - run: pnpm security:check
       - run: pnpm lint
       - run: pnpm typecheck
-      - run: pnpm build
       - run: pnpm test
+      - run: pnpm build
+      - name: Validate Supabase migrations, RLS, generated types, and schema drift
+        shell: bash
+        run: |
+          set -euo pipefail
+          trap 'pnpm db:stop' EXIT
+          pnpm db:start
+          pnpm db:reset
+          pnpm db:test
+          pnpm db:test:rest
+          pnpm db:types:check
+          pnpm db:schema:check

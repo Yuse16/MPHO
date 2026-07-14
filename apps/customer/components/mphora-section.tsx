@@ -1,21 +1,22 @@
 import { Zap, ChevronRight } from 'lucide-react'
 import { ProductCarousel } from './product-carousel'
-import { getFeaturedListings, formatPrice } from '@/lib/catalog'
+import { getFeaturedListings } from '@/lib/catalog'
 import type { Product } from '@/lib/data'
 
 export async function MphoraSection() {
-  const listings = await getFeaturedListings(5)
+  const result = await getFeaturedListings(5)
+  const listings = result.status === 'SUCCESS_WITH_DATA'
+    ? result.data.filter((listing) => listing.mphoraCandidate)
+    : []
 
   const products: Product[] = listings.map((item) => ({
-    id: item.listing.id,
-    name: item.listing.customer_title,
-    description: item.product.description?.slice(0, 60) ?? item.listing.customer_description?.slice(0, 60) ?? '',
-    price: item.listing.base_price_amount_minor / 100,
-    image: item.primary_media
-      ? `/images/${item.primary_media.storage_path}`
-      : '/placeholder.svg',
+    id: item.listingId,
+    name: item.name,
+    description: item.shortDescription?.slice(0, 60) ?? item.fullDescription?.slice(0, 60) ?? '',
+    price: item.price,
+    image: item.image?.url ?? '/placeholder.svg',
     tag: 'Entrega hoy',
-    alt: item.primary_media?.alt_text ?? item.listing.customer_title,
+    alt: item.image?.alt ?? item.name,
   }))
 
   return (
@@ -45,7 +46,13 @@ export async function MphoraSection() {
         </button>
       </div>
 
-      <ProductCarousel products={products} />
+      {result.status !== 'SUCCESS_WITH_DATA' && result.status !== 'SUCCESS_EMPTY' ? (
+        <div role="alert" className="glass mx-4 rounded-2xl px-6 py-8 text-center text-sm text-muted-foreground lg:mx-8">
+          No pudimos consultar las opciones MPHORA. Intenta de nuevo más tarde.
+        </div>
+      ) : (
+        <ProductCarousel products={products} />
+      )}
     </section>
   )
 }

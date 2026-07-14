@@ -1,145 +1,211 @@
-import { createServerClient } from '@supabase/ssr';
-import type { CatalogListing, CatalogCategory, Listing, Product, Category, Zone, Tag, MediaAsset } from '@mpho/database';
+import type { PostgrestError } from '@supabase/supabase-js'
+import type { PublicCatalogCategory, PublicCatalogListing } from '@mpho/types'
+import type { PublicCatalogCategoryRow, PublicCatalogRow } from '@mpho/database'
+import {
+  createPublicSupabaseClient,
+  PublicSupabaseConfigurationError,
+} from '@/lib/supabase/public'
 
-function getSupabase() {
-  return createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        getAll() {
-          return [];
-        },
-      },
-    }
-  );
-}
+export type CatalogErrorCode =
+  | 'NETWORK_ERROR'
+  | 'PERMISSION_ERROR'
+  | 'INVALID_QUERY'
+  | 'INVALID_RESPONSE'
+  | 'CONFIGURATION_ERROR'
 
-type ListingRow = Listing & {
-  product: (Product & { category: Category | null }) | null;
-  listing_zones: { zone: Zone }[];
-};
+export type CatalogResult<T> =
+  | { status: 'SUCCESS_WITH_DATA'; data: T }
+  | { status: 'SUCCESS_EMPTY'; data: T }
+  | { status: CatalogErrorCode; data: null; message: string }
 
 export async function getCatalogListings(options?: {
-  categorySlug?: string;
-  limit?: number;
-  offset?: number;
-}): Promise<CatalogListing[]> {
-  const supabase = getSupabase();
-  const limit = options?.limit ?? 20;
-  const offset = options?.offset ?? 0;
-
-  let query = supabase
-    .from('listings')
-    .select(`
-      *,
-      product:products(*, category:categories(*)),
-      listing_zones(zone:zones(*))
-    `)
-    .eq('status', 'published')
-    .order('created_at', { ascending: false })
-    .range(offset, offset + limit - 1);
-
-  if (options?.categorySlug) {
-    query = query.eq('product.category.slug', options.categorySlug);
+  categorySlug?: string
+  limit?: number
+  offset?: number
+}): Promise<CatalogResult<PublicCatalogListing[]>> {
+  try {
+    const supabase = createPublicSupabaseClient()
+    const { data, error } = await supabase.rpc('get_public_catalog', {
+      p_category_slug: options?.categorySlug ?? undefined,
+      p_listing_slug: undefined,
+      p_result_limit: options?.limit ?? 20,
+      p_result_offset: options?.offset ?? 0,
+    })
+    if (error) return catalogError(error)
+    return mapListingRows(data ?? [])
+  } catch (error) {
+    return unexpectedCatalogError(error)
   }
-
-  const { data, error } = await query;
-
-  if (error) {
-    console.error('Error fetching catalog listings:', error);
-    return [];
-  }
-
-  return ((data ?? []) as ListingRow[]).map(mapRow);
 }
 
 export async function getCatalogListingBySlug(
-  slug: string
-): Promise<CatalogListing | null> {
-  const supabase = getSupabase();
-
-  const { data, error } = await supabase
-    .from('listings')
-    .select(`
-      *,
-      product:products(*, category:categories(*)),
-      listing_zones(zone:zones(*))
-    `)
-    .eq('status', 'published')
-    .eq('product.slug', slug)
-    .single();
-
-  if (error) {
-    console.error('Error fetching listing:', error);
-    return null;
+  slug: string,
+): Promise<CatalogResult<PublicCatalogListing | null>> {
+  if (!slug.trim()) {
+    return { status: 'INVALID_QUERY', data: null, message: 'The product slug is required.' }
   }
 
-  return mapRow(data as ListingRow);
+  try {
+    const supabase = createPublicSupabaseClient()
+    const { data, error } = await supabase.rpc('get_public_catalog', {
+      p_category_slug: undefined,
+      p_listing_slug: slug,
+      p_result_limit: 1,
+      p_result_offset: 0,
+    })
+    if (error) return catalogError(error)
+
+    const mapped = mapListingRows(data ?? [])
+    if (mapped.status === 'SUCCESS_EMPTY') {
+      return { status: 'SUCCESS_EMPTY', data: null }
+    }
+    if (mapped.status !== 'SUCCESS_WITH_DATA') return mapped
+    return { status: 'SUCCESS_WITH_DATA', data: mapped.data[0] ?? null }
+  } catch (error) {
+    return unexpectedCatalogError(error)
+  }
 }
 
-export async function getCatalogCategories(): Promise<CatalogCategory[]> {
-  const supabase = getSupabase();
+export async function getCatalogCategories(): Promise<CatalogResult<PublicCatalogCategory[]>> {
+  try {
+    const supabase = createPublicSupabaseClient()
+    const { data, error } = await supabase.rpc('get_public_catalog_categories')
+    if (error) return catalogError(error)
 
-  const { data, error } = await supabase
-    .from('categories')
-    .select('*')
-    .eq('status', 'active')
-    .eq('type', 'product')
-    .order('sort_order', { ascending: true });
+    const categories: PublicCatalogCategory[] = []
+    for (const row of data ?? []) {
+      const mapped = mapCategoryRow(row)
+      if (!mapped) {
+        return invalidResponse('A public catalog category did not match its contract.')
+      }
+      categories.push(mapped)
+    }
+    return categories.length
+      ? { status: 'SUCCESS_WITH_DATA', data: categories }
+      : { status: 'SUCCESS_EMPTY', data: [] }
+  } catch (error) {
+    return unexpectedCatalogError(error)
+  }
+}
 
-  if (error) {
-    console.error('Error fetching categories:', error);
-    return [];
+export function getFeaturedListings(limit = 6) {
+  return getCatalogListings({ limit })
+}
+
+export function mapListingRows(rows: PublicCatalogRow[]): CatalogResult<PublicCatalogListing[]> {
+  const listings: PublicCatalogListing[] = []
+  for (const row of rows) {
+    const mapped = mapListingRow(row)
+    if (!mapped) {
+      return invalidResponse('A public catalog listing did not match its contract.')
+    }
+    listings.push(mapped)
   }
 
-  return (data ?? []).map((cat) => ({
-    category: cat as Category,
-    listing_count: 0,
-  }));
+  return listings.length
+    ? { status: 'SUCCESS_WITH_DATA', data: listings }
+    : { status: 'SUCCESS_EMPTY', data: [] }
 }
 
-export async function getFeaturedListings(
-  limitCount = 6
-): Promise<CatalogListing[]> {
-  const supabase = getSupabase();
+function mapListingRow(row: PublicCatalogRow): PublicCatalogListing | null {
+  const categoryValues = [row.category_id, row.category_slug, row.category_name]
+  const hasAnyCategoryValue = categoryValues.some((value) => value !== null)
 
-  const { data, error } = await supabase
-    .from('listings')
-    .select(`
-      *,
-      product:products(*, category:categories(*)),
-      listing_zones(zone:zones(*))
-    `)
-    .eq('status', 'published')
-    .order('created_at', { ascending: false })
-    .limit(limitCount);
-
-  if (error) {
-    console.error('Error fetching featured listings:', error);
-    return [];
+  if (
+    !isNonEmptyString(row.listing_id) ||
+    !isNonEmptyString(row.product_id) ||
+    !isNonEmptyString(row.slug) ||
+    !isNonEmptyString(row.name) ||
+    !Number.isSafeInteger(row.price_amount_minor) ||
+    row.price_amount_minor < 0 ||
+    row.currency !== 'MXN' ||
+    (hasAnyCategoryValue && !categoryValues.every(isNonEmptyString))
+  ) {
+    return null
   }
 
-  return ((data ?? []) as ListingRow[]).map(mapRow);
-}
+  const category =
+    isNonEmptyString(row.category_id) &&
+    isNonEmptyString(row.category_slug) &&
+    isNonEmptyString(row.category_name)
+      ? { id: row.category_id, slug: row.category_slug, name: row.category_name }
+      : null
+  const imageUrl = absolutePublicMediaUrl(row.image_url)
 
-function mapRow(row: ListingRow): CatalogListing {
   return {
-    listing: row as Listing,
-    product: (row.product ?? { id: '', name: '', slug: '', description: null, product_type: 'product', category_id: null, status: 'active', created_at: '', updated_at: '' }) as Product & { category: Category | null },
-    tags: [],
-    primary_media: null,
-    listing_zones: (row.listing_zones ?? []).map((lz) => ({ zone: lz.zone })),
-    min_price: row.base_price_amount_minor,
-    max_price: row.base_price_amount_minor,
-  };
+    listingId: row.listing_id,
+    productId: row.product_id,
+    slug: row.slug,
+    name: row.name,
+    shortDescription: row.short_description,
+    fullDescription: row.full_description,
+    price: { amountMinor: row.price_amount_minor, currency: 'MXN' },
+    image: imageUrl ? { url: imageUrl, alt: isNonEmptyString(row.image_alt) ? row.image_alt : row.name } : null,
+    category,
+    featured: row.featured,
+    personalizationAvailable: row.personalization_available,
+    scheduledDeliveryAvailable: row.scheduled_delivery_available,
+    mphoraCandidate: row.mphora_candidate,
+  }
 }
 
-export function formatPrice(amountMinor: number, currency = 'MXN'): string {
+function mapCategoryRow(row: PublicCatalogCategoryRow): PublicCatalogCategory | null {
+  if (
+    !isNonEmptyString(row.id) ||
+    !isNonEmptyString(row.slug) ||
+    !isNonEmptyString(row.name) ||
+    !Number.isSafeInteger(row.listing_count) ||
+    row.listing_count < 0
+  ) {
+    return null
+  }
+  return {
+    id: row.id,
+    slug: row.slug,
+    name: row.name,
+    description: row.description,
+    imageUrl: absolutePublicMediaUrl(row.image_url),
+    listingCount: row.listing_count,
+  }
+}
+
+function absolutePublicMediaUrl(path: string | null) {
+  if (!path) return null
+  if (!path.startsWith('/storage/v1/object/public/')) return null
+  const baseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+  return baseUrl ? new URL(path, baseUrl).toString() : null
+}
+
+function catalogError(error: PostgrestError): CatalogResult<never> {
+  if (error.code === '42501') {
+    return { status: 'PERMISSION_ERROR', data: null, message: 'Catalog access was denied.' }
+  }
+  if (error.code.startsWith('PGRST') || error.code.startsWith('22')) {
+    return { status: 'INVALID_QUERY', data: null, message: 'The catalog query was rejected.' }
+  }
+  return { status: 'NETWORK_ERROR', data: null, message: 'The catalog service is unavailable.' }
+}
+
+function unexpectedCatalogError(error: unknown): CatalogResult<never> {
+  if (error instanceof PublicSupabaseConfigurationError) {
+    return { status: 'CONFIGURATION_ERROR', data: null, message: error.message }
+  }
+  return { status: 'NETWORK_ERROR', data: null, message: 'The catalog service is unavailable.' }
+}
+
+function invalidResponse(message: string): CatalogResult<never> {
+  return { status: 'INVALID_RESPONSE', data: null, message }
+}
+
+function isNonEmptyString(value: unknown): value is string {
+  return typeof value === 'string' && value.trim().length > 0
+}
+
+export function formatPrice(money: PublicCatalogListing['price']): string {
   return new Intl.NumberFormat('es-MX', {
     style: 'currency',
-    currency,
+    currency: money.currency,
     minimumFractionDigits: 0,
     maximumFractionDigits: 0,
-  }).format(amountMinor / 100);
+  }).format(money.amountMinor / 100)
 }

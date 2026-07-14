@@ -7,12 +7,12 @@ import { cn } from '@/lib/utils'
 
 export function CartButton({ className }: { className?: string }) {
   const { count, lastAddedId } = useCart()
-  const [bump, setBump] = useState(false)
+  const [completedBumpId, setCompletedBumpId] = useState<string | null>(null)
+  const bump = lastAddedId !== null && lastAddedId !== completedBumpId
 
   useEffect(() => {
     if (lastAddedId) {
-      setBump(true)
-      const t = window.setTimeout(() => setBump(false), 350)
+      const t = window.setTimeout(() => setCompletedBumpId(lastAddedId), 350)
       return () => window.clearTimeout(t)
     }
   }, [lastAddedId])

@@ -8,11 +8,16 @@ export type City = {
 
 export type ProductAvailability = 'local' | 'mphora' | 'by_order'
 
+export type Money = {
+  amountMinor: number
+  currency: 'MXN'
+}
+
 export type Product = {
   id: string
   name: string
   description: string
-  price: number
+  price: Money
   image: string
   tag?: string
   alt: string
@@ -20,37 +25,36 @@ export type Product = {
   cityId: string
 }
 
-export type OrderStatus =
-  | 'draft'
-  | 'pending_payment'
-  | 'paid'
-  | 'assignment_pending'
-  | 'partner_accepted'
-  | 'preparing'
-  | 'ready_for_pickup'
-  | 'out_for_delivery'
-  | 'delivered'
-  | 'completed'
-  | 'cancelled'
-
-export type Order = {
-  id: string
-  status: OrderStatus
-  customerId: string
-  partnerId?: string
-  cityId: string
-  items: OrderItem[]
-  total: number
-  createdAt: string
-  updatedAt: string
+export type PublicCatalogListing = {
+  listingId: string
+  productId: string
+  slug: string
+  name: string
+  shortDescription: string | null
+  fullDescription: string | null
+  price: Money
+  image: {
+    url: string
+    alt: string
+  } | null
+  category: {
+    id: string
+    slug: string
+    name: string
+  } | null
+  featured: boolean
+  personalizationAvailable: boolean
+  scheduledDeliveryAvailable: boolean
+  mphoraCandidate: boolean
 }
 
-export type OrderItem = {
+export type PublicCatalogCategory = {
   id: string
-  productId: string
+  slug: string
   name: string
-  price: number
-  qty: number
+  description: string | null
+  imageUrl: string | null
+  listingCount: number
 }
 
 export type Partner = {

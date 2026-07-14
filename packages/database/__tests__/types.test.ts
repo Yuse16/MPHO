@@ -7,23 +7,16 @@ import type {
   Partner,
   Recipient,
   Address,
-  UserRoleAssignment,
-  PartnerCapability,
-  PartnerSchedule,
-  PartnerCapacity,
   ProfileInsert,
-  CustomerInsert,
   CityInsert,
-  PartnerInsert,
-  RecipientInsert,
-  AddressInsert,
 } from '@mpho/database/types';
 
 // ─── Type guards ────────────────────────────────────────────────────────────
 // Verify the type definitions match what doc 25 specifies.
 
-function assertType<T>(_value: T): void {
+function assertType<T>(value: T): void {
   // Runtime no-op; the compiler enforces types.
+  void value;
 }
 
 describe('Database types', () => {

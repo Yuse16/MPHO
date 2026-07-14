@@ -1,4 +1,6 @@
 // =============================================================================
+
+import type { Money } from '@mpho/types'
 // Shared types and utilities for customer-facing components.
 // =============================================================================
 // Mock data has been replaced by server-side Supabase queries in lib/catalog.ts.
@@ -9,7 +11,7 @@ export type Product = {
   id: string
   name: string
   description: string
-  price: number
+  price: Money
   image: string
   tag?: string
   alt: string
@@ -30,6 +32,11 @@ export type City = {
   status: CityStatus
 }
 
-export function formatPrice(value: number) {
-  return new Intl.NumberFormat('es-MX').format(value)
+export function formatPrice(money: Money) {
+  return new Intl.NumberFormat('es-MX', {
+    style: 'currency',
+    currency: money.currency,
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  }).format(money.amountMinor / 100)
 }

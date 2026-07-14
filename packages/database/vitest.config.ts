@@ -11,7 +11,6 @@ export default defineConfig({
     alias: {
       '@mpho/database': path.resolve(__dirname, './index.ts'),
       '@mpho/database/types': path.resolve(__dirname, './types.ts'),
-      '@mpho/database/client': path.resolve(__dirname, './client.ts'),
     },
   },
 })
