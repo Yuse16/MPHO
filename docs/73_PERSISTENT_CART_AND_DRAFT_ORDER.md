@@ -55,6 +55,32 @@ Personalization supports three optional plain-text fields: recipient name (120 c
 
 Each cart has at most one `cart_recipient`, one `cart_delivery_address`, and one `requested_delivery_at`. The selected zone must be active and belong to the active city, but this does not prove real coverage or capacity.
 
+### Remote CI failure and requested delivery time contract
+
+The Phase 6 remote GitHub Actions run failed only in `apps/customer/tests/cart-draft-flow.test.tsx`: the `datetime-local` input was expected to contain `2026-07-17T14:00`, but the UTC runner produced `2026-07-17T20:00`. The six-hour difference exposed an environment-dependent conversion in the UI; it did not indicate that PostgreSQL had stored the wrong instant.
+
+The Customer selects a wall-clock value with `datetime-local`. For the initial Saltillo/Ramos Arizpe operating area, that civil time is explicitly interpreted in the IANA zone `America/Monterrey`; it is never interpreted in the browser, Node process, database session, or CI runner zone.
+
+An instant and a wall time are different values with different purposes:
+
+- `2026-07-17T20:00:00.000Z` is an absolute UTC instant suitable for comparison, persistence and audit.
+- `2026-07-17T14:00` is the local wall time visible and selected by the Customer in `America/Monterrey`.
+- An HTML `datetime-local` value has the exact format `YYYY-MM-DDTHH:mm` and deliberately contains neither a UTC suffix nor an offset. It must not be parsed using the runtime's implicit local zone.
+
+The complete representation flow is:
+
+1. Customer input `2026-07-17T14:00` means 14:00 in `America/Monterrey` and contains no offset by HTML definition.
+2. Before the mutation, `deliveryInputToInstant` resolves that civil time in the named delivery zone and sends `2026-07-17T20:00:00.000Z`.
+3. PostgreSQL stores the instant in `requested_delivery_at timestamptz`; for this example its UTC representation is `2026-07-17 20:00:00+00`.
+4. The cart and order APIs return that persisted instant in `requestedDeliveryAt` as an offset-bearing timestamp.
+5. `formatDeliveryInstantForInput` formats the instant in `America/Monterrey` and fills the `datetime-local` control with the original `2026-07-17T14:00`.
+
+The previous implementation called `new Date(value)` and used the runtime `getTimezoneOffset()`. A Mac in Monterrey subtracted six hours from `20:00Z`, while a GitHub Actions UTC process subtracted zero and displayed `20:00`. That environment-dependent conversion was the defect. The replacement uses explicit-zone `Intl.DateTimeFormat` parts in both directions and has no dependency on the runtime default time zone.
+
+Regression tests run the same input, persisted instant and round trip under both `TZ=UTC` and `TZ=America/Monterrey`. Both environments now render `2026-07-17T14:00`, convert it to `2026-07-17T20:00:00.000Z` for persistence, and restore `2026-07-17T14:00` when the API value returns. The final workspace result is 106 passing tests, with lint, strict TypeScript and all three application builds passing. No database or API contract change was required because `timestamptz` and `requestedDeliveryAt` already represented the absolute instant correctly.
+
+If MPHO expands into a city with another time zone, the city/zone model must gain an approved IANA time-zone field before accepting requested delivery times there.
+
 The requested date uses `timestamptz`, must be in the future at mutation and conversion time, and is never presented as a confirmed window, promise or reservation.
 
 ## 8. Revalidation and quote snapshot
@@ -127,7 +153,7 @@ The Customer UI exposes `/carrito` and `/pedidos/[id]`, handles empty/loading/er
 
 Automated coverage includes: unique active cart, selection validation, quantity limit, duplicate/foreign option, foreign variant, inactive/draft catalog, version conflict, PII isolation, text/HTML/length rules, future date, fresh quote, non-final draft, atomic conversion, initial event only, converted cart, request hashing, same/different key behavior, concurrent tabs/calls, Customer A/B, partner, anon, safe DTO, content type, origin, payload allowlist, private caching, empty cart and responsive UI states.
 
-Local automated evidence covers 98 workspace tests, 94 pgTAP assertions, the three REST/RPC boundary suites, generated-type drift, schema drift, lint, strict TypeScript and all three application builds. Visual review passed at 1280×720 and 390×844 for the empty cart, persisted cart, atomic draft creation and draft-order result, with no horizontal overflow, console warning/error or hydration failure. The visual pass found and corrected missing form hydration and the false empty-cart flash during authoritative loading.
+Local automated evidence covers 106 workspace tests, 94 pgTAP assertions, the three REST/RPC boundary suites, generated-type drift, schema drift, lint, strict TypeScript and all three application builds. The delivery-time regression is also executed explicitly under both `TZ=UTC` and `TZ=America/Monterrey` to prove that the named-zone contract, rather than the process setting, controls the result. Visual review passed at 1280×720 and 390×844 for the empty cart, persisted cart, atomic draft creation and draft-order result, with no horizontal overflow, console warning/error or hydration failure. The visual pass found and corrected missing form hydration and the false empty-cart flash during authoritative loading.
 
 ## 14. Risks and deferred decisions
 
