@@ -90,6 +90,9 @@ importers:
       '@mpho/design-tokens':
         specifier: workspace:*
         version: link:../../packages/design-tokens
+      '@mpho/quote-engine':
+        specifier: workspace:*
+        version: link:../../packages/quote-engine
       '@mpho/types':
         specifier: workspace:*
         version: link:../../packages/types
@@ -225,6 +228,15 @@ importers:
         version: 3.2.7(@types/node@24.13.3)(jiti@2.7.0)(jsdom@29.1.1(@noble/hashes@1.8.0))(lightningcss@1.32.0)
 
   packages/design-tokens: {}
+
+  packages/quote-engine:
+    devDependencies:
+      typescript:
+        specifier: ^5.7.3
+        version: 5.7.3
+      vitest:
+        specifier: ^3.2.0
+        version: 3.2.7(@types/node@24.13.3)(jiti@2.7.0)(jsdom@29.1.1(@noble/hashes@1.8.0))(lightningcss@1.32.0)
 
   packages/types: {}
 

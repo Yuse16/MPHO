@@ -902,6 +902,182 @@ export type Database = {
         }
         Relationships: []
       }
+      quote_items: {
+        Row: {
+          availability_status: Database["public"]["Enums"]["quote_availability_status"]
+          created_at: string
+          currency: string
+          id: string
+          line_total_amount_minor: number
+          listing_id: string
+          options_snapshot: Json
+          product_id: string
+          product_snapshot: Json
+          quantity: number
+          quote_id: string
+          unit_adjustments_amount_minor: number
+          unit_base_amount_minor: number
+          unit_final_amount_minor: number
+          variant_id: string | null
+          variant_snapshot: Json | null
+        }
+        Insert: {
+          availability_status: Database["public"]["Enums"]["quote_availability_status"]
+          created_at?: string
+          currency: string
+          id?: string
+          line_total_amount_minor: number
+          listing_id: string
+          options_snapshot?: Json
+          product_id: string
+          product_snapshot: Json
+          quantity: number
+          quote_id: string
+          unit_adjustments_amount_minor: number
+          unit_base_amount_minor: number
+          unit_final_amount_minor: number
+          variant_id?: string | null
+          variant_snapshot?: Json | null
+        }
+        Update: {
+          availability_status?: Database["public"]["Enums"]["quote_availability_status"]
+          created_at?: string
+          currency?: string
+          id?: string
+          line_total_amount_minor?: number
+          listing_id?: string
+          options_snapshot?: Json
+          product_id?: string
+          product_snapshot?: Json
+          quantity?: number
+          quote_id?: string
+          unit_adjustments_amount_minor?: number
+          unit_base_amount_minor?: number
+          unit_final_amount_minor?: number
+          variant_id?: string | null
+          variant_snapshot?: Json | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quote_items_listing_id_fkey"
+            columns: ["listing_id"]
+            isOneToOne: false
+            referencedRelation: "listings"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quote_items_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quote_items_quote_id_fkey"
+            columns: ["quote_id"]
+            isOneToOne: false
+            referencedRelation: "quotes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quote_items_variant_id_fkey"
+            columns: ["variant_id"]
+            isOneToOne: false
+            referencedRelation: "listing_variants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      quotes: {
+        Row: {
+          availability_status: Database["public"]["Enums"]["quote_availability_status"]
+          created_at: string
+          currency: string
+          customer_id: string
+          delivery_amount_minor: number | null
+          discount_amount_minor: number
+          expires_at: string | null
+          id: string
+          idempotency_key: string
+          invalidated_at: string | null
+          invalidation_reason: string | null
+          pending_components: Json
+          pricing_version: string
+          public_reference: string
+          requested_delivery_at: string | null
+          service_amount_minor: number | null
+          status: Database["public"]["Enums"]["quote_status"]
+          subtotal_amount_minor: number
+          total_is_final: boolean
+          total_known_amount_minor: number
+          updated_at: string
+          zone_id: string | null
+        }
+        Insert: {
+          availability_status: Database["public"]["Enums"]["quote_availability_status"]
+          created_at?: string
+          currency: string
+          customer_id: string
+          delivery_amount_minor?: number | null
+          discount_amount_minor?: number
+          expires_at?: string | null
+          id?: string
+          idempotency_key: string
+          invalidated_at?: string | null
+          invalidation_reason?: string | null
+          pending_components?: Json
+          pricing_version: string
+          public_reference?: string
+          requested_delivery_at?: string | null
+          service_amount_minor?: number | null
+          status: Database["public"]["Enums"]["quote_status"]
+          subtotal_amount_minor: number
+          total_is_final?: boolean
+          total_known_amount_minor: number
+          updated_at?: string
+          zone_id?: string | null
+        }
+        Update: {
+          availability_status?: Database["public"]["Enums"]["quote_availability_status"]
+          created_at?: string
+          currency?: string
+          customer_id?: string
+          delivery_amount_minor?: number | null
+          discount_amount_minor?: number
+          expires_at?: string | null
+          id?: string
+          idempotency_key?: string
+          invalidated_at?: string | null
+          invalidation_reason?: string | null
+          pending_components?: Json
+          pricing_version?: string
+          public_reference?: string
+          requested_delivery_at?: string | null
+          service_amount_minor?: number | null
+          status?: Database["public"]["Enums"]["quote_status"]
+          subtotal_amount_minor?: number
+          total_is_final?: boolean
+          total_known_amount_minor?: number
+          updated_at?: string
+          zone_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quotes_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quotes_zone_id_fkey"
+            columns: ["zone_id"]
+            isOneToOne: false
+            referencedRelation: "zones"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       recipients: {
         Row: {
           archived_at: string | null
@@ -1095,6 +1271,12 @@ export type Database = {
         Returns: Database["public"]["Enums"]["user_role"][]
       }
       auth_uid: { Args: never; Returns: string }
+      calculate_public_quote: { Args: { p_request: Json }; Returns: Json }
+      create_customer_quote: {
+        Args: { p_idempotency_key: string; p_request: Json }
+        Returns: Json
+      }
+      get_customer_quote: { Args: { p_quote_id: string }; Returns: Json }
       get_public_catalog: {
         Args: {
           p_category_slug?: string
@@ -1132,6 +1314,10 @@ export type Database = {
           name: string
           slug: string
         }[]
+      }
+      get_public_quote_configuration: {
+        Args: { p_listing_id: string }
+        Returns: Json
       }
       has_role: {
         Args: { check_role: Database["public"]["Enums"]["user_role"] }
@@ -1179,6 +1365,8 @@ export type Database = {
       product_status: "draft" | "active" | "archived"
       product_type: "product" | "service" | "bundle" | "add_on"
       profile_status: "active" | "suspended" | "deleted"
+      quote_availability_status: "eligible" | "requires_review" | "unavailable"
+      quote_status: "valid" | "requires_review" | "expired" | "invalidated"
       recipient_surprise_mode: "none" | "full_surprise" | "partial_surprise"
       tag_type: "style" | "delivery" | "feature" | "seasonal"
       user_role:
@@ -1362,6 +1550,8 @@ export const Constants = {
       product_status: ["draft", "active", "archived"],
       product_type: ["product", "service", "bundle", "add_on"],
       profile_status: ["active", "suspended", "deleted"],
+      quote_availability_status: ["eligible", "requires_review", "unavailable"],
+      quote_status: ["valid", "requires_review", "expired", "invalidated"],
       recipient_surprise_mode: ["none", "full_surprise", "partial_surprise"],
       tag_type: ["style", "delivery", "feature", "seasonal"],
       user_role: [

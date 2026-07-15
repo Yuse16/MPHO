@@ -164,8 +164,14 @@ Valid validation coverage was replaced with a package-level Money test that enfo
 - Real device/PWA installation, offline, update, notification, and logout testing remains pending.
 - Remote GitHub Actions validation remains pending until an authorized push.
 
-## 9. Next recommended work
+## 9. Phase 5 implementation in review
 
-After Phase 4.1 is reviewed and committed, the next approved phase should build on the safe catalog and identity foundations without beginning money movement prematurely. Define and test the real order lifecycle, actor permissions, idempotency, audit events, and exception handling before checkout or provider integrations.
+Phase 5 introduces an authoritative quote boundary without implementing checkout or money movement. The database recalculates base price plus active variant and option adjustments, persists immutable customer-owned snapshots idempotently, and returns a public DTO without partner identity. Delivery and service remain `null`; the total is explicitly not final and availability requires review. Customer product detail now offers a preview-only calculator. No inventory is read or reserved, and no order, payment, assignment, delivery, HADIA, or MPHORA execution exists.
+
+The applied model is `quotes` plus `quote_items`; `quote_adjustments` and `pricing_rules` were not created because no approved rule requires them. Full evidence and deferred decisions are recorded in document 72.
+
+## 10. Next recommended work
+
+After Phase 5 review, define the quote-to-order conversion contract and the real order lifecycle, actor permissions, idempotency, audit events, and exception handling before checkout or provider integrations.
 
 Do not infer production readiness from local compilation or local Supabase tests.

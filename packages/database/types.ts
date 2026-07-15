@@ -27,6 +27,8 @@ export type ListingStatus = Enums<'listing_status'>
 export type ListingSourceType = Enums<'listing_source_type'>
 export type AvailabilityMode = Enums<'availability_mode'>
 export type MediaVisibility = Enums<'media_visibility'>
+export type QuoteStatus = Enums<'quote_status'>
+export type QuoteAvailabilityStatus = Enums<'quote_availability_status'>
 
 export type Profile = Tables<'profiles'>
 export type UserRoleAssignment = Tables<'user_roles'>
@@ -49,6 +51,8 @@ export type ListingZone = Tables<'listing_zones'>
 export type ListingVariant = Tables<'listing_variants'>
 export type ListingOption = Tables<'listing_options'>
 export type MediaAsset = Tables<'media_assets'>
+export type Quote = Tables<'quotes'>
+export type QuoteItem = Tables<'quote_items'>
 
 export type ProfileInsert = TablesInsert<'profiles'>
 export type ProfileUpdate = TablesUpdate<'profiles'>
@@ -78,6 +82,8 @@ export type ListingOptionInsert = TablesInsert<'listing_options'>
 export type ListingOptionUpdate = TablesUpdate<'listing_options'>
 export type MediaAssetInsert = TablesInsert<'media_assets'>
 export type MediaAssetUpdate = TablesUpdate<'media_assets'>
+export type QuoteInsert = TablesInsert<'quotes'>
+export type QuoteItemInsert = TablesInsert<'quote_items'>
 
 export type PublicCatalogRow =
   Database['public']['Functions']['get_public_catalog']['Returns'][number]

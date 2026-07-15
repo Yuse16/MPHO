@@ -460,6 +460,7 @@ Puntos MPHO are internal supply, receiving, preparation, personalization, storag
 |---:|---|---:|---|---|
 | 72 | `docs/69_CURRENT_IMPLEMENTATION_AND_FOUNDATION_STATUS.md` | 01 | Complete | Real implementation status through Phase 4.1 |
 | 73 | `docs/71_CATALOG_SECURITY_TYPES_AND_CI_HARDENING.md` | 13 | Complete | Phase 4.1 catalog security, generated types, clients, routes, tests, and CI evidence |
+| 74 | `docs/72_SERVER_SIDE_PRICING_AVAILABILITY_AND_QUOTES.md` | 14 | Complete | Phase 5 authoritative pricing, availability, quote persistence, API, RLS, tests, and deferred rules |
 
 ### Purpose
 
