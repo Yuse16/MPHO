@@ -1,6 +1,6 @@
 'use client';
 
-import { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
+import { createContext, useContext, useEffect, useRef, useState, type ReactNode } from 'react';
 import type { User } from '@supabase/supabase-js';
 import { createBrowserSupabaseClient } from '@/lib/supabase/browser';
 
@@ -19,9 +19,11 @@ const AuthContext = createContext<AuthContextValue>({
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
-  const [supabase] = useState(() => createBrowserSupabaseClient());
+  const supabaseRef = useRef<ReturnType<typeof createBrowserSupabaseClient> | null>(null);
 
   useEffect(() => {
+    const supabase = supabaseRef.current ?? createBrowserSupabaseClient();
+    supabaseRef.current = supabase;
     let active = true;
 
     void supabase.auth.getUser().then(({ data: { user: currentUser } }) => {
@@ -41,9 +43,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       active = false;
       subscription.unsubscribe();
     };
-  }, [supabase]);
+  }, []);
 
   const signOut = async () => {
+    const supabase = supabaseRef.current ?? createBrowserSupabaseClient();
+    supabaseRef.current = supabase;
     await supabase.auth.signOut();
     setUser(null);
     window.location.href = '/';

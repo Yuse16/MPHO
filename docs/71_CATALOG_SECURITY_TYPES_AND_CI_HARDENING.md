@@ -199,7 +199,7 @@ The workflow pins:
 - `pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1` — v4.3.0 (the commit dereferenced by the annotated v4 tag);
 - `actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020` — v4.4.0.
 
-The job runs frozen install, client-secret scan, lint, typecheck, tests, all three builds, Supabase start/reset, migrations and seed, 24 pgTAP/RLS assertions, anonymous PostgREST boundary tests, generated-type drift, and schema drift. A trap always stops the local Supabase stack. CI does not use `--ignore-health-check`.
+The job runs frozen install, client-secret scan, lint, typecheck, tests, Supabase start/reset, migrations and seed, 24 pgTAP/RLS assertions, anonymous PostgREST boundary tests, generated-type generation and drift verification, schema drift, and then all three builds. An `always()` cleanup step stops the local Supabase stack. CI does not use `--ignore-health-check`.
 
 Local equivalent validation and remote GitHub Actions are separate evidence. Remote GitHub Actions remains pending until an authorized future push.
 
@@ -245,7 +245,57 @@ The first clean Docker-volume startup required Realtime and Storage vector-store
 
 Visual validation passed at 1280×720 and 390×844: Home, header, hero, recipient selector, HADIA, truthful empty MPHORA state, empty cart, mobile navigation, login, signup, public product, and protected profile redirect. Browser console contained no warnings/errors or hydration failures, document width matched viewport width, and no internal partner name or identifier appeared.
 
-## 12. Remaining risks
+## 12. Remote Customer build regression and CI correction
+
+On 2026-07-15, GitHub Actions failed while prerendering Customer `/_not-found` with `PublicSupabaseConfigurationError`. The remote job built the three applications before starting the local Supabase stack, so `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY` were unavailable at build time.
+
+The failure had two contributing causes:
+
+- CI executed `pnpm build` before local Supabase startup and public-variable export.
+- `AuthProvider` called `createBrowserSupabaseClient()` from a `useState` initializer. Although `config.ts` already exposed a lazy `getPublicSupabaseConfig()` function and performed no module-level validation, the state initializer ran while Next.js prerendered the client component on the server. Importing the root provider tree therefore caused configuration validation even for `/_not-found`.
+
+The correction keeps strict validation at client-creation time and makes these changes:
+
+- `AuthProvider` creates and retains its browser client from `useEffect`, which runs only in the browser, and reuses that stable client for auth subscription and sign-out.
+- CI starts local Supabase before database validation and builds.
+- CI reads `API_URL` and `ANON_KEY` from `supabase status -o env`, explicitly exports them as `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY` through `GITHUB_ENV`, and masks the anon key before export logging.
+- CI performs database reset, pgTAP/RLS, REST, generated-type creation and verification, and schema drift before building Customer, Partner, and Central.
+- CI still uses normal Supabase health checks and contains no production credential or hardcoded Supabase endpoint/key.
+
+Regression coverage now proves that:
+
+- importing `config.ts` and `app/not-found.tsx` with missing public variables does not throw;
+- server-rendering the root `Providers` tree does not create a browser client;
+- actually creating a browser client without configuration throws `PublicSupabaseConfigurationError`;
+- valid public configuration creates the client;
+- production Supabase modules use literal public environment access, contain no dynamic `process.env[name]`, and contain no hardcoded remote Supabase project URL.
+
+Final local results on 2026-07-15:
+
+```text
+effective-empty Customer build before fix  FAIL at /_not-found with PublicSupabaseConfigurationError
+effective-empty Customer build after fix   PASS, including static /_not-found
+pnpm install --frozen-lockfile              PASS, 10 workspace projects, lockfile unchanged
+pnpm security:check                         PASS
+pnpm lint                                   PASS, 9/9 scripted workspaces
+pnpm typecheck                              PASS, 9/9 scripted workspaces
+pnpm test                                   PASS, 51 tests (37 customer, 12 database, 2 validation)
+npx supabase stop                           PASS after Docker Desktop startup
+npx supabase start                          PASS with normal health checks; no ignore flag
+npx supabase db reset                       PASS, 14 migrations plus seed
+npx supabase test db                        PASS, 24/24 pgTAP/RLS assertions
+pnpm db:test:rest                           PASS, 13 anonymous PostgREST boundary checks
+pnpm db:types                               PASS
+pnpm db:types:check                         PASS, no generated-type drift
+pnpm db:schema:check                        PASS, no schema drift
+pnpm build                                  PASS, Customer + Partner + Central on Next.js 16.2.6
+```
+
+The exact `env -u` reproduction command loaded the developer's ignored `apps/customer/.env.local` and therefore passed locally. For a clean-runner-equivalent reproduction without reading, moving, or changing that file, both public variables were explicitly set to empty strings; this reproduced the prior remote `/_not-found` failure before the fix and passed after it.
+
+Remote GitHub Actions validation remains pending until the next authorized push. No commit or push was made as part of this correction.
+
+## 13. Remaining risks
 
 - The public RPC reports conservative `false` for featured, scheduled delivery, and MPHORA until authoritative eligibility exists.
 - Direct safe-column table grants remain for compatibility; customer code must use the explicit RPC DTO.
