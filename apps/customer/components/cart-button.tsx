@@ -4,6 +4,7 @@ import { ShoppingCart } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { useCart } from '@/lib/cart-context'
 import { cn } from '@/lib/utils'
+import Link from 'next/link'
 
 export function CartButton({ className }: { className?: string }) {
   const { count, lastAddedId } = useCart()
@@ -18,8 +19,8 @@ export function CartButton({ className }: { className?: string }) {
   }, [lastAddedId])
 
   return (
-    <button
-      type="button"
+    <Link
+      href="/carrito"
       aria-label={`Ver carrito, ${count} ${count === 1 ? 'artículo' : 'artículos'}`}
       className={cn(
         'glass relative flex size-11 items-center justify-center rounded-full transition-all duration-200 hover:border-[color:var(--color-border-lime)] active:scale-95',
@@ -38,6 +39,6 @@ export function CartButton({ className }: { className?: string }) {
           {count}
         </span>
       )}
-    </button>
+    </Link>
   )
 }

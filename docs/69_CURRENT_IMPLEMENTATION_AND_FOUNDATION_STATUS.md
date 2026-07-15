@@ -2,11 +2,11 @@
 
 ## 1. Purpose and evidence date
 
-This document records what is actually implemented in MPHO through Phase 4.1. It separates working foundations from prototypes and future production work.
+This document records what is actually implemented in MPHO through Phase 6. It separates working foundations from prototypes and future production work.
 
-- Evidence date: 2026-07-14.
-- Base commit: `3f7d2fa` (`feat: implement Supabase public catalog`).
-- Current phase: 4.1 — catalog security, generated types, client/auth/route hardening, and complete workspace CI.
+- Evidence date: 2026-07-15.
+- Base commit: `827a2fb` (Phase 5 merged into `origin/main`).
+- Current phase: 6 — persistent Customer cart and atomic draft-order creation.
 - Production status: blocked; local validation is not production approval.
 
 ## 2. Current repository
@@ -101,8 +101,9 @@ Full Phase 4.1 decisions and evidence are in `docs/71_CATALOG_SECURITY_TYPES_AND
 | Category filtering | Implemented foundation | Server-side exact slug filter |
 | Customer auth | Implemented foundation | Login/signup/callback/session routing; not production-complete |
 | Customer profile | Protected route | Requires a valid session |
-| Cart | In-memory prototype | Starts empty; no server persistence |
-| Checkout and orders | Missing | No trusted production flow |
+| Cart | Implemented foundation | Customer-owned, persistent, versioned and server-authoritative |
+| Draft orders | Implemented foundation | Atomic quote revalidation and immutable snapshots; only `draft` exists |
+| Checkout and payment | Missing | No payment initiation, authorization, reservation, or operational execution |
 | HADIA | Visual only | No AI execution or privileged tools |
 | MPHORA | Truthful placeholder | No item is labeled fast without operational eligibility |
 | Partner app | Compiling shell | Operational workflows not implemented |
@@ -123,6 +124,8 @@ The customer-facing contract uses `get_public_catalog` and `get_public_catalog_c
 
 This does not prove production security. Production secrets, MFA, recovery, monitoring, backups, incident readiness, provider controls, and the launch checklist remain unresolved.
 
+Phase 6 adds private cart/order tables with RLS and authenticated owner-only reads. `anon` has no table access, and `authenticated` has no direct INSERT, UPDATE, or DELETE. Versioned cart mutations and draft conversion run through narrowly granted `SECURITY DEFINER` functions with empty `search_path`, internally resolved Customer identity, payload limits, request hashing, and cross-customer not-found semantics. Recipient, address, dedication, and instructions are not logged or sent to analytics.
+
 ## 6. Tests and CI
 
 Local validation covers:
@@ -133,7 +136,7 @@ Local validation covers:
 - unit/component tests;
 - builds for Customer, Partner, and Central;
 - local Supabase start/reset;
-- 24 pgTAP/RLS assertions;
+- 94 pgTAP/RLS assertions across catalog, quote, cart, order, grants, ownership, idempotency, and concurrency boundaries;
 - anonymous PostgREST calls;
 - generated-type drift;
 - schema drift.
@@ -158,20 +161,32 @@ Valid validation coverage was replaced with a package-level Money test that enfo
 
 ### Product and technical debt
 
-- Customer cart is local and non-authoritative.
+- Production rate limiting, observability, abandoned-cart retention/anonymization, and recipient-PII lifecycle controls remain unresolved.
 - HADIA and MPHORA are not operational engines.
 - Public catalog booleans are conservative until real eligibility rules exist.
 - Real device/PWA installation, offline, update, notification, and logout testing remains pending.
 - Remote GitHub Actions validation remains pending until an authorized push.
 
-## 9. Phase 5 implementation in review
+## 9. Phase 5 merged foundation
 
-Phase 5 introduces an authoritative quote boundary without implementing checkout or money movement. The database recalculates base price plus active variant and option adjustments, persists immutable customer-owned snapshots idempotently, and returns a public DTO without partner identity. Delivery and service remain `null`; the total is explicitly not final and availability requires review. Customer product detail now offers a preview-only calculator. No inventory is read or reserved, and no order, payment, assignment, delivery, HADIA, or MPHORA execution exists.
+Phase 5, merged into `origin/main` at `827a2fb`, introduces an authoritative quote boundary without implementing checkout or money movement. The database recalculates base price plus active variant and option adjustments, persists immutable customer-owned snapshots idempotently, and returns a public DTO without partner identity. Delivery and service remain `null`; the total is explicitly not final and availability requires review. Customer product detail offers a preview-only calculator. No inventory is read or reserved, and no payment, assignment, delivery, HADIA, or MPHORA execution exists.
 
 The applied model is `quotes` plus `quote_items`; `quote_adjustments` and `pricing_rules` were not created because no approved rule requires them. Full evidence and deferred decisions are recorded in document 72.
 
-## 10. Next recommended work
+## 10. Phase 6 implementation
 
-After Phase 5 review, define the quote-to-order conversion contract and the real order lifecycle, actor permissions, idempotency, audit events, and exception handling before checkout or provider integrations.
+- One active cart per Customer is enforced by a partial unique index.
+- Every cart mutation requires `expectedVersion`; successful mutations increment it and stale clients receive `VERSION_CONFLICT`.
+- Listing, variant, option, quantity, text personalization, recipient, address, zone, and requested date are persisted without trusting browser price or availability.
+- Cart recipient and address data are temporary and are not automatically inserted into saved `recipients` or `addresses`.
+- Draft creation locks the cart, recalculates Phase 5 pricing, creates a fresh immutable quote, snapshots the order and items, writes only `NULL → draft`, and converts the cart in one transaction.
+- Database idempotency uses `(customer_id, idempotency_key)` plus a server-generated SHA-256 request hash.
+- Customer routes expose `/carrito` and `/pedidos/[id]` without payment, reservation, partner assignment, tracking, or delivery promises.
+
+Full decisions and evidence are in `docs/73_PERSISTENT_CART_AND_DRAFT_ORDER.md`.
+
+## 11. Next recommended work
+
+Define the controlled transition from `draft` into quote review/checkout readiness, including approved delivery/service pricing, finality, expiration, operational availability, complete personalization compatibility, and a production-ready authentication/rate-limit/observability baseline. Payment remains blocked until those gates are complete.
 
 Do not infer production readiness from local compilation or local Supabase tests.

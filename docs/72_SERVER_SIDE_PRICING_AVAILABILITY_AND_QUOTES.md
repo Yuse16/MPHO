@@ -2,7 +2,7 @@
 
 ## 1. Objective and status
 
-Phase 5 creates MPHO's first authoritative server-side pricing, availability, and quote boundary. Status is **complete locally; remote CI pending the next authorized push**. Base commit: `c10dccd`. Migration: `20260715090000_server_side_quotes.sql`.
+Phase 5 creates MPHO's first authoritative server-side pricing, availability, and quote boundary. Status is **merged into `origin/main` at `827a2fb`**. Migration: `20260715090000_server_side_quotes.sql`.
 
 ## 2. Scope
 
@@ -103,9 +103,9 @@ Visual/browser evidence passed at 1280×720 and 390×844 on `/producto/rosas-pre
 - Inventory and capacity integration.
 - Required-option semantic validation beyond active selected options.
 - Rate limiting and production observability.
-- Quote-to-order conversion and revalidation.
+- Quote-to-order conversion beyond a non-final `draft`; Phase 6 now performs a fresh server recalculation and snapshot but does not advance checkout readiness.
 - Seed catalog variants/options suitable for real merchandising.
 
 ## 16. Next recommended phase
 
-Define a server-side quote-to-order conversion and complete order lifecycle with revalidation, audit history, one responsible partner, exceptions, and idempotency before implementing checkout or any payment provider.
+Phase 6 implements persistent cart conversion only into `draft`, with fresh revalidation, snapshots, initial audit history, concurrency control and idempotency. A later phase must define final quote readiness and controlled lifecycle transitions before any payment provider.

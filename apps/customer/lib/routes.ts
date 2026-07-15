@@ -6,9 +6,10 @@ const protectedExactRoutes = new Set([
   '/pedidos',
   '/direcciones',
   '/personas',
+  '/carrito',
   '/ocasiones-guardadas',
 ])
-const protectedRoutePrefixes = ['/pedidos/']
+const protectedRoutePrefixes = ['/pedidos/', '/carrito/']
 
 export function isPublicRoute(pathname: string) {
   return publicExactRoutes.has(pathname) || publicRoutePrefixes.some((prefix) => pathname.startsWith(prefix))

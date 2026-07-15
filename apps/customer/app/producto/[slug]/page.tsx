@@ -85,13 +85,7 @@ export default async function PublicProductPage({
 
             {quoteConfiguration && <QuoteCalculator listingId={product.listingId} configuration={quoteConfiguration} />}
 
-            <button
-              type="button"
-              disabled
-              className="mt-auto w-full cursor-not-allowed rounded-full bg-white/10 px-6 py-4 font-bold text-faint"
-            >
-              Compra todavía no disponible
-            </button>
+            <p className="mt-5 text-center text-xs text-faint">Puedes guardar un borrador; la compra y el pago todavía no están disponibles.</p>
           </div>
         </article>
       </div>
