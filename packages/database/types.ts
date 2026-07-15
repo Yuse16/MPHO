@@ -29,6 +29,8 @@ export type AvailabilityMode = Enums<'availability_mode'>
 export type MediaVisibility = Enums<'media_visibility'>
 export type QuoteStatus = Enums<'quote_status'>
 export type QuoteAvailabilityStatus = Enums<'quote_availability_status'>
+export type CartStatus = Enums<'cart_status'>
+export type OrderState = Enums<'order_state'>
 
 export type Profile = Tables<'profiles'>
 export type UserRoleAssignment = Tables<'user_roles'>
@@ -53,6 +55,15 @@ export type ListingOption = Tables<'listing_options'>
 export type MediaAsset = Tables<'media_assets'>
 export type Quote = Tables<'quotes'>
 export type QuoteItem = Tables<'quote_items'>
+export type Cart = Tables<'carts'>
+export type CartItem = Tables<'cart_items'>
+export type CartItemOption = Tables<'cart_item_options'>
+export type CartItemPersonalization = Tables<'cart_item_personalizations'>
+export type CartRecipient = Tables<'cart_recipients'>
+export type CartDeliveryAddress = Tables<'cart_delivery_addresses'>
+export type Order = Tables<'orders'>
+export type OrderItem = Tables<'order_items'>
+export type OrderStateHistory = Tables<'order_state_history'>
 
 export type ProfileInsert = TablesInsert<'profiles'>
 export type ProfileUpdate = TablesUpdate<'profiles'>
@@ -84,6 +95,10 @@ export type MediaAssetInsert = TablesInsert<'media_assets'>
 export type MediaAssetUpdate = TablesUpdate<'media_assets'>
 export type QuoteInsert = TablesInsert<'quotes'>
 export type QuoteItemInsert = TablesInsert<'quote_items'>
+export type CartInsert = TablesInsert<'carts'>
+export type CartItemInsert = TablesInsert<'cart_items'>
+export type OrderInsert = TablesInsert<'orders'>
+export type OrderItemInsert = TablesInsert<'order_items'>
 
 export type PublicCatalogRow =
   Database['public']['Functions']['get_public_catalog']['Returns'][number]

@@ -8,7 +8,7 @@ import { formatPrice, type Product } from '@/lib/data'
 import { cn } from '@/lib/utils'
 
 export function ProductCard({ product }: { product: Product }) {
-  const { addItem, lastAddedId } = useCart()
+  const { addItem, lastAddedId, loading } = useCart()
   const [fav, setFav] = useState(false)
   const [imgError, setImgError] = useState(false)
   const justAdded = lastAddedId === product.id
@@ -68,7 +68,8 @@ export function ProductCard({ product }: { product: Product }) {
           <button
             type="button"
             aria-label={`Agregar ${product.name} al carrito`}
-            onClick={() => addItem(product)}
+            onClick={() => void addItem({ listingId: product.id })}
+            disabled={loading}
             className={cn(
               'flex size-10 items-center justify-center rounded-full border transition-all duration-200 active:scale-90',
               justAdded

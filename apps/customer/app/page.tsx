@@ -1,4 +1,3 @@
-import { CartProvider } from '@/lib/cart-context'
 import { MobileHeader } from '@/components/mobile-header'
 import { DesktopHeader } from '@/components/desktop-header'
 import { HeroSection } from '@/components/hero-section'
@@ -12,7 +11,6 @@ import { FloatingCartButton } from '@/components/floating-cart-button'
 
 export default function Home() {
   return (
-    <CartProvider>
       <div className="mpho-bg min-h-screen">
         <MobileHeader />
         <DesktopHeader />
@@ -29,6 +27,5 @@ export default function Home() {
         <MobileBottomNavigation />
         <FloatingCartButton />
       </div>
-    </CartProvider>
   )
 }

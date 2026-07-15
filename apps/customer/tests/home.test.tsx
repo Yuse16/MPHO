@@ -10,11 +10,12 @@ vi.mock('@/components/mphora-section', () => ({
 }))
 
 import Home from '../app/page'
+import { CartProvider } from '@/lib/cart-context'
 
 describe('Home page', () => {
   it('renders the MPHO hero heading', async () => {
     await act(async () => {
-      render(<Home />)
+      render(<CartProvider><Home /></CartProvider>)
     })
     const matches = screen.getAllByText(/regalo/i)
     expect(matches.length).toBeGreaterThan(0)
@@ -22,7 +23,7 @@ describe('Home page', () => {
 
   it('renders the HADIA card section', async () => {
     await act(async () => {
-      render(<Home />)
+      render(<CartProvider><Home /></CartProvider>)
     })
     const matches = screen.getAllByText(/HADIA/i)
     expect(matches.length).toBeGreaterThan(0)
@@ -30,7 +31,7 @@ describe('Home page', () => {
 
   it('does not show partner names to customers', async () => {
     await act(async () => {
-      render(<Home />)
+      render(<CartProvider><Home /></CartProvider>)
     })
     const text = document.body.textContent ?? ''
     expect(text).not.toMatch(/punto\s*mpho/i)
