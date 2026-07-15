@@ -2,6 +2,8 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { ArrowLeft, Package, ShieldCheck } from 'lucide-react'
 import { formatPrice, getCatalogListingBySlug } from '@/lib/catalog'
+import { getQuoteConfiguration } from '@/lib/quotes'
+import { QuoteCalculator } from '@/components/quote-calculator'
 
 export default async function PublicProductPage({
   params,
@@ -33,6 +35,7 @@ export default async function PublicProductPage({
   }
 
   const product = result.data
+  const quoteConfiguration = await getQuoteConfiguration(product.listingId)
 
   return (
     <main className="min-h-screen px-4 py-6 sm:px-8 lg:px-12">
@@ -79,6 +82,8 @@ export default async function PublicProductPage({
                 Disponibilidad, preparación y entrega sujetas a confirmación antes del pago.
               </p>
             </div>
+
+            {quoteConfiguration && <QuoteCalculator listingId={product.listingId} configuration={quoteConfiguration} />}
 
             <button
               type="button"

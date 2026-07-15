@@ -303,3 +303,7 @@ Remote GitHub Actions validation remains pending until the next authorized push.
 - Local tests do not validate a remote Supabase project or production deployment.
 - Remote GitHub Actions is not validated until a future authorized push.
 - Checkout, orders, payments, refunds, earnings, payouts, delivery, and operational PWAs remain outside this phase.
+
+## 14. Phase 5 dependency note
+
+Phase 5 preserves the Phase 4.1 catalog boundary and CI ordering. Quote functions use a separate explicit DTO, never broaden public catalog columns, never expose `partner_id`, and use the local Supabase URL/anon key already exported before build. CI continues to pin Actions by SHA, masks the local anon key, and does not use `--ignore-health-check`. The current Node.js 20 Action warning remains separate upgrade debt; no Action SHA was changed in Phase 5.
