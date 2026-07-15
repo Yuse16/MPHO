@@ -2,18 +2,11 @@
 // @mpho/database — public API
 // =============================================================================
 
-export {
-  getSupabaseBrowserClient,
-  getSupabaseServerClient,
-  getSupabaseMiddlewareClient,
-} from './client';
-
 export type {
   // Enums
   ProfileStatus,
   UserRole,
   UserRoleAssignmentStatus,
-  CustomerStatus,
   CityStatus,
   ZoneStatus,
   PartnerStatus,
@@ -24,13 +17,10 @@ export type {
   ProductStatus,
   ProductType,
   TagType,
-  TagStatus,
   ListingStatus,
   ListingSourceType,
   AvailabilityMode,
-  MediaOwnerType,
   MediaVisibility,
-  MediaStatus,
   // Row types
   Profile,
   UserRoleAssignment,
@@ -53,8 +43,8 @@ export type {
   ListingVariant,
   ListingOption,
   MediaAsset,
-  CatalogListing,
-  CatalogCategory,
+  PublicCatalogRow,
+  PublicCatalogCategoryRow,
   // Insert/Update types
   ProfileInsert,
   ProfileUpdate,

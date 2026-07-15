@@ -7,5 +7,10 @@
   "types": "./index.ts",
   "exports": {
     ".": "./index.ts"
+  },
+  "scripts": {
+    "lint": "eslint .",
+    "typecheck": "tsc --project tsconfig.json",
+    "test": "vitest run --passWithNoTests"
   }
 }

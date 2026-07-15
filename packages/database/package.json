@@ -7,15 +7,13 @@
   "types": "./index.ts",
   "exports": {
     ".": "./index.ts",
-    "./client": "./client.ts",
-    "./types": "./types.ts"
+    "./types": "./types.ts",
+    "./types.generated": "./types.generated.ts"
   },
   "scripts": {
+    "lint": "eslint .",
     "typecheck": "tsc --noEmit",
     "test": "vitest run"
-  },
-  "dependencies": {
-    "@supabase/supabase-js": "^2.49.1"
   },
   "devDependencies": {
     "typescript": "^5.7.3",

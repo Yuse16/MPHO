@@ -8,8 +8,3 @@ export const APP_CONFIG = {
 export const CITY_CONFIG = {
   defaultCityId: 'saltillo',
 } as const
-
-export const ORDER_CONFIG = {
-  maxItemsPerOrder: 10,
-  cancellationWindowMinutes: 30,
-} as const

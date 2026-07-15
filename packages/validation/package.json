@@ -10,5 +10,10 @@
   },
   "dependencies": {
     "@mpho/types": "workspace:*"
+  },
+  "scripts": {
+    "lint": "eslint .",
+    "typecheck": "tsc --project tsconfig.json",
+    "test": "vitest run --passWithNoTests"
   }
 }

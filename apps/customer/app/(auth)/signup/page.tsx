@@ -4,7 +4,7 @@ import { useState, type FormEvent } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Mail, Lock, Eye, EyeOff } from 'lucide-react';
-import { createClient } from '@/lib/supabase/client';
+import { createBrowserSupabaseClient } from '@/lib/supabase/browser';
 
 export default function SignupPage() {
   const router = useRouter();
@@ -33,7 +33,7 @@ export default function SignupPage() {
 
     setLoading(true);
 
-    const supabase = createClient();
+    const supabase = createBrowserSupabaseClient();
     const { error: authError } = await supabase.auth.signUp({
       email,
       password,

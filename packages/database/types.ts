@@ -1,388 +1,85 @@
-// =============================================================================
-// Database types — generated from Supabase schema
-// =============================================================================
-// Run `supabase gen types typescript --local > packages/database/types.ts`
-// after `supabase start` to get the latest auto-generated types.
-//
-// These manual types represent the Phase 2-4 identity/geography/partner/catalog schema.
-// They serve as the source of truth until the auto-generator is available.
-// =============================================================================
+// Domain aliases are built on the generated Supabase schema. The generated file
+// is the SQL source of truth; this module only adds stable domain names.
+import type {
+  Database,
+  Enums,
+  Tables,
+  TablesInsert,
+  TablesUpdate,
+} from './types.generated'
 
-export type Json =
-  | string
-  | number
-  | boolean
-  | null
-  | { [key: string]: Json | undefined }
-  | Json[];
+export type { Database, Json } from './types.generated'
 
-// ─── Enums ──────────────────────────────────────────────────────────────────
+export type ProfileStatus = Enums<'profile_status'>
+export type UserRole = Enums<'user_role'>
+export type UserRoleAssignmentStatus = Enums<'user_role_assignment_status'>
+export type CityStatus = Enums<'city_status'>
+export type ZoneStatus = Enums<'zone_status'>
+export type PartnerStatus = Enums<'partner_status'>
+export type PartnerCapabilityStatus = Enums<'partner_capability_status'>
+export type RecipientSurpriseMode = Enums<'recipient_surprise_mode'>
+export type AddressOwnerType = Enums<'address_owner_type'>
+export type CategoryType = Enums<'category_type'>
+export type ProductStatus = Enums<'product_status'>
+export type ProductType = Enums<'product_type'>
+export type TagType = Enums<'tag_type'>
+export type ListingStatus = Enums<'listing_status'>
+export type ListingSourceType = Enums<'listing_source_type'>
+export type AvailabilityMode = Enums<'availability_mode'>
+export type MediaVisibility = Enums<'media_visibility'>
 
-export type ProfileStatus = 'active' | 'suspended' | 'deleted';
-export type UserRole = 'customer' | 'partner_operator' | 'partner_admin' | 'courier' | 'mpho_operator' | 'mpho_admin' | 'service_account';
-export type UserRoleAssignmentStatus = 'active' | 'revoked';
-export type CustomerStatus = 'active' | 'suspended' | 'deleted';
-export type CityStatus = 'active' | 'planned' | 'suspended';
-export type ZoneStatus = 'active' | 'planned' | 'suspended';
-export type PartnerStatus = 'pending_onboarding' | 'active' | 'paused' | 'suspended' | 'closed';
-export type PartnerCapabilityStatus = 'active' | 'suspended' | 'revoked';
-export type RecipientSurpriseMode = 'none' | 'full_surprise' | 'partial_surprise';
-export type AddressOwnerType = 'customer' | 'recipient' | 'partner' | 'order_snapshot';
-export type CategoryType = 'product' | 'occasion' | 'recipient' | 'style';
-export type ProductStatus = 'active' | 'draft' | 'archived';
-export type ProductType = 'product' | 'service' | 'bundle' | 'add_on';
-export type TagType = 'style' | 'feature' | 'delivery' | 'seasonal';
-export type TagStatus = 'active' | 'archived';
-export type ListingStatus = 'draft' | 'submitted' | 'published' | 'changes_requested' | 'suspended' | 'archived';
-export type ListingSourceType = 'partner_local' | 'external_curated' | 'mpho_owned_future';
-export type AvailabilityMode = 'instant' | 'partner_confirmation' | 'by_order';
-export type MediaOwnerType = 'product' | 'listing' | 'partner' | 'order' | 'brand';
-export type MediaVisibility = 'public' | 'private' | 'restricted';
-export type MediaStatus = 'active' | 'archived';
+export type Profile = Tables<'profiles'>
+export type UserRoleAssignment = Tables<'user_roles'>
+export type Customer = Tables<'customers'>
+export type City = Tables<'cities'>
+export type Zone = Tables<'zones'>
+export type Address = Tables<'addresses'>
+export type Partner = Tables<'partners'>
+export type PartnerCapability = Tables<'partner_capabilities'>
+export type PartnerSchedule = Tables<'partner_schedules'>
+export type PartnerScheduleException = Tables<'partner_schedule_exceptions'>
+export type PartnerCapacity = Tables<'partner_capacity'>
+export type Recipient = Tables<'recipients'>
+export type Category = Tables<'categories'>
+export type Tag = Tables<'tags'>
+export type Product = Tables<'products'>
+export type ProductTag = Tables<'product_tags'>
+export type Listing = Tables<'listings'>
+export type ListingZone = Tables<'listing_zones'>
+export type ListingVariant = Tables<'listing_variants'>
+export type ListingOption = Tables<'listing_options'>
+export type MediaAsset = Tables<'media_assets'>
 
-// ─── Row types ──────────────────────────────────────────────────────────────
+export type ProfileInsert = TablesInsert<'profiles'>
+export type ProfileUpdate = TablesUpdate<'profiles'>
+export type CustomerInsert = TablesInsert<'customers'>
+export type CustomerUpdate = TablesUpdate<'customers'>
+export type CityInsert = TablesInsert<'cities'>
+export type CityUpdate = TablesUpdate<'cities'>
+export type ZoneInsert = TablesInsert<'zones'>
+export type ZoneUpdate = TablesUpdate<'zones'>
+export type PartnerInsert = TablesInsert<'partners'>
+export type PartnerUpdate = TablesUpdate<'partners'>
+export type RecipientInsert = TablesInsert<'recipients'>
+export type RecipientUpdate = TablesUpdate<'recipients'>
+export type AddressInsert = TablesInsert<'addresses'>
+export type AddressUpdate = TablesUpdate<'addresses'>
+export type CategoryInsert = TablesInsert<'categories'>
+export type CategoryUpdate = TablesUpdate<'categories'>
+export type TagInsert = TablesInsert<'tags'>
+export type TagUpdate = TablesUpdate<'tags'>
+export type ProductInsert = TablesInsert<'products'>
+export type ProductUpdate = TablesUpdate<'products'>
+export type ListingInsert = TablesInsert<'listings'>
+export type ListingUpdate = TablesUpdate<'listings'>
+export type ListingVariantInsert = TablesInsert<'listing_variants'>
+export type ListingVariantUpdate = TablesUpdate<'listing_variants'>
+export type ListingOptionInsert = TablesInsert<'listing_options'>
+export type ListingOptionUpdate = TablesUpdate<'listing_options'>
+export type MediaAssetInsert = TablesInsert<'media_assets'>
+export type MediaAssetUpdate = TablesUpdate<'media_assets'>
 
-export interface Profile {
-  id: string;
-  auth_user_id: string;
-  email: string | null;
-  phone: string | null;
-  display_name: string | null;
-  status: ProfileStatus;
-  default_role: UserRole;
-  created_at: string;
-  updated_at: string;
-  last_login_at: string | null;
-}
-
-export interface UserRoleAssignment {
-  id: string;
-  profile_id: string;
-  role: UserRole;
-  partner_id: string | null;
-  status: UserRoleAssignmentStatus;
-  created_at: string;
-  revoked_at: string | null;
-  created_by: string | null;
-}
-
-export interface Customer {
-  id: string;
-  profile_id: string;
-  marketing_consent: boolean;
-  preferred_currency: string;
-  created_at: string;
-  updated_at: string;
-}
-
-export interface City {
-  id: string;
-  name: string;
-  state: string;
-  country_code: string;
-  timezone: string;
-  currency: string;
-  status: CityStatus;
-  created_at: string;
-  updated_at: string;
-}
-
-export interface Zone {
-  id: string;
-  city_id: string;
-  name: string;
-  slug: string;
-  status: ZoneStatus;
-  postal_codes: string[];
-  boundary_geojson: Json | null;
-  mphora_enabled: boolean;
-  operating_hours: Json | null;
-  created_at: string;
-  updated_at: string;
-}
-
-export interface Address {
-  id: string;
-  owner_type: AddressOwnerType;
-  owner_id: string;
-  label: string | null;
-  street: string;
-  exterior_number: string;
-  interior_number: string | null;
-  neighborhood: string | null;
-  postal_code: string | null;
-  city_id: string;
-  state: string | null;
-  country_code: string;
-  latitude: number | null;
-  longitude: number | null;
-  references_text: string | null;
-  is_default: boolean;
-  created_at: string;
-  updated_at: string;
-  archived_at: string | null;
-}
-
-export interface Partner {
-  id: string;
-  public_name: string;
-  legal_name: string | null;
-  slug: string;
-  status: PartnerStatus;
-  city_id: string;
-  primary_zone_id: string | null;
-  address_id: string | null;
-  phone: string | null;
-  email: string | null;
-  timezone: string | null;
-  payout_currency: string;
-  agreement_version: string | null;
-  agreement_accepted_at: string | null;
-  created_at: string;
-  updated_at: string;
-  paused_at: string | null;
-  suspended_at: string | null;
-  closed_at: string | null;
-}
-
-export interface PartnerCapability {
-  id: string;
-  partner_id: string;
-  capability_code: string;
-  status: PartnerCapabilityStatus;
-  approved_by: string | null;
-  approved_at: string | null;
-  restrictions: Json | null;
-  created_at: string;
-  updated_at: string;
-}
-
-export interface PartnerSchedule {
-  id: string;
-  partner_id: string;
-  day_of_week: number;
-  opens_at: string | null;
-  closes_at: string | null;
-  is_closed: boolean;
-  effective_from: string | null;
-  effective_to: string | null;
-  created_at: string;
-  updated_at: string;
-}
-
-export interface PartnerScheduleException {
-  id: string;
-  partner_id: string;
-  exception_date: string;
-  opens_at: string | null;
-  closes_at: string | null;
-  is_closed: boolean;
-  reason: string | null;
-  created_at: string;
-  updated_at: string;
-}
-
-export interface PartnerCapacity {
-  id: string;
-  partner_id: string;
-  capacity_type: string;
-  capacity_value: number;
-  active_count: number;
-  valid_from: string | null;
-  valid_until: string | null;
-  updated_by: string | null;
-  updated_at: string;
-}
-
-export interface Recipient {
-  id: string;
-  customer_id: string;
-  name: string;
-  relationship: string | null;
-  phone: string | null;
-  surprise_mode: RecipientSurpriseMode;
-  notes: string | null;
-  consent_basis: string | null;
-  created_at: string;
-  updated_at: string;
-  archived_at: string | null;
-}
-
-// ─── Catalog types (Phase 4) ────────────────────────────────────────────────
-
-export interface Category {
-  id: string;
-  name: string;
-  slug: string;
-  type: CategoryType;
-  description: string | null;
-  parent_id: string | null;
-  sort_order: number;
-  status: ProductStatus;
-  created_at: string;
-  updated_at: string;
-}
-
-export interface Tag {
-  id: string;
-  name: string;
-  slug: string;
-  type: TagType;
-  status: TagStatus;
-  created_at: string;
-  updated_at: string;
-}
-
-export interface Product {
-  id: string;
-  name: string;
-  slug: string;
-  description: string | null;
-  product_type: ProductType;
-  category_id: string | null;
-  status: ProductStatus;
-  created_at: string;
-  updated_at: string;
-}
-
-export interface ProductTag {
-  product_id: string;
-  tag_id: string;
-}
-
-export interface Listing {
-  id: string;
-  product_id: string;
-  partner_id: string | null;
-  source_type: ListingSourceType;
-  customer_title: string;
-  customer_description: string | null;
-  status: ListingStatus;
-  availability_mode: AvailabilityMode;
-  base_price_amount_minor: number;
-  currency: string;
-  preparation_minutes: number | null;
-  external_source_url: string | null;
-  external_observed_price_minor: number | null;
-  external_last_validated_at: string | null;
-  published_at: string | null;
-  created_at: string;
-  updated_at: string;
-}
-
-export interface ListingZone {
-  listing_id: string;
-  zone_id: string;
-  status: ProductStatus;
-  created_at: string;
-}
-
-export interface ListingVariant {
-  id: string;
-  listing_id: string;
-  name: string;
-  slug: string;
-  sku: string | null;
-  price_amount_minor: number;
-  currency: string;
-  stock_quantity: number | null;
-  stock_mode: string;
-  status: TagStatus;
-  sort_order: number;
-  created_at: string;
-  updated_at: string;
-}
-
-export interface ListingOption {
-  id: string;
-  listing_id: string;
-  name: string;
-  slug: string;
-  option_type: string;
-  values: Json;
-  default_value: string | null;
-  price_impact_minor: number;
-  required: boolean;
-  sort_order: number;
-  status: TagStatus;
-  created_at: string;
-  updated_at: string;
-}
-
-export interface MediaAsset {
-  id: string;
-  owner_type: MediaOwnerType;
-  owner_id: string;
-  storage_bucket: string;
-  storage_path: string;
-  visibility: MediaVisibility;
-  mime_type: string;
-  alt_text: string | null;
-  sort_order: number;
-  status: MediaStatus;
-  created_at: string;
-  updated_at: string;
-}
-
-// ─── Composite query types ──────────────────────────────────────────────────
-// Types returned by catalog queries joining listings + products + media.
-
-export interface CatalogListing {
-  listing: Listing;
-  product: Product & { category: Category | null };
-  tags: Tag[];
-  primary_media: MediaAsset | null;
-  listing_zones: { zone: Zone }[];
-  min_price: number;
-  max_price: number;
-}
-
-export interface CatalogCategory {
-  category: Category;
-  listing_count: number;
-}
-
-// ─── Insert/Update types ────────────────────────────────────────────────────
-// Omits auto-generated fields (id, created_at, updated_at) for inserts.
-
-export type ProfileInsert = Omit<Profile, 'id' | 'created_at' | 'updated_at' | 'last_login_at'>;
-export type ProfileUpdate = Partial<Omit<Profile, 'id' | 'auth_user_id' | 'created_at'>>;
-
-export type CustomerInsert = Omit<Customer, 'id' | 'created_at' | 'updated_at'>;
-export type CustomerUpdate = Partial<Omit<Customer, 'id' | 'profile_id' | 'created_at'>>;
-
-export type CityInsert = Omit<City, 'id' | 'created_at' | 'updated_at'>;
-export type CityUpdate = Partial<Omit<City, 'id' | 'created_at'>>;
-
-export type ZoneInsert = Omit<Zone, 'id' | 'created_at' | 'updated_at'>;
-export type ZoneUpdate = Partial<Omit<Zone, 'id' | 'created_at'>>;
-
-export type PartnerInsert = Omit<Partner, 'id' | 'created_at' | 'updated_at' | 'paused_at' | 'suspended_at' | 'closed_at'>;
-export type PartnerUpdate = Partial<Omit<Partner, 'id' | 'created_at'>>;
-
-export type RecipientInsert = Omit<Recipient, 'id' | 'created_at' | 'updated_at' | 'archived_at'>;
-export type RecipientUpdate = Partial<Omit<Recipient, 'id' | 'customer_id' | 'created_at'>>;
-
-export type AddressInsert = Omit<Address, 'id' | 'created_at' | 'updated_at' | 'archived_at'>;
-export type AddressUpdate = Partial<Omit<Address, 'id' | 'created_at'>>;
-
-export type CategoryInsert = Omit<Category, 'id' | 'created_at' | 'updated_at'>;
-export type CategoryUpdate = Partial<Omit<Category, 'id' | 'created_at'>>;
-
-export type TagInsert = Omit<Tag, 'id' | 'created_at' | 'updated_at'>;
-export type TagUpdate = Partial<Omit<Tag, 'id' | 'created_at'>>;
-
-export type ProductInsert = Omit<Product, 'id' | 'created_at' | 'updated_at'>;
-export type ProductUpdate = Partial<Omit<Product, 'id' | 'created_at'>>;
-
-export type ListingInsert = Omit<Listing, 'id' | 'created_at' | 'updated_at' | 'published_at'>;
-export type ListingUpdate = Partial<Omit<Listing, 'id' | 'created_at'>>;
-
-export type ListingVariantInsert = Omit<ListingVariant, 'id' | 'created_at' | 'updated_at'>;
-export type ListingVariantUpdate = Partial<Omit<ListingVariant, 'id' | 'created_at'>>;
-
-export type ListingOptionInsert = Omit<ListingOption, 'id' | 'created_at' | 'updated_at'>;
-export type ListingOptionUpdate = Partial<Omit<ListingOption, 'id' | 'created_at'>>;
-
-export type MediaAssetInsert = Omit<MediaAsset, 'id' | 'created_at' | 'updated_at'>;
-export type MediaAssetUpdate = Partial<Omit<MediaAsset, 'id' | 'created_at'>>;
+export type PublicCatalogRow =
+  Database['public']['Functions']['get_public_catalog']['Returns'][number]
+export type PublicCatalogCategoryRow =
+  Database['public']['Functions']['get_public_catalog_categories']['Returns'][number]

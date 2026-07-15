@@ -62,8 +62,7 @@ export function ProductCard({ product }: { product: Product }) {
 
         <div className="mt-auto flex items-end justify-between pt-3">
           <p className="text-base font-extrabold text-foreground">
-            ${formatPrice(product.price)}
-            <span className="ml-1 text-[10px] font-medium text-faint">MXN</span>
+            {formatPrice(product.price)}
           </p>
 
           <button

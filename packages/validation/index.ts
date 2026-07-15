@@ -1,4 +1,4 @@
-import type { City, Product, OrderStatus } from '@mpho/types'
+import type { City, Product } from '@mpho/types'
 
 export function isValidCity(cityId: string, cities: City[]): boolean {
   return cities.some((c) => c.id === cityId && c.status === 'active')
@@ -6,29 +6,14 @@ export function isValidCity(cityId: string, cities: City[]): boolean {
 
 export function isValidProduct(product: Product): boolean {
   return (
-    product.id.length > 0 &&
-    product.name.length > 0 &&
-    product.price > 0 &&
-    product.cityId.length > 0
+    product.id.trim().length > 0 &&
+    product.name.trim().length > 0 &&
+    product.description.trim().length > 0 &&
+    product.image.trim().length > 0 &&
+    product.alt.trim().length > 0 &&
+    Number.isInteger(product.price.amountMinor) &&
+    product.price.amountMinor > 0 &&
+    product.price.currency === 'MXN' &&
+    product.cityId.trim().length > 0
   )
-}
-
-export function isValidOrderStatusTransition(
-  from: OrderStatus,
-  to: OrderStatus,
-): boolean {
-  const transitions: Record<OrderStatus, OrderStatus[]> = {
-    draft: ['pending_payment', 'cancelled'],
-    pending_payment: ['paid', 'cancelled'],
-    paid: ['assignment_pending', 'cancelled'],
-    assignment_pending: ['partner_accepted', 'cancelled'],
-    partner_accepted: ['preparing'],
-    preparing: ['ready_for_pickup'],
-    ready_for_pickup: ['out_for_delivery'],
-    out_for_delivery: ['delivered'],
-    delivered: ['completed'],
-    completed: [],
-    cancelled: [],
-  }
-  return transitions[from]?.includes(to) ?? false
 }

@@ -70,35 +70,35 @@ Examples:
 | 2 | `README.md` | 01 | Complete | High-level project introduction |
 | 3 | `docs/00_DOCUMENTATION_INDEX.md` | 01 | Complete | Documentation index and governance |
 | 4 | `docs/01_PROJECT_OVERVIEW.md` | 01 | Complete | Full product overview |
-| 5 | `docs/02_PRODUCT_VISION.md` | 02 | Pending | Vision, future state, product principles |
-| 6 | `docs/03_BRAND_ECOSYSTEM.md` | 02 | Pending | MPHO, HADIA, MPHORA, and sub-brands |
-| 7 | `docs/04_GLOSSARY.md` | 02 | Pending | Official terminology |
-| 8 | `docs/05_SCOPE_AND_NON_GOALS.md` | 02 | Pending | Scope and exclusions |
-| 9 | `docs/06_BUSINESS_MODEL.md` | 03 | Pending | Revenue and operating model |
-| 10 | `docs/07_MARKETPLACE_RULES.md` | 03 | Pending | Marketplace rules |
-| 11 | `docs/08_PARTNER_PROGRAM.md` | 03 | Pending | Partner onboarding and operations |
-| 12 | `docs/09_PRICING_AND_COMMISSIONS.md` | 03 | Pending | Pricing, fees, margins, commissions |
-| 13 | `docs/10_USER_ROLES.md` | 04 | Pending | Roles, permissions, responsibilities |
-| 14 | `docs/11_CUSTOMER_JOURNEY.md` | 04 | Pending | Customer journey |
-| 15 | `docs/12_PARTNER_JOURNEY.md` | 04 | Pending | Partner journey |
-| 16 | `docs/13_ORDER_LIFECYCLE.md` | 04 | Pending | States, transitions, exceptions |
-| 17 | `docs/14_CUSTOMER_APP.md` | 05 | Pending | Customer app screens and features |
-| 18 | `docs/15_PARTNER_APP.md` | 05 | Pending | MPHO Aliados screens and features |
-| 19 | `docs/16_ADMIN_PANEL.md` | 05 | Pending | Administration and exception handling |
-| 20 | `docs/17_CATALOG_AND_INVENTORY.md` | 05 | Pending | Products, stock, availability |
-| 21 | `docs/18_HADIA_AI.md` | 06 | Pending | HADIA behavior and limitations |
-| 22 | `docs/19_MPHORA_EXPRESS.md` | 06 | Pending | Fast-delivery eligibility |
-| 23 | `docs/20_WHATSAPP_AUTOMATION.md` | 06 | Pending | Messages, templates, automations |
-| 24 | `docs/21_DELIVERY_LOGISTICS.md` | 06 | Pending | Couriers, zones, delivery flow |
-| 25 | `docs/22_PAYMENTS_AND_PAYOUTS.md` | 07 | Pending | Payments, balances, payouts, refunds |
-| 26 | `docs/23_TECH_STACK.md` | 07 | Pending | Technologies and selection criteria |
-| 27 | `docs/24_SYSTEM_ARCHITECTURE.md` | 07 | Pending | System components and communication |
-| 28 | `docs/25_DATABASE_SCHEMA.md` | 07 | Pending | Entities, relations, access |
-| 29 | `docs/26_API_AND_INTEGRATIONS.md` | 08 | Pending | APIs, webhooks, external systems |
-| 30 | `docs/27_SECURITY_AND_PRIVACY.md` | 08 | Pending | Security, privacy, audit |
-| 31 | `docs/28_DESIGN_SYSTEM.md` | 08 | Pending | Visual identity, components, accessibility |
-| 32 | `docs/29_TESTING_AND_QA.md` | 08 | Pending | Test strategy and quality |
-| 33 | `docs/30_MVP_ROADMAP_AND_BACKLOG.md` | 08 | Pending | Phases, backlog, priorities |
+| 5 | `docs/02_PRODUCT_VISION.md` | 02 | Complete | Vision, future state, product principles |
+| 6 | `docs/03_BRAND_ECOSYSTEM.md` | 02 | Complete | MPHO, HADIA, MPHORA, and sub-brands |
+| 7 | `docs/04_GLOSSARY.md` | 02 | Complete | Official terminology |
+| 8 | `docs/05_SCOPE_AND_NON_GOALS.md` | 02 | Complete | Scope and exclusions |
+| 9 | `docs/06_BUSINESS_MODEL.md` | 03 | Complete | Revenue and operating model |
+| 10 | `docs/07_MARKETPLACE_RULES.md` | 03 | Complete | Marketplace rules |
+| 11 | `docs/08_PARTNER_PROGRAM.md` | 03 | Complete | Partner onboarding and operations |
+| 12 | `docs/09_PRICING_AND_COMMISSIONS.md` | 03 | Complete | Pricing, fees, margins, commissions |
+| 13 | `docs/10_USER_ROLES.md` | 04 | Complete | Roles, permissions, responsibilities |
+| 14 | `docs/11_CUSTOMER_JOURNEY.md` | 04 | Complete | Customer journey |
+| 15 | `docs/12_PARTNER_JOURNEY.md` | 04 | Complete | Partner journey |
+| 16 | `docs/13_ORDER_LIFECYCLE.md` | 04 | Complete | States, transitions, exceptions |
+| 17 | `docs/14_CUSTOMER_APP.md` | 05 | Complete | Customer app screens and features |
+| 18 | `docs/15_PARTNER_APP.md` | 05 | Complete | MPHO Aliados screens and features |
+| 19 | `docs/16_ADMIN_PANEL.md` | 05 | Complete | Administration and exception handling |
+| 20 | `docs/17_CATALOG_AND_INVENTORY.md` | 05 | Complete | Products, stock, availability |
+| 21 | `docs/18_HADIA_AI.md` | 06 | Complete | HADIA behavior and limitations |
+| 22 | `docs/19_MPHORA_EXPRESS.md` | 06 | Complete | Fast-delivery eligibility |
+| 23 | `docs/20_WHATSAPP_AUTOMATION.md` | 06 | Complete | Messages, templates, automations |
+| 24 | `docs/21_DELIVERY_LOGISTICS.md` | 06 | Complete | Couriers, zones, delivery flow |
+| 25 | `docs/22_PAYMENTS_AND_PAYOUTS.md` | 07 | Complete | Payments, balances, payouts, refunds |
+| 26 | `docs/23_TECH_STACK.md` | 07 | Complete | Technologies and selection criteria |
+| 27 | `docs/24_SYSTEM_ARCHITECTURE.md` | 07 | Complete | System components and communication |
+| 28 | `docs/25_DATABASE_SCHEMA.md` | 07 | Complete | Entities, relations, access |
+| 29 | `docs/26_API_AND_INTEGRATIONS.md` | 08 | Complete | APIs, webhooks, external systems |
+| 30 | `docs/27_SECURITY_AND_PRIVACY.md` | 08 | Complete | Security, privacy, audit |
+| 31 | `docs/28_DESIGN_SYSTEM.md` | 08 | Complete | Visual identity, components, accessibility |
+| 32 | `docs/29_TESTING_AND_QA.md` | 08 | Complete | Test strategy and quality |
+| 33 | `docs/30_MVP_ROADMAP_AND_BACKLOG.md` | 08 | Complete | Phases, backlog, priorities |
 
 ---
 
@@ -458,9 +458,9 @@ Puntos MPHO are internal supply, receiving, preparation, personalization, storag
 
 | Order | File | Pack | Status | Purpose |
 |---:|---|---:|---|---|
-| 72 | `docs/69_CURRENT_IMPLEMENTATION_AND_FOUNDATION_STATUS.md` | 01 | Complete | Real implementation status after Phase 1 monorepo migration |
+| 72 | `docs/69_CURRENT_IMPLEMENTATION_AND_FOUNDATION_STATUS.md` | 01 | Complete | Real implementation status through Phase 4.1 |
+| 73 | `docs/71_CATALOG_SECURITY_TYPES_AND_CI_HARDENING.md` | 13 | Complete | Phase 4.1 catalog security, generated types, clients, routes, tests, and CI evidence |
 
 ### Purpose
 
 This document records what actually exists in code versus what is documented, tracks defects corrected, validation results, and remaining risks. It must be updated after every foundation milestone.
-
