@@ -462,6 +462,7 @@ Puntos MPHO are internal supply, receiving, preparation, personalization, storag
 | 73 | `docs/71_CATALOG_SECURITY_TYPES_AND_CI_HARDENING.md` | 13 | Complete | Phase 4.1 catalog security, generated types, clients, routes, tests, and CI evidence |
 | 74 | `docs/72_SERVER_SIDE_PRICING_AVAILABILITY_AND_QUOTES.md` | 14 | Complete | Phase 5 authoritative pricing, availability, quote persistence, API, RLS, tests, and deferred rules |
 | 75 | `docs/73_PERSISTENT_CART_AND_DRAFT_ORDER.md` | 15 | Complete | Phase 6 persistent cart, PII staging, concurrency, quote revalidation, atomic draft order, API, RLS, and tests |
+| 76 | `docs/74_OPERATIONAL_REVIEW_AND_FINAL_QUOTE.md` | 16 | Complete | Phase 7 operational review, availability evidence, approved delivery, final quote, Central workflow, RLS, and audit |
 
 ### Purpose
 

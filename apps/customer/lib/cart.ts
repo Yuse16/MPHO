@@ -13,7 +13,8 @@ export type CartItem = { id: string; listingId: string; name: string; slug: stri
 export type CartRecipient = { sourceRecipientId: string | null; name: string; relationship: string | null; phone: string | null; surpriseMode: 'none' | 'full_surprise' | 'partial_surprise'; deliveryNote: string | null }
 export type CartAddress = { sourceAddressId: string | null; label: string | null; street: string; exteriorNumber: string; interiorNumber: string | null; neighborhood: string | null; postalCode: string | null; cityId: string; zoneId: string; state: string | null; countryCode: 'MX'; references: string | null }
 export type CustomerCart = { id: string; status: 'active' | 'converted' | 'abandoned'; version: number; requestedDeliveryAt: string | null; convertedOrderId: string | null; items: CartItem[]; recipient: CartRecipient | null; address: CartAddress | null }
-export type DraftOrder = { id: string; reference: string; state: 'draft'; quoteId: string; requestedDeliveryAt: string; recipient: CartRecipient; address: CartAddress; currency: 'MXN'; subtotal: { amountMinor: number; currency: 'MXN' }; delivery: null; service: null; totalKnown: { amountMinor: number; currency: 'MXN' }; totalIsFinal: boolean; availabilityStatus: 'eligible' | 'requires_review'; pendingComponents: string[]; items: unknown[]; createdAt: string }
+type Money = { amountMinor: number; currency: 'MXN' }
+export type DraftOrder = { id: string; reference: string; state: 'draft' | 'quote_pending' | 'quoted'; version: number; requestedDeliveryAt: string; recipient: CartRecipient; address: CartAddress; currency: 'MXN'; subtotal: Money; delivery: Money | null; service: Money | null; totalKnown: Money; totalIsFinal: boolean; availabilityStatus: 'eligible' | 'requires_review'; pendingComponents: string[]; quoteExpiresAt: string | null; review: { status: 'pending' | 'in_progress' | 'changes_required' | 'approved' | 'rejected'; publicReasonCode: string | null; publicExplanation: string | null; nextAction: string | null } | null; previousSubtotal: Money | null; difference: Money | null; priceExplanation: string | null; items: unknown[]; createdAt: string }
 export type DomainResult<T> = { ok: true; value: T } | { ok: false; error: ApiError }
 
 type RpcEnvelope<T> = { ok?: boolean; cart?: T; order?: T; error?: ApiError; replayed?: boolean }
@@ -37,9 +38,21 @@ export async function mutateCart(operation: string, payload: Record<string, unkn
   const supabase = await customerClient()
   if (!supabase) return failure('UNAUTHORIZED', 'Authentication is required.')
   const { data, error } = await supabase.rpc('mutate_customer_cart', { p_operation: operation, p_payload: payload as Json, p_expected_version: expectedVersion })
-  if (error) return failure('DATABASE_ERROR', 'The cart could not be updated.')
+  if (error) {
+    if (error.message.includes('INCOMPATIBLE_CART_ITEM')) return failure('INCOMPATIBLE_CART_ITEM', 'Este producto necesita gestionarse por separado. Crea otro pedido para continuar.')
+    return failure('DATABASE_ERROR', 'The cart could not be updated.')
+  }
   const envelope = data as RpcEnvelope<CustomerCart>
   return envelope.ok && envelope.cart ? { ok: true, value: envelope.cart } : { ok: false, error: envelope.error ?? { code: 'DATABASE_ERROR', message: 'The cart response is invalid.' } }
+}
+
+export async function submitOrderReview(orderId: string, expectedVersion: number, idempotencyKey: string, requestId: string): Promise<DomainResult<DraftOrder>> {
+  const supabase = await customerClient()
+  if (!supabase) return failure('UNAUTHORIZED', 'Authentication is required.')
+  const { data, error } = await supabase.rpc('submit_customer_order_review', { p_order_id: orderId, p_expected_version: expectedVersion, p_idempotency_key: idempotencyKey, p_request_id: requestId })
+  if (error) return failure('DATABASE_ERROR', 'The review could not be requested.')
+  const envelope = data as RpcEnvelope<DraftOrder>
+  return envelope.ok && envelope.order ? { ok: true, value: envelope.order } : { ok: false, error: envelope.error ?? { code: 'DATABASE_ERROR', message: 'The review response is invalid.' } }
 }
 
 export async function createDraftOrder(cartId: string, expectedVersion: number, idempotencyKey: string, requestId: string): Promise<DomainResult<DraftOrder>> {

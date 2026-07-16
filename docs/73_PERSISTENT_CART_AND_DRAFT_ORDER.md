@@ -171,3 +171,5 @@ Local automated evidence covers 106 workspace tests, 94 pgTAP assertions, the th
 ## 15. Next phase
 
 Define a server-side readiness gate from editable `draft` toward quote review/checkout eligibility. It must resolve final delivery/service pricing, quote expiry, operational availability, personalization compatibility and customer acceptance before any payment integration. Payment, reservation and partner assignment remain prohibited until that contract is approved.
+
+Phase 7 approves and implements this readiness gate as `draft → quote_pending → quoted`. It also enforces one internal local fulfillment source per pilot cart without exposing that source to Customer. `INCOMPATIBLE_CART_ITEM` uses the neutral public message “Este producto necesita gestionarse por separado. Crea otro pedido para continuar.” Historical incompatible drafts are retained but cannot enter review.

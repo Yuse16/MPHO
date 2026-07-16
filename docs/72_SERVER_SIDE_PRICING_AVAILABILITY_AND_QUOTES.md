@@ -109,3 +109,5 @@ Visual/browser evidence passed at 1280×720 and 390×844 on `/producto/rosas-pre
 ## 16. Next recommended phase
 
 Phase 6 implements persistent cart conversion only into `draft`, with fresh revalidation, snapshots, initial audit history, concurrency control and idempotency. A later phase must define final quote readiness and controlled lifecycle transitions before any payment provider.
+
+Phase 7 now implements that later boundary without payment. A final quote is a new immutable snapshot with approved delivery, an explicit `pilot_no_service_fee` component, `totalIsFinal = true`, `availabilityStatus = eligible`, a 30-minute server-side expiry and an auditable pricing version. The preliminary quote is invalidated rather than overwritten. See document 74.

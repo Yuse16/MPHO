@@ -17,7 +17,7 @@
     "db:stop": "supabase stop",
     "db:reset": "supabase db reset",
     "db:test": "supabase test db",
-    "db:test:rest": "sh scripts/test-public-catalog-rest.sh && sh scripts/test-quotes-rest.sh && sh scripts/test-cart-orders-rest.sh",
+    "db:test:rest": "sh scripts/test-public-catalog-rest.sh && sh scripts/test-quotes-rest.sh && sh scripts/test-cart-orders-rest.sh && sh scripts/test-operational-review-rest.sh",
     "db:types": "sh scripts/generate-database-types.sh",
     "db:types:check": "sh scripts/check-database-types.sh",
     "db:schema:check": "sh scripts/check-schema-drift.sh",

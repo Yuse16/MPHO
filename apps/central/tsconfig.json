@@ -16,6 +16,8 @@
     "plugins": [{ "name": "next" }],
     "paths": {
       "@/*": ["./*"],
+      "@mpho/database": ["../../packages/database"],
+      "@mpho/database/*": ["../../packages/database/*"],
       "@mpho/design-tokens": ["../../packages/design-tokens"],
       "@mpho/types": ["../../packages/types"]
     }

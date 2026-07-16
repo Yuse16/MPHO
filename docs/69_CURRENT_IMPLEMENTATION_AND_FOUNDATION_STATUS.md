@@ -136,7 +136,7 @@ Local validation covers:
 - unit/component tests;
 - builds for Customer, Partner, and Central;
 - local Supabase start/reset;
-- 94 pgTAP/RLS assertions across catalog, quote, cart, order, grants, ownership, idempotency, and concurrency boundaries;
+- 132 pgTAP/RLS assertions across catalog, quote, cart, order, operational review, grants, ownership, idempotency, and concurrency boundaries;
 - anonymous PostgREST calls;
 - generated-type drift;
 - schema drift.
@@ -188,5 +188,11 @@ Full decisions and evidence are in `docs/73_PERSISTENT_CART_AND_DRAFT_ORDER.md`.
 ## 11. Next recommended work
 
 Define the controlled transition from `draft` into quote review/checkout readiness, including approved delivery/service pricing, finality, expiration, operational availability, complete personalization compatibility, and a production-ready authentication/rate-limit/observability baseline. Payment remains blocked until those gates are complete.
+
+## 12. Phase 7 implementation
+
+Branch `feat/phase-7-operational-review` adds the controlled pre-payment lifecycle `draft → quote_pending → quoted`. It introduces owner/versioned operational reviews, expiring availability evidence, an operator-proposed/admin-approved delivery component, the explicit zero-value pilot service rule, immutable final quotes, invalidation, redacted audit logs, Customer-safe DTOs, and minimal Central review routes.
+
+It does not add payment, assignment, responsible partner, Partner offers, reservation, fulfillment, delivery execution, ledger, earnings, commission, external products, HADIA, MPHORA, WhatsApp or n8n. Partner remains a shell.
 
 Do not infer production readiness from local compilation or local Supabase tests.

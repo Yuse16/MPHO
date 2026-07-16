@@ -1,12 +1,13 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-const mocks=vi.hoisted(()=>({getCart:vi.fn(),mutateCart:vi.fn(),createDraftOrder:vi.fn(),getDraftOrder:vi.fn()}))
+const mocks=vi.hoisted(()=>({getCart:vi.fn(),mutateCart:vi.fn(),createDraftOrder:vi.fn(),getDraftOrder:vi.fn(),submitOrderReview:vi.fn()}))
 vi.mock('@/lib/cart',async(importOriginal)=>({...await importOriginal<typeof import('@/lib/cart')>(),...mocks}))
 import { GET as cartGet } from '@/app/api/cart/route'
 import { POST as itemPost } from '@/app/api/cart/items/route'
 import { PUT as recipientPut } from '@/app/api/cart/recipient/route'
 import { POST as draftPost } from '@/app/api/orders/draft/route'
 import { GET as orderGet } from '@/app/api/orders/[id]/route'
+import { POST as reviewPost } from '@/app/api/orders/[id]/review/route'
 
 const cart={id:'71000000-0000-4000-8000-000000000001',status:'active',version:1,requestedDeliveryAt:null,convertedOrderId:null,items:[],recipient:null,address:null}
 const headers={'Content-Type':'application/json','Origin':'http://localhost','Host':'localhost'}
@@ -20,6 +21,8 @@ describe('cart and draft API boundary',()=>{
   it('maps stale versions to a typed conflict',async()=>{mocks.mutateCart.mockResolvedValue({ok:false,error:{code:'VERSION_CONFLICT',message:'changed',currentVersion:2}});const response=await recipientPut(new Request('http://localhost/api/cart/recipient',{method:'PUT',headers,body:JSON.stringify({expectedVersion:1,sourceRecipientId:null,name:'Ana',relationship:null,phone:null,surpriseMode:'none',deliveryNote:null})}));expect(response.status).toBe(409);expect((await response.json()).error.currentVersion).toBe(2)})
   it('requires an idempotency key for draft creation',async()=>{const response=await draftPost(new Request('http://localhost/api/orders/draft',{method:'POST',headers,body:JSON.stringify({cartId:cart.id,expectedVersion:1})}));expect(response.status).toBe(400);expect(mocks.createDraftOrder).not.toHaveBeenCalled()})
   it('creates draft through the server boundary without accepting price fields',async()=>{mocks.createDraftOrder.mockResolvedValue({ok:true,value:{id:'72000000-0000-4000-8000-000000000002'}});const response=await draftPost(new Request('http://localhost/api/orders/draft',{method:'POST',headers:{...headers,'Idempotency-Key':'draft-key-123'},body:JSON.stringify({cartId:cart.id,expectedVersion:1})}));expect(response.status).toBe(201);expect(mocks.createDraftOrder).toHaveBeenCalledWith(cart.id,1,'draft-key-123',expect.any(String))})
+  it('requests review with only order identity and expected version',async()=>{mocks.submitOrderReview.mockResolvedValue({ok:true,value:{id:'72000000-0000-4000-8000-000000000002',state:'quote_pending'}});const response=await reviewPost(new Request('http://localhost/api/orders/id/review',{method:'POST',headers:{...headers,'Idempotency-Key':'review-key-123'},body:JSON.stringify({expectedVersion:1})}),{params:Promise.resolve({id:'72000000-0000-4000-8000-000000000002'})});expect(response.status).toBe(200);expect(mocks.submitOrderReview).toHaveBeenCalledWith('72000000-0000-4000-8000-000000000002',1,'review-key-123',expect.any(String))})
+  it('rejects Customer-supplied price, availability, quote or source fields on review',async()=>{const response=await reviewPost(new Request('http://localhost/api/orders/id/review',{method:'POST',headers:{...headers,'Idempotency-Key':'review-key-123'},body:JSON.stringify({expectedVersion:1,delivery:100,partnerId:'hidden'})}),{params:Promise.resolve({id:'72000000-0000-4000-8000-000000000002'})});expect(response.status).toBe(400);expect(mocks.submitOrderReview).not.toHaveBeenCalled()})
   it('returns not-found for a foreign order',async()=>{mocks.getDraftOrder.mockResolvedValue({ok:false,error:{code:'ORDER_NOT_FOUND',message:'not found'}});const response=await orderGet(new Request('http://localhost'),{params:Promise.resolve({id:'72000000-0000-4000-8000-000000000002'})});expect(response.status).toBe(404);expect(response.headers.get('cache-control')).toContain('no-store')})
   it('does not emit PII through console logging',async()=>{const spy=vi.spyOn(console,'log').mockImplementation(()=>{});mocks.mutateCart.mockResolvedValue({ok:true,value:cart});await recipientPut(new Request('http://localhost/api/cart/recipient',{method:'PUT',headers,body:JSON.stringify({expectedVersion:1,sourceRecipientId:null,name:'Nombre privado',relationship:null,phone:'8440000000',surpriseMode:'none',deliveryNote:'Nota privada'})}));expect(spy).not.toHaveBeenCalled();spy.mockRestore()})
 })

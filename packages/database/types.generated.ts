@@ -84,6 +84,72 @@ export type Database = {
           },
         ]
       }
+      audit_logs: {
+        Row: {
+          action: string
+          actor_profile_id: string
+          actor_role: Database["public"]["Enums"]["user_role"]
+          created_at: string
+          expected_version: number | null
+          id: string
+          idempotency_key: string
+          metadata: Json
+          order_id: string | null
+          reason_code: string | null
+          request_hash: string
+          request_id: string
+          result: Json
+          resulting_version: number | null
+        }
+        Insert: {
+          action: string
+          actor_profile_id: string
+          actor_role: Database["public"]["Enums"]["user_role"]
+          created_at?: string
+          expected_version?: number | null
+          id?: string
+          idempotency_key: string
+          metadata?: Json
+          order_id?: string | null
+          reason_code?: string | null
+          request_hash: string
+          request_id: string
+          result?: Json
+          resulting_version?: number | null
+        }
+        Update: {
+          action?: string
+          actor_profile_id?: string
+          actor_role?: Database["public"]["Enums"]["user_role"]
+          created_at?: string
+          expected_version?: number | null
+          id?: string
+          idempotency_key?: string
+          metadata?: Json
+          order_id?: string | null
+          reason_code?: string | null
+          request_hash?: string
+          request_id?: string
+          result?: Json
+          resulting_version?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "audit_logs_actor_profile_id_fkey"
+            columns: ["actor_profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "audit_logs_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       cart_delivery_addresses: {
         Row: {
           cart_id: string
@@ -798,6 +864,66 @@ export type Database = {
           },
         ]
       }
+      order_availability_checks: {
+        Row: {
+          checked_at: string | null
+          checked_by: string | null
+          created_at: string
+          dimension: Database["public"]["Enums"]["availability_check_dimension"]
+          expires_at: string | null
+          id: string
+          reason_code: string | null
+          review_id: string
+          source_reference: string | null
+          source_type: string | null
+          status: Database["public"]["Enums"]["availability_check_status"]
+          updated_at: string
+        }
+        Insert: {
+          checked_at?: string | null
+          checked_by?: string | null
+          created_at?: string
+          dimension: Database["public"]["Enums"]["availability_check_dimension"]
+          expires_at?: string | null
+          id?: string
+          reason_code?: string | null
+          review_id: string
+          source_reference?: string | null
+          source_type?: string | null
+          status?: Database["public"]["Enums"]["availability_check_status"]
+          updated_at?: string
+        }
+        Update: {
+          checked_at?: string | null
+          checked_by?: string | null
+          created_at?: string
+          dimension?: Database["public"]["Enums"]["availability_check_dimension"]
+          expires_at?: string | null
+          id?: string
+          reason_code?: string | null
+          review_id?: string
+          source_reference?: string | null
+          source_type?: string | null
+          status?: Database["public"]["Enums"]["availability_check_status"]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "order_availability_checks_checked_by_fkey"
+            columns: ["checked_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "order_availability_checks_review_id_fkey"
+            columns: ["review_id"]
+            isOneToOne: false
+            referencedRelation: "order_reviews"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       order_items: {
         Row: {
           created_at: string
@@ -874,6 +1000,72 @@ export type Database = {
             columns: ["variant_id"]
             isOneToOne: false
             referencedRelation: "listing_variants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      order_reviews: {
+        Row: {
+          completed_at: string | null
+          created_at: string
+          evidence_expires_at: string | null
+          id: string
+          internal_reason: string | null
+          next_action: string | null
+          order_id: string
+          owner_profile_id: string | null
+          public_explanation: string | null
+          public_reason_code: string | null
+          started_at: string | null
+          status: Database["public"]["Enums"]["order_review_status"]
+          updated_at: string
+          version: number
+        }
+        Insert: {
+          completed_at?: string | null
+          created_at?: string
+          evidence_expires_at?: string | null
+          id?: string
+          internal_reason?: string | null
+          next_action?: string | null
+          order_id: string
+          owner_profile_id?: string | null
+          public_explanation?: string | null
+          public_reason_code?: string | null
+          started_at?: string | null
+          status?: Database["public"]["Enums"]["order_review_status"]
+          updated_at?: string
+          version?: number
+        }
+        Update: {
+          completed_at?: string | null
+          created_at?: string
+          evidence_expires_at?: string | null
+          id?: string
+          internal_reason?: string | null
+          next_action?: string | null
+          order_id?: string
+          owner_profile_id?: string | null
+          public_explanation?: string | null
+          public_reason_code?: string | null
+          started_at?: string | null
+          status?: Database["public"]["Enums"]["order_review_status"]
+          updated_at?: string
+          version?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "order_reviews_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: true
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "order_reviews_owner_profile_id_fkey"
+            columns: ["owner_profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
         ]
@@ -1453,6 +1645,111 @@ export type Database = {
         }
         Relationships: []
       }
+      quote_components: {
+        Row: {
+          amount_minor: number
+          approved_at: string | null
+          approved_by: string | null
+          component_type: Database["public"]["Enums"]["quote_component_type"]
+          created_at: string
+          currency: string
+          expires_at: string
+          id: string
+          invalidated_at: string | null
+          invalidation_reason: string | null
+          order_id: string
+          pricing_version: string
+          proposed_at: string
+          proposed_by: string
+          quote_id: string | null
+          reason: string
+          review_id: string
+          source_reference: string
+          source_type: string
+          status: Database["public"]["Enums"]["quote_component_status"]
+        }
+        Insert: {
+          amount_minor: number
+          approved_at?: string | null
+          approved_by?: string | null
+          component_type: Database["public"]["Enums"]["quote_component_type"]
+          created_at?: string
+          currency: string
+          expires_at: string
+          id?: string
+          invalidated_at?: string | null
+          invalidation_reason?: string | null
+          order_id: string
+          pricing_version: string
+          proposed_at?: string
+          proposed_by: string
+          quote_id?: string | null
+          reason: string
+          review_id: string
+          source_reference: string
+          source_type: string
+          status: Database["public"]["Enums"]["quote_component_status"]
+        }
+        Update: {
+          amount_minor?: number
+          approved_at?: string | null
+          approved_by?: string | null
+          component_type?: Database["public"]["Enums"]["quote_component_type"]
+          created_at?: string
+          currency?: string
+          expires_at?: string
+          id?: string
+          invalidated_at?: string | null
+          invalidation_reason?: string | null
+          order_id?: string
+          pricing_version?: string
+          proposed_at?: string
+          proposed_by?: string
+          quote_id?: string | null
+          reason?: string
+          review_id?: string
+          source_reference?: string
+          source_type?: string
+          status?: Database["public"]["Enums"]["quote_component_status"]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quote_components_approved_by_fkey"
+            columns: ["approved_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quote_components_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quote_components_proposed_by_fkey"
+            columns: ["proposed_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quote_components_quote_id_fkey"
+            columns: ["quote_id"]
+            isOneToOne: false
+            referencedRelation: "quotes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quote_components_review_id_fkey"
+            columns: ["review_id"]
+            isOneToOne: false
+            referencedRelation: "order_reviews"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       quote_items: {
         Row: {
           availability_status: Database["public"]["Enums"]["quote_availability_status"]
@@ -1823,6 +2120,17 @@ export type Database = {
       }
       auth_uid: { Args: never; Returns: string }
       calculate_public_quote: { Args: { p_request: Json }; Returns: Json }
+      central_review_command: {
+        Args: {
+          p_command: string
+          p_expected_version: number
+          p_idempotency_key: string
+          p_order_id: string
+          p_payload: Json
+          p_request_id: string
+        }
+        Returns: Json
+      }
       create_customer_draft_order: {
         Args: {
           p_cart_id: string
@@ -1836,6 +2144,7 @@ export type Database = {
         Args: { p_idempotency_key: string; p_request: Json }
         Returns: Json
       }
+      get_central_order_review: { Args: { p_order_id: string }; Returns: Json }
       get_customer_cart: { Args: never; Returns: Json }
       get_customer_order: { Args: { p_order_id: string }; Returns: Json }
       get_customer_quote: { Args: { p_quote_id: string }; Returns: Json }
@@ -1886,6 +2195,7 @@ export type Database = {
         Returns: boolean
       }
       is_mpho_staff: { Args: never; Returns: boolean }
+      list_central_order_reviews: { Args: never; Returns: Json }
       mutate_customer_cart: {
         Args: {
           p_expected_version: number
@@ -1898,6 +2208,87 @@ export type Database = {
       phase6_customer_id: { Args: never; Returns: string }
       phase6_order_json: { Args: { p_order_id: string }; Returns: Json }
       phase6_profile_id: { Args: never; Returns: string }
+      phase7_audit: {
+        Args: {
+          p_action: string
+          p_actor: string
+          p_expected: number
+          p_hash: string
+          p_key: string
+          p_metadata: Json
+          p_order: string
+          p_reason: string
+          p_request: string
+          p_result: Json
+          p_resulting: number
+          p_role: Database["public"]["Enums"]["user_role"]
+        }
+        Returns: undefined
+      }
+      phase7_cart_source_compatible: {
+        Args: {
+          p_cart_id: string
+          p_exclude_item_id?: string
+          p_listing_id: string
+        }
+        Returns: boolean
+      }
+      phase7_customer_order_json: {
+        Args: { p_order_id: string }
+        Returns: Json
+      }
+      phase7_expire_order_quote: {
+        Args: { p_order_id: string }
+        Returns: undefined
+      }
+      phase7_has_role: {
+        Args: { p_role: Database["public"]["Enums"]["user_role"] }
+        Returns: boolean
+      }
+      phase7_hash: { Args: { p_value: Json }; Returns: string }
+      phase7_incompatible_cart_message: { Args: never; Returns: Json }
+      phase7_mask: {
+        Args: { p_value: string; p_visible?: number }
+        Returns: string
+      }
+      phase7_profile_id: { Args: never; Returns: string }
+      phase7_public_reason: { Args: { p_code: string }; Returns: string }
+      phase7_replay: {
+        Args: {
+          p_action: string
+          p_actor: string
+          p_hash: string
+          p_key: string
+        }
+        Returns: Json
+      }
+      phase7_single_source: { Args: { p_order_id: string }; Returns: boolean }
+      phase7_staff_review_json: {
+        Args: { p_include_pii?: boolean; p_order_id: string }
+        Returns: Json
+      }
+      phase7_staff_role: {
+        Args: never
+        Returns: Database["public"]["Enums"]["user_role"]
+      }
+      reveal_central_order_pii: {
+        Args: {
+          p_idempotency_key: string
+          p_order_id: string
+          p_reason: string
+          p_request_id: string
+        }
+        Returns: Json
+      }
+      submit_customer_order_review: {
+        Args: {
+          p_expected_version: number
+          p_idempotency_key: string
+          p_order_id: string
+          p_request_id: string
+        }
+        Returns: Json
+      }
     }
     Enums: {
       address_owner_type:
@@ -1905,6 +2296,20 @@ export type Database = {
         | "recipient"
         | "partner"
         | "order_snapshot"
+      availability_check_dimension:
+        | "catalog"
+        | "fulfillment_source"
+        | "city"
+        | "zone"
+        | "schedule"
+        | "capacity"
+        | "personalization"
+        | "delivery"
+      availability_check_status:
+        | "pending"
+        | "validated"
+        | "rejected"
+        | "requires_intervention"
       availability_mode:
         | "tracked_stock"
         | "partner_confirmation"
@@ -1930,7 +2335,13 @@ export type Database = {
         | "rejected"
         | "archived"
       media_visibility: "public" | "partner_only" | "internal"
-      order_state: "draft"
+      order_review_status:
+        | "pending"
+        | "in_progress"
+        | "changes_required"
+        | "approved"
+        | "rejected"
+      order_state: "draft" | "quote_pending" | "quoted"
       partner_capability_status: "active" | "suspended" | "revoked"
       partner_status:
         | "pending_onboarding"
@@ -1942,6 +2353,8 @@ export type Database = {
       product_type: "product" | "service" | "bundle" | "add_on"
       profile_status: "active" | "suspended" | "deleted"
       quote_availability_status: "eligible" | "requires_review" | "unavailable"
+      quote_component_status: "proposed" | "approved" | "invalidated"
+      quote_component_type: "delivery" | "service"
       quote_status: "valid" | "requires_review" | "expired" | "invalidated"
       recipient_surprise_mode: "none" | "full_surprise" | "partial_surprise"
       tag_type: "style" | "delivery" | "feature" | "seasonal"
@@ -2088,6 +2501,22 @@ export const Constants = {
         "partner",
         "order_snapshot",
       ],
+      availability_check_dimension: [
+        "catalog",
+        "fulfillment_source",
+        "city",
+        "zone",
+        "schedule",
+        "capacity",
+        "personalization",
+        "delivery",
+      ],
+      availability_check_status: [
+        "pending",
+        "validated",
+        "rejected",
+        "requires_intervention",
+      ],
       availability_mode: [
         "tracked_stock",
         "partner_confirmation",
@@ -2116,7 +2545,14 @@ export const Constants = {
         "archived",
       ],
       media_visibility: ["public", "partner_only", "internal"],
-      order_state: ["draft"],
+      order_review_status: [
+        "pending",
+        "in_progress",
+        "changes_required",
+        "approved",
+        "rejected",
+      ],
+      order_state: ["draft", "quote_pending", "quoted"],
       partner_capability_status: ["active", "suspended", "revoked"],
       partner_status: [
         "pending_onboarding",
@@ -2129,6 +2565,8 @@ export const Constants = {
       product_type: ["product", "service", "bundle", "add_on"],
       profile_status: ["active", "suspended", "deleted"],
       quote_availability_status: ["eligible", "requires_review", "unavailable"],
+      quote_component_status: ["proposed", "approved", "invalidated"],
+      quote_component_type: ["delivery", "service"],
       quote_status: ["valid", "requires_review", "expired", "invalidated"],
       recipient_surprise_mode: ["none", "full_surprise", "partial_surprise"],
       tag_type: ["style", "delivery", "feature", "seasonal"],
