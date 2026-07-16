@@ -44,6 +44,9 @@ importers:
       '@mpho/design-tokens':
         specifier: workspace:*
         version: link:../../packages/design-tokens
+      '@mpho/payments':
+        specifier: workspace:*
+        version: link:../../packages/payments
       '@mpho/types':
         specifier: workspace:*
         version: link:../../packages/types
@@ -108,6 +111,9 @@ importers:
       '@mpho/design-tokens':
         specifier: workspace:*
         version: link:../../packages/design-tokens
+      '@mpho/payments':
+        specifier: workspace:*
+        version: link:../../packages/payments
       '@mpho/quote-engine':
         specifier: workspace:*
         version: link:../../packages/quote-engine
@@ -246,6 +252,19 @@ importers:
         version: 3.2.7(@types/node@24.13.3)(jiti@2.7.0)(jsdom@29.1.1(@noble/hashes@1.8.0))(lightningcss@1.32.0)
 
   packages/design-tokens: {}
+
+  packages/payments:
+    dependencies:
+      mercadopago:
+        specifier: 3.2.0
+        version: 3.2.0
+    devDependencies:
+      typescript:
+        specifier: ^5.7.3
+        version: 5.7.3
+      vitest:
+        specifier: ^3.2.0
+        version: 3.2.7(@types/node@24.13.3)(jiti@2.7.0)(jsdom@29.1.1(@noble/hashes@1.8.0))(lightningcss@1.32.0)
 
   packages/quote-engine:
     devDependencies:
@@ -3040,6 +3059,10 @@ packages:
   media-typer@1.1.0:
     resolution: {integrity: sha512-aisnrDP4GNe06UcKFnV5bfMNPBUw4jsLGaWwWfnH3v02GnBuXX2MCVn5RbrWo0j3pczUilYblq7fQ7Nw2t5XKw==}
     engines: {node: '>= 0.8'}
+
+  mercadopago@3.2.0:
+    resolution: {integrity: sha512-9keIOj21CpIvpLepeUp+VTUejiD7Dc2eCy2yqW21G4yBtj3Ey2E4AsnFrxRfGchtRc6L7qxA3YNkT4N7IcWj+g==}
+    engines: {node: '>=18'}
 
   merge-descriptors@2.0.0:
     resolution: {integrity: sha512-Snk314V5ayFLhp3fkUREub6WtjBfPdCPY1Ln8/8munuLuiYhsABgBVWsozAG+MWMbVEvcdcpbi9R7ww22l9Q3g==}
@@ -6717,6 +6740,8 @@ snapshots:
   mdn-data@2.27.1: {}
 
   media-typer@1.1.0: {}
+
+  mercadopago@3.2.0: {}
 
   merge-descriptors@2.0.0: {}
 

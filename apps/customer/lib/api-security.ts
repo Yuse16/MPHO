@@ -47,7 +47,7 @@ export function isExactObject(value: unknown, fields: readonly string[]): value 
 
 export function statusForError(code: string) {
   if (code === 'UNAUTHORIZED') return 401
-  if (code === 'VERSION_CONFLICT' || code === 'IDEMPOTENCY_CONFLICT' || code === 'CART_NOT_ACTIVE' || code === 'INCOMPATIBLE_CART_ITEM') return 409
+  if (code === 'VERSION_CONFLICT' || code === 'IDEMPOTENCY_CONFLICT' || code === 'CART_NOT_ACTIVE' || code === 'INCOMPATIBLE_CART_ITEM' || code === 'PAYMENT_ATTEMPT_EXISTS' || code === 'ALREADY_PAID' || code === 'PAYMENT_REQUIRES_REVIEW') return 409
   if (code.endsWith('_NOT_FOUND') || code === 'CART_NOT_FOUND') return 404
   return 422
 }

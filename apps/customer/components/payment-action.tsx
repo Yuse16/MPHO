@@ -1,0 +1,12 @@
+'use client'
+import { useState } from 'react'
+
+const allowedHosts=new Set(['www.mercadopago.com.mx','mercadopago.com.mx','sandbox.mercadopago.com.mx','www.mercadopago.com','mercadopago.com','sandbox.mercadopago.com'])
+
+export function PaymentAction({orderId,version,disabled=false}:{orderId:string;version:number;disabled?:boolean}){
+  const[loading,setLoading]=useState(false);const[error,setError]=useState<string|null>(null)
+  async function pay(){if(loading||disabled)return;setLoading(true);setError(null);try{const response=await fetch('/api/payments/checkout',{method:'POST',headers:{'Content-Type':'application/json','Idempotency-Key':crypto.randomUUID()},body:JSON.stringify({orderId,expectedVersion:version})});const result=await response.json() as {order?:{payment?:{checkoutUrl?:string|null}};error?:{code?:string}};if(!response.ok)throw new Error(result.error?.code??'PAYMENT_ERROR');const target=new URL(result.order?.payment?.checkoutUrl??'');if(target.protocol!=='https:'||!allowedHosts.has(target.hostname))throw new Error('INVALID_CHECKOUT_URL');window.location.assign(target.toString())}catch(e){setError(e instanceof Error&&e.message==='VERSION_CONFLICT'?'El pedido cambió en otra pestaña. Actualiza esta página.':'No fue posible abrir el pago de forma segura. Intenta nuevamente.');setLoading(false)}}
+  return <div className="mt-5"><button type="button" onClick={pay} disabled={disabled||loading} className="w-full rounded-full bg-[#c8ff35] px-5 py-3 font-bold text-black disabled:opacity-50">{loading?'Creando pago seguro…':'Pagar con Mercado Pago'}</button>{error&&<p role="alert" className="mt-3 text-sm text-red-300">{error}</p>}</div>
+}
+
+export function PaymentRequery({attemptId,enabled}:{attemptId:string;enabled:boolean}){const[status,setStatus]=useState<string|null>(null);async function check(){setStatus('Consultando…');const response=await fetch('/api/payments/requery',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({attemptId})});setStatus(response.ok?'Consulta completada. Actualiza en unos segundos.':response.status===429?'Espera un momento antes de volver a consultar.':'No fue posible consultar ahora.')}return <div className="mt-5"><button disabled={!enabled} onClick={check} className="w-full rounded-full border border-white/20 px-5 py-3 font-bold disabled:opacity-50">Volver a consultar</button>{status&&<p aria-live="polite" className="mt-2 text-sm text-muted-foreground">{status}</p>}</div>}

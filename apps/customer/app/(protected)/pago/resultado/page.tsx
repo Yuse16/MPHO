@@ -1,0 +1,7 @@
+import Link from 'next/link'
+import { redirect } from 'next/navigation'
+import { getDraftOrder } from '@/lib/cart'
+
+export const dynamic='force-dynamic'
+export const revalidate=0
+export default async function PaymentResult({searchParams}:{searchParams:Promise<{order?:string}>}){const{order:id}=await searchParams;if(!id)redirect('/');const result=await getDraftOrder(id);const state=!result.ok?'help_required':result.value.state==='paid'?'approved':result.value.payment?.status==='requires_review'?'help_required':result.value.payment?.status==='expired'?'expired':result.value.state==='pending_payment'?'confirming':'not_completed';const message={approved:'Pago confirmado.',confirming:'Estamos confirmando tu pago.',not_completed:'El pago no se completó.',expired:'La sesión de pago venció.',help_required:'Necesitamos verificar tu pago.'}[state];return <main className="flex min-h-screen items-center justify-center p-5"><section className="glass w-full max-w-lg rounded-[2rem] p-8 text-center"><p className="text-xs font-bold uppercase tracking-[.2em] text-lime">MPHO</p><h1 className="mt-4 text-3xl font-bold">{message}</h1><p className="mt-4 text-sm text-muted-foreground">Esta página no usa ni modifica datos enviados por Mercado Pago. El estado proviene de MPHO.</p>{result.ok&&<Link href={`/pedidos/${result.value.id}`} className="mt-7 inline-flex rounded-full bg-white/10 px-5 py-3 font-bold">Ver mi pedido</Link>}</section></main>}

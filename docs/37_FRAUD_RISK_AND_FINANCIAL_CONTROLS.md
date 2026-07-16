@@ -1,5 +1,7 @@
 # 37_FRAUD_RISK_AND_FINANCIAL_CONTROLS.md
 
+> Phase 8 control update: only an authoritative exact approved payment can produce `paid`. Mismatch, late approval, unknown payment, state race and second approval are preserved as `requires_review`; no browser action or Central operator can mark paid, edit money or trigger a refund.
+
 ## 1. Purpose
 
 This document defines fraud prevention, detection, review, and response for MPHO.

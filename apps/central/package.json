@@ -13,6 +13,7 @@
   "dependencies": {
     "@mpho/database": "workspace:*",
     "@mpho/design-tokens": "workspace:*",
+    "@mpho/payments": "workspace:*",
     "@mpho/types": "workspace:*",
     "@supabase/ssr": "^0.12.0",
     "@supabase/supabase-js": "^2.49.1",

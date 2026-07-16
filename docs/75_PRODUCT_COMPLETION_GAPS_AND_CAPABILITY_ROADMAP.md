@@ -1,5 +1,7 @@
 # 75_PRODUCT_COMPLETION_GAPS_AND_CAPABILITY_ROADMAP.md
 
+> Phase 8 update (2026-07-16): the payment foundation through `paid` is implemented but not production-approved. The next recommended work is sandbox acceptance, durable reconciliation/alerts and operational evidence. Assignment, reservation, fulfillment, refunds and ledger remain separate future phases.
+
 ## 1. Purpose and precedence
 
 This document is the primary map of the gap between the product vision and the executable MPHO repository after Phases 1–7. It answers what exists, what is only partial, what remains designed, what is blocked, and in which order the product should be completed.

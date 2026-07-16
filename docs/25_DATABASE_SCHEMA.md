@@ -1,5 +1,7 @@
 # 25_DATABASE_SCHEMA.md
 
+> Phase 8 implementation note (2026-07-16): `payment_attempts`, sanitized `payment_provider_events`, `orders.active_payment_attempt_id` and `orders.paid_at` were added with RLS default deny, restricted foreign keys, uniqueness/idempotency and transactional approval. See migration `20260716180000_payment_integrity_foundation.sql` and document 76.
+
 ## 1. Purpose
 
 This document defines the conceptual PostgreSQL database schema for MPHO.

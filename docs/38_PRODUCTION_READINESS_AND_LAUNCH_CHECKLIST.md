@@ -1,5 +1,7 @@
 # 38_PRODUCTION_READINESS_AND_LAUNCH_CHECKLIST.md
 
+> Phase 8 zero-tolerance blockers: complete Docker/Supabase validation, real sandbox matrix, excluded-method proof, account/application correlation evidence, separate live configuration, webhook/secret rotation evidence, production alerts with owners, recovery exercise and incident runbook drill. Payment production remains blocked until all are evidenced.
+
 ## 1. Purpose
 
 This document is the final production security gate for MPHO.
