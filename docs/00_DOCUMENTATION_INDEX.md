@@ -458,12 +458,13 @@ Puntos MPHO are internal supply, receiving, preparation, personalization, storag
 
 | Order | File | Pack | Status | Purpose |
 |---:|---|---:|---|---|
-| 72 | `docs/69_CURRENT_IMPLEMENTATION_AND_FOUNDATION_STATUS.md` | 01 | Complete | Real implementation status through Phase 6 |
+| 72 | `docs/69_CURRENT_IMPLEMENTATION_AND_FOUNDATION_STATUS.md` | 01 | Complete | Real implementation status through Phase 7 |
 | 73 | `docs/71_CATALOG_SECURITY_TYPES_AND_CI_HARDENING.md` | 13 | Complete | Phase 4.1 catalog security, generated types, clients, routes, tests, and CI evidence |
 | 74 | `docs/72_SERVER_SIDE_PRICING_AVAILABILITY_AND_QUOTES.md` | 14 | Complete | Phase 5 authoritative pricing, availability, quote persistence, API, RLS, tests, and deferred rules |
 | 75 | `docs/73_PERSISTENT_CART_AND_DRAFT_ORDER.md` | 15 | Complete | Phase 6 persistent cart, PII staging, concurrency, quote revalidation, atomic draft order, API, RLS, and tests |
 | 76 | `docs/74_OPERATIONAL_REVIEW_AND_FINAL_QUOTE.md` | 16 | Complete | Phase 7 operational review, availability evidence, approved delivery, final quote, Central workflow, RLS, and audit |
+| 77 | `docs/75_PRODUCT_COMPLETION_GAPS_AND_CAPABILITY_ROADMAP.md` | 17 | Complete | Evidence-based product truth matrix, completion gaps, current risks, and ordered capability roadmap after Phase 7 |
 
 ### Purpose
 
-This document records what actually exists in code versus what is documented, tracks defects corrected, validation results, and remaining risks. It must be updated after every foundation milestone.
+Document 69 records the implementation foundation and phase evidence. Document 75 is the primary cross-product map for distinguishing implemented, partial, planned, blocked, and deferred capabilities and for ordering the work required after Phase 7. Neither replaces the specialized specifications or the lifecycle source of truth. Both must be updated when a foundation milestone changes their factual claims.

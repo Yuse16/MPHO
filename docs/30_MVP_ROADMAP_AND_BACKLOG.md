@@ -19,6 +19,16 @@ This document should guide OpenCode and human contributors in implementation ord
 
 Do not start a later phase while critical foundations from earlier phases remain incomplete.
 
+### Current precedence after Phase 7
+
+The original phase plan in this document predates the executable foundation sequence. For current implementation status and ordering after Phase 7, the following sources govern:
+
+1. `docs/13_ORDER_LIFECYCLE.md` for state order and authorization.
+2. `docs/69_CURRENT_IMPLEMENTATION_AND_FOUNDATION_STATUS.md` for verified phase evidence.
+3. `docs/75_PRODUCT_COMPLETION_GAPS_AND_CAPABILITY_ROADMAP.md` for the product truth matrix, gaps and detailed capability dependencies.
+
+Older phase numbers and unchecked backlog items below remain useful planning history; they are not claims that a feature exists. In particular, formal Punto MPHO assignment remains after confirmed payment, and a visual HADIA/MPHORA surface is not an operational engine.
+
 ---
 
 ## 2. MVP objective
@@ -80,7 +90,40 @@ The MVP will use:
 
 ---
 
-## 5. Roadmap overview
+## 5. Execution roadmap after Phase 7
+
+The repository at `4d0bce2` has reached a final pre-payment quote. The next sequence is:
+
+### Operational MVP — required for the first real order
+
+| Order | Block | Objective | Exit boundary |
+|---:|---|---|---|
+| 1 | Phase 8 — initial payment and financial integrity | Create and confirm one provider payment safely against an unexpired final quote | Idempotent intent, verified webhook, explicit payment states and reconciliation evidence |
+| 2 | Formal assignment after payment | Assign exactly one responsible Punto MPHO only after `paid` | Audited offer, acceptance/rejection, timeout and reassignment |
+| 3 | Operational Partner PWA | Make MPHO Aliados the official task source | Partner sees what to do, by when and estimated earning; state skipping and cross-partner access are blocked |
+| 4 | Inventory and reservations | Replace manual availability assumptions with authoritative stock | Fresh stock, adjustments, concurrency-safe reservation and expiry |
+| 5 | Preparation and quality control | Execute work from approved instructions and evidence | Checklist, private evidence, QC, incidents and ready-for-pickup state |
+| 6 | Delivery and Customer-safe tracking | Preserve custody through a verified delivery outcome | Dispatch, handoff, attempts, tracking, evidence and failed-delivery recovery |
+| 7 | Refunds, ledger, earnings and payouts | Make every financial effect reconstructable | Refund reconciliation, ledger, earnings, payout controls and disputes |
+| 8 | Productive hardening and controlled pilot | Satisfy launch gates and prove the flow in cohorts | Backup/recovery, monitoring, rate limits, incident readiness and pilot evidence |
+
+Phase 8 must not add pre-payment partner assignment, inventory reservation, fulfillment authorization or browser-trusted amounts. Payment provider approval must remain distinct from settlement and reconciliation.
+
+### Product completion after the operational core
+
+| Order | Block | Classification for first real order |
+|---:|---|---|
+| 9 | Grounded and constrained HADIA recommendation agent | Advanced capability; not a blocker |
+| 10 | Operational MPHORA eligibility engine | Advanced delivery mode; not a blocker |
+| 11 | People, occasions, reminders and retention | Post-core growth capability |
+| 12 | Complete PWA install/update/offline behavior, push, WhatsApp and order support | PWA production behavior is required before calling each app complete; every channel is not required to prove the first controlled transaction |
+| 13 | Advanced personalization and human-assisted computer vision | Deferred; not a blocker |
+
+HADIA, MPHORA and computer vision may differentiate MPHO, but none may postpone the basic integrity of payment, assignment, preparation, delivery, refund and partner settlement.
+
+## 5A. Original planning baseline
+
+The following overview is the pre-foundation roadmap. It is retained as planning history and thematic backlog. It must be interpreted through the current precedence note above.
 
 ```text
 Phase 0 — Validation and preparation
@@ -1198,9 +1241,9 @@ docs/30_MVP_ROADMAP_AND_BACKLOG.md
 
 ---
 
-## 35. Final implementation order
+## 35. Superseded original implementation order
 
-Recommended exact implementation order:
+The following order was the original recommendation before Phases 1–7 were implemented. It is retained for traceability and is superseded by section 5 and document 75 for future execution:
 
 ```text
 1. Repository and environments

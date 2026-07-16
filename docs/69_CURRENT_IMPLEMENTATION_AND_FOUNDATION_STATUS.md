@@ -2,12 +2,14 @@
 
 ## 1. Purpose and evidence date
 
-This document records what is actually implemented in MPHO through Phase 6. It separates working foundations from prototypes and future production work.
+This document records what is actually implemented in MPHO through Phase 7. It separates working foundations from prototypes and future production work.
 
-- Evidence date: 2026-07-15.
-- Base commit: `827a2fb` (Phase 5 merged into `origin/main`).
-- Current phase: 6 — persistent Customer cart and atomic draft-order creation.
+- Evidence date: 2026-07-16.
+- Base commit: `4d0bce2` (Phase 7 merged into `origin/main`).
+- Completed boundary: Phase 7 — controlled operational review and final pre-payment quote.
 - Production status: blocked; local validation is not production approval.
+
+For the cross-product capability matrix and recommended execution sequence, see `docs/75_PRODUCT_COMPLETION_GAPS_AND_CAPABILITY_ROADMAP.md`.
 
 ## 2. Current repository
 
@@ -16,7 +18,7 @@ MPHO/
 ├── apps/
 │   ├── customer/       Next.js customer application
 │   ├── partner/        Next.js MPHO Aliados shell
-│   └── central/        Next.js MPHO Central shell
+│   └── central/        Next.js MPHO Central pre-payment review module
 ├── packages/
 │   ├── config/
 │   ├── database/       tracked Supabase-generated types and domain aliases
@@ -25,8 +27,8 @@ MPHO/
 │   ├── ui/
 │   └── validation/
 ├── supabase/
-│   ├── migrations/     13 historical migrations plus one Phase 4.1 migration
-│   ├── tests/          real pgTAP/RLS catalog tests
+│   ├── migrations/     versioned foundation and Phase 4.1–7 migrations
+│   ├── tests/          pgTAP/RLS tests through operational review
 │   └── seed.sql
 ├── scripts/            secret, type-drift, and schema-drift checks
 ├── docs/               canonical lower-case documentation path
@@ -95,23 +97,25 @@ Full Phase 4.1 decisions and evidence are in `docs/71_CATALOG_SECURITY_TYPES_AND
 
 | Area | Current status | Boundary |
 |---|---|---|
-| Customer Home | Implemented prototype | Visual/discovery surface; not a complete storefront |
-| Public catalog | Implemented foundation | Published, active, priced MXN listings only |
-| Product by slug | Implemented foundation | One controlled result or explicit not-found state |
-| Category filtering | Implemented foundation | Server-side exact slug filter |
-| Customer auth | Implemented foundation | Login/signup/callback/session routing; not production-complete |
-| Customer profile | Protected route | Requires a valid session |
-| Cart | Implemented foundation | Customer-owned, persistent, versioned and server-authoritative |
-| Draft orders | Implemented foundation | Atomic quote revalidation and immutable snapshots; only `draft` exists |
-| Checkout and payment | Missing | No payment initiation, authorization, reservation, or operational execution |
-| HADIA | Visual only | No AI execution or privileged tools |
-| MPHORA | Truthful placeholder | No item is labeled fast without operational eligibility |
-| Partner app | Compiling shell | Operational workflows not implemented |
-| Central app | Compiling shell | Admin workflows not implemented |
-| Payments/refunds | Missing | No provider or ledger |
-| Earnings/payouts | Missing | No financial workflow |
-| Delivery | Missing | No provider or state execution |
-| PWA/offline/push | Incomplete | Not production accepted |
+| Customer Home | PARTIAL | Visual/discovery surface backed by public catalog; not a complete storefront |
+| Public catalog | PARTIAL | Published, active, priced MXN listings and safe public DTO; no search, filters or authoritative stock |
+| Product by slug | IMPLEMENTED | One controlled public result or explicit not-found state |
+| Category filtering | IMPLEMENTED | Server-side exact slug filter; broad discovery filters remain planned |
+| Customer auth | PARTIAL | Login/signup/callback/session routing; recovery and production controls remain incomplete |
+| Customer profile | PARTIAL | Protected route exists; full account and retention functions do not |
+| Quote | IMPLEMENTED | Authoritative preliminary and final immutable quote boundaries exist through `quoted` |
+| Cart | IMPLEMENTED | Customer-owned, persistent, versioned and server-authoritative |
+| Draft orders | IMPLEMENTED | Atomic quote revalidation, immutable snapshots, idempotency and owner-only retrieval |
+| Operational review | IMPLEMENTED | `draft → quote_pending → quoted`, expiring checks, audit and controlled regressions |
+| Checkout and payment | BLOCKED | No payment intent, provider, verified webhook, approved payment or reconciliation |
+| HADIA | PLANNED | Visual entry only; no AI execution, grounding, memory or tools |
+| MPHORA | BLOCKED | Candidate flag exists without operational eligibility; Customer “Entrega hoy” mapping is not verified |
+| Partner app | PARTIAL | Compiling shell only; operational workflows are not implemented |
+| Central app | PARTIAL | Minimal pre-payment review queue/detail exists; full tower-of-control workflows do not |
+| Payments/refunds | BLOCKED | No provider, payment/refund records or ledger |
+| Earnings/payouts | PLANNED | No executable financial workflow |
+| Delivery | PLANNED | Pre-payment delivery amount can be manually verified; no dispatch, tracking or delivery state execution |
+| PWA/offline/push | PARTIAL | Three independent web applications exist; manifests, workers, notifications and device acceptance are incomplete |
 
 ## 5. Security boundary now implemented
 
@@ -120,7 +124,7 @@ Anonymous catalog access is limited at two layers:
 1. Column grants prevent selection of internal listing columns.
 2. RLS prevents drafts and draft child records from becoming visible.
 
-The customer-facing contract uses `get_public_catalog` and `get_public_catalog_categories`. Direct broad table selection is not the application contract. `service_role` is absent from client code and no privileged database helper is exported from `@mpho/database`.
+The customer-facing contract uses controlled public RPCs. Direct broad table selection is not the application contract. `service_role` is absent from client code and no privileged database helper is exported from `@mpho/database`.
 
 This does not prove production security. Production secrets, MFA, recovery, monitoring, backups, incident readiness, provider controls, and the launch checklist remain unresolved.
 
@@ -153,11 +157,11 @@ Valid validation coverage was replaced with a package-level Money test that enfo
 
 ### Production blockers
 
-- No completed checkout, order state machine, payment, refund, ledger, payout, or delivery implementation.
+- No payment, lifecycle after `quoted`, refund, ledger, payout, assignment, fulfillment, or delivery execution.
 - No completed production auth recovery, MFA, privileged-role administration, or security monitoring.
 - No production backup/restore or incident evidence.
 - Legal, tax, privacy, partner-contract, and launch decisions remain unresolved.
-- Partner and Central are shells, not accepted operational PWAs.
+- Partner is a shell. Central is a narrow pre-payment review module, not an accepted operational PWA.
 
 ### Product and technical debt
 
@@ -187,12 +191,22 @@ Full decisions and evidence are in `docs/73_PERSISTENT_CART_AND_DRAFT_ORDER.md`.
 
 ## 11. Next recommended work
 
-Define the controlled transition from `draft` into quote review/checkout readiness, including approved delivery/service pricing, finality, expiration, operational availability, complete personalization compatibility, and a production-ready authentication/rate-limit/observability baseline. Payment remains blocked until those gates are complete.
+Phase 8 should add initial payment integrity against an unexpired final quote: server-created intent, provider sandbox adapter, verified and replay-safe webhook, explicit payment states, double-charge prevention, idempotent transition toward `paid`, and reconciliation evidence. It must not assign a Punto MPHO before confirmed payment. Production rate limiting, privileged identity, observability, secrets and legal/financial gates remain prerequisites, not optional cleanup.
 
 ## 12. Phase 7 implementation
 
-Branch `feat/phase-7-operational-review` adds the controlled pre-payment lifecycle `draft → quote_pending → quoted`. It introduces owner/versioned operational reviews, expiring availability evidence, an operator-proposed/admin-approved delivery component, the explicit zero-value pilot service rule, immutable final quotes, invalidation, redacted audit logs, Customer-safe DTOs, and minimal Central review routes.
+Phase 7, merged into `origin/main` at `4d0bce2`, adds the controlled pre-payment lifecycle `draft → quote_pending → quoted`. It introduces owner/versioned operational reviews, expiring availability evidence, an operator-proposed/admin-approved delivery component, the explicit zero-value pilot service rule, immutable final quotes, invalidation, redacted audit logs, Customer-safe DTOs, and minimal Central review routes.
 
 It does not add payment, assignment, responsible partner, Partner offers, reservation, fulfillment, delivery execution, ledger, earnings, commission, external products, HADIA, MPHORA, WhatsApp or n8n. Partner remains a shell.
 
 Do not infer production readiness from local compilation or local Supabase tests.
+
+## 13. Layer-by-layer truth after Phase 7
+
+- **Customer:** UI, frontend calls, APIs, persistence and RLS exist through final quote. Payment, tracking, support and complete PWA operation do not.
+- **Partner:** only the independent application shell exists. There is no official offer, acceptance, inventory, preparation, evidence, incident, earnings or payout workflow.
+- **Central:** UI/API/database commands exist only for pre-payment operational review. There is no complete order, fulfillment, delivery, finance, incident or security control tower.
+- **Operations:** schedule, capacity and personalization may be confirmed manually as expiring evidence. That evidence is not inventory, reservation, partner acceptance or authority to prepare.
+- **Money:** product arithmetic, approved delivery and explicit pilot service of 0 MXN form a final quote. No money is initiated, approved, settled or reconciled.
+- **Logistics:** a delivery cost may be approved; no delivery request or custody event exists.
+- **Production:** RLS and audit foundations are evidence, but document 38 remains unsatisfied and launch remains blocked.
