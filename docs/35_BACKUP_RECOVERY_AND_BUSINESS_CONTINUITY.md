@@ -1,5 +1,7 @@
 # 35_BACKUP_RECOVERY_AND_BUSINESS_CONTINUITY.md
 
+> Phase 8 recovery update: orders, payment attempts, sanitized provider events, audit logs and state history must be backed up and restored as one integrity set. Events have an initial 90-day documentary retention; automatic deletion is blocked until legal approval, a safe job and deletion evidence exist.
+
 ## 1. Purpose
 
 This document defines backup, restoration, disaster recovery, and business continuity for MPHO.

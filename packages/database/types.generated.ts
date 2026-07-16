@@ -1126,6 +1126,7 @@ export type Database = {
       }
       orders: {
         Row: {
+          active_payment_attempt_id: string | null
           availability_status: Database["public"]["Enums"]["quote_availability_status"]
           created_at: string
           currency: string
@@ -1136,6 +1137,7 @@ export type Database = {
           discount_amount_minor: number
           id: string
           idempotency_key: string
+          paid_at: string | null
           pending_components: Json
           public_reference: string
           quote_id: string
@@ -1152,6 +1154,7 @@ export type Database = {
           version: number
         }
         Insert: {
+          active_payment_attempt_id?: string | null
           availability_status: Database["public"]["Enums"]["quote_availability_status"]
           created_at?: string
           currency: string
@@ -1162,6 +1165,7 @@ export type Database = {
           discount_amount_minor?: number
           id?: string
           idempotency_key: string
+          paid_at?: string | null
           pending_components: Json
           public_reference?: string
           quote_id: string
@@ -1178,6 +1182,7 @@ export type Database = {
           version?: number
         }
         Update: {
+          active_payment_attempt_id?: string | null
           availability_status?: Database["public"]["Enums"]["quote_availability_status"]
           created_at?: string
           currency?: string
@@ -1188,6 +1193,7 @@ export type Database = {
           discount_amount_minor?: number
           id?: string
           idempotency_key?: string
+          paid_at?: string | null
           pending_components?: Json
           public_reference?: string
           quote_id?: string
@@ -1204,6 +1210,13 @@ export type Database = {
           version?: number
         }
         Relationships: [
+          {
+            foreignKeyName: "orders_active_payment_attempt_id_fkey"
+            columns: ["active_payment_attempt_id"]
+            isOneToOne: false
+            referencedRelation: "payment_attempts"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "orders_customer_id_fkey"
             columns: ["customer_id"]
@@ -1507,6 +1520,194 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      payment_attempts: {
+        Row: {
+          amount_minor: number
+          approved_at: string | null
+          cancelled_at: string | null
+          checkout_url: string | null
+          created_at: string
+          currency: string
+          customer_id: string
+          environment: string
+          expired_at: string | null
+          expires_at: string
+          external_reference: string
+          id: string
+          idempotency_key: string
+          initiated_at: string
+          last_provider_check_at: string | null
+          order_id: string
+          provider: string
+          provider_payment_id: string | null
+          provider_preference_id: string | null
+          provider_status: string | null
+          provider_status_detail: string | null
+          quote_id: string
+          rejected_at: string | null
+          request_hash: string
+          review_reason: string | null
+          status: Database["public"]["Enums"]["payment_attempt_status"]
+          updated_at: string
+          version: number
+        }
+        Insert: {
+          amount_minor: number
+          approved_at?: string | null
+          cancelled_at?: string | null
+          checkout_url?: string | null
+          created_at?: string
+          currency: string
+          customer_id: string
+          environment: string
+          expired_at?: string | null
+          expires_at: string
+          external_reference: string
+          id?: string
+          idempotency_key: string
+          initiated_at?: string
+          last_provider_check_at?: string | null
+          order_id: string
+          provider: string
+          provider_payment_id?: string | null
+          provider_preference_id?: string | null
+          provider_status?: string | null
+          provider_status_detail?: string | null
+          quote_id: string
+          rejected_at?: string | null
+          request_hash: string
+          review_reason?: string | null
+          status?: Database["public"]["Enums"]["payment_attempt_status"]
+          updated_at?: string
+          version?: number
+        }
+        Update: {
+          amount_minor?: number
+          approved_at?: string | null
+          cancelled_at?: string | null
+          checkout_url?: string | null
+          created_at?: string
+          currency?: string
+          customer_id?: string
+          environment?: string
+          expired_at?: string | null
+          expires_at?: string
+          external_reference?: string
+          id?: string
+          idempotency_key?: string
+          initiated_at?: string
+          last_provider_check_at?: string | null
+          order_id?: string
+          provider?: string
+          provider_payment_id?: string | null
+          provider_preference_id?: string | null
+          provider_status?: string | null
+          provider_status_detail?: string | null
+          quote_id?: string
+          rejected_at?: string | null
+          request_hash?: string
+          review_reason?: string | null
+          status?: Database["public"]["Enums"]["payment_attempt_status"]
+          updated_at?: string
+          version?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payment_attempt_order_consistency_fk"
+            columns: ["order_id", "customer_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id", "customer_id"]
+          },
+          {
+            foreignKeyName: "payment_attempts_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "payment_attempts_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "payment_attempts_quote_id_fkey"
+            columns: ["quote_id"]
+            isOneToOne: false
+            referencedRelation: "quotes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      payment_provider_events: {
+        Row: {
+          action: string | null
+          created_at: string
+          environment: string
+          error_code: string | null
+          event_type: string | null
+          id: string
+          live_mode: boolean | null
+          payload_hash: string
+          processed_at: string | null
+          processing_attempts: number
+          processing_status: Database["public"]["Enums"]["payment_event_processing_status"]
+          provider: string
+          provider_event_id: string
+          provider_resource_id: string | null
+          received_at: string
+          request_id: string
+          sanitized_payload: Json
+          signature_valid: boolean
+          updated_at: string
+        }
+        Insert: {
+          action?: string | null
+          created_at?: string
+          environment: string
+          error_code?: string | null
+          event_type?: string | null
+          id?: string
+          live_mode?: boolean | null
+          payload_hash: string
+          processed_at?: string | null
+          processing_attempts?: number
+          processing_status?: Database["public"]["Enums"]["payment_event_processing_status"]
+          provider: string
+          provider_event_id: string
+          provider_resource_id?: string | null
+          received_at?: string
+          request_id: string
+          sanitized_payload?: Json
+          signature_valid: boolean
+          updated_at?: string
+        }
+        Update: {
+          action?: string | null
+          created_at?: string
+          environment?: string
+          error_code?: string | null
+          event_type?: string | null
+          id?: string
+          live_mode?: boolean | null
+          payload_hash?: string
+          processed_at?: string | null
+          processing_attempts?: number
+          processing_status?: Database["public"]["Enums"]["payment_event_processing_status"]
+          provider?: string
+          provider_event_id?: string
+          provider_resource_id?: string | null
+          received_at?: string
+          request_id?: string
+          sanitized_payload?: Json
+          signature_valid?: boolean
+          updated_at?: string
+        }
+        Relationships: []
       }
       product_tags: {
         Row: {
@@ -2119,6 +2320,18 @@ export type Database = {
         Returns: Database["public"]["Enums"]["user_role"][]
       }
       auth_uid: { Args: never; Returns: string }
+      begin_payment_checkout: {
+        Args: {
+          p_auth_user_id: string
+          p_environment: string
+          p_expected_version: number
+          p_idempotency_key: string
+          p_minimum_seconds: number
+          p_order_id: string
+          p_request_id: string
+        }
+        Returns: Json
+      }
       calculate_public_quote: { Args: { p_request: Json }; Returns: Json }
       central_review_command: {
         Args: {
@@ -2127,6 +2340,16 @@ export type Database = {
           p_idempotency_key: string
           p_order_id: string
           p_payload: Json
+          p_request_id: string
+        }
+        Returns: Json
+      }
+      complete_payment_checkout: {
+        Args: {
+          p_attempt_id: string
+          p_checkout_url: string
+          p_preference_id: string
+          p_provider_expires_at: string
           p_request_id: string
         }
         Returns: Json
@@ -2144,7 +2367,16 @@ export type Database = {
         Args: { p_idempotency_key: string; p_request: Json }
         Returns: Json
       }
+      fail_payment_checkout: {
+        Args: {
+          p_attempt_id: string
+          p_error_code: string
+          p_requires_review: boolean
+        }
+        Returns: Json
+      }
       get_central_order_review: { Args: { p_order_id: string }; Returns: Json }
+      get_central_payment: { Args: { p_attempt_id: string }; Returns: Json }
       get_customer_cart: { Args: never; Returns: Json }
       get_customer_order: { Args: { p_order_id: string }; Returns: Json }
       get_customer_quote: { Args: { p_quote_id: string }; Returns: Json }
@@ -2196,11 +2428,20 @@ export type Database = {
       }
       is_mpho_staff: { Args: never; Returns: boolean }
       list_central_order_reviews: { Args: never; Returns: Json }
+      list_central_payments: { Args: never; Returns: Json }
       mutate_customer_cart: {
         Args: {
           p_expected_version: number
           p_operation: string
           p_payload: Json
+        }
+        Returns: Json
+      }
+      payment_requery_target: {
+        Args: {
+          p_attempt_id: string
+          p_auth_user_id: string
+          p_force?: boolean
         }
         Returns: Json
       }
@@ -2270,6 +2511,42 @@ export type Database = {
       phase7_staff_role: {
         Args: never
         Returns: Database["public"]["Enums"]["user_role"]
+      }
+      phase8_attempt_public_json: {
+        Args: { p_attempt_id: string }
+        Returns: Json
+      }
+      phase8_customer_from_auth_user: {
+        Args: { p_auth_user_id: string }
+        Returns: string
+      }
+      phase8_customer_order_json: {
+        Args: { p_order_id: string }
+        Returns: Json
+      }
+      process_provider_payment: {
+        Args: {
+          p_event_id: string
+          p_expected_application_id: string
+          p_expected_environment: string
+          p_payment: Json
+        }
+        Returns: Json
+      }
+      register_payment_provider_event: {
+        Args: {
+          p_action: string
+          p_environment: string
+          p_event_id: string
+          p_event_type: string
+          p_live_mode: boolean
+          p_payload_hash: string
+          p_request_id: string
+          p_resource_id: string
+          p_sanitized: Json
+          p_signature_valid: boolean
+        }
+        Returns: Json
       }
       reveal_central_order_pii: {
         Args: {
@@ -2341,7 +2618,12 @@ export type Database = {
         | "changes_required"
         | "approved"
         | "rejected"
-      order_state: "draft" | "quote_pending" | "quoted"
+      order_state:
+        | "draft"
+        | "quote_pending"
+        | "quoted"
+        | "pending_payment"
+        | "paid"
       partner_capability_status: "active" | "suspended" | "revoked"
       partner_status:
         | "pending_onboarding"
@@ -2349,6 +2631,23 @@ export type Database = {
         | "paused"
         | "suspended"
         | "closed"
+      payment_attempt_status:
+        | "creating"
+        | "checkout_ready"
+        | "pending"
+        | "approved"
+        | "rejected"
+        | "cancelled"
+        | "expired"
+        | "error"
+        | "requires_review"
+      payment_event_processing_status:
+        | "received"
+        | "processing"
+        | "processed"
+        | "retry_pending"
+        | "rejected"
+        | "requires_review"
       product_status: "draft" | "active" | "archived"
       product_type: "product" | "service" | "bundle" | "add_on"
       profile_status: "active" | "suspended" | "deleted"
@@ -2552,7 +2851,13 @@ export const Constants = {
         "approved",
         "rejected",
       ],
-      order_state: ["draft", "quote_pending", "quoted"],
+      order_state: [
+        "draft",
+        "quote_pending",
+        "quoted",
+        "pending_payment",
+        "paid",
+      ],
       partner_capability_status: ["active", "suspended", "revoked"],
       partner_status: [
         "pending_onboarding",
@@ -2560,6 +2865,25 @@ export const Constants = {
         "paused",
         "suspended",
         "closed",
+      ],
+      payment_attempt_status: [
+        "creating",
+        "checkout_ready",
+        "pending",
+        "approved",
+        "rejected",
+        "cancelled",
+        "expired",
+        "error",
+        "requires_review",
+      ],
+      payment_event_processing_status: [
+        "received",
+        "processing",
+        "processed",
+        "retry_pending",
+        "rejected",
+        "requires_review",
       ],
       product_status: ["draft", "active", "archived"],
       product_type: ["product", "service", "bundle", "add_on"],

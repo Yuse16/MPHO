@@ -1,5 +1,7 @@
 # 13_ORDER_LIFECYCLE.md
 
+> Phase 8 implementation note (2026-07-16): the executable subset is `draft → quote_pending → quoted → pending_payment → paid`, with `pending_payment → quoted` for non-approved terminal attempts and coordinated quote expiry. `paid` does not imply assignment, reservation, preparation or delivery. See document 76.
+
 ## 1. Purpose
 
 This document defines the official lifecycle of an MPHO order.

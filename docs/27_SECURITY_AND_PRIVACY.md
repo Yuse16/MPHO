@@ -1,5 +1,7 @@
 # 27_SECURITY_AND_PRIVACY.md
 
+> Phase 8 implementation note (2026-07-16): payment secrets and elevated Supabase access live only in exact `server-only` modules guarded by the secret scanner. Provider events are sanitized; Customer DTOs omit provider IDs/status detail; checkout URLs remain owner-only and disappear after expiry.
+
 ## 1. Purpose
 
 This document defines the security and privacy baseline for MPHO.

@@ -1,5 +1,7 @@
 # 26_API_AND_INTEGRATIONS.md
 
+> Phase 8 implementation note (2026-07-16): the narrow payment surface is `POST /api/payments/checkout`, `POST /api/payments/requery`, `POST /api/webhooks/mercado-pago` and read-only `/pago/resultado`. Only the webhook is public; its signature is validated by the official SDK before provider lookup. See document 76.
+
 ## 1. Purpose
 
 This document defines the API and integration strategy for MPHO.

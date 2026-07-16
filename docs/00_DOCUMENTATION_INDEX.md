@@ -99,6 +99,7 @@ Examples:
 | 31 | `docs/28_DESIGN_SYSTEM.md` | 08 | Complete | Visual identity, components, accessibility |
 | 32 | `docs/29_TESTING_AND_QA.md` | 08 | Complete | Test strategy and quality |
 | 33 | `docs/30_MVP_ROADMAP_AND_BACKLOG.md` | 08 | Complete | Phases, backlog, priorities |
+| 79 | `docs/76_PAYMENT_INTEGRITY_AND_MERCADO_PAGO_FOUNDATION.md` | Phase 8 | In review | Checkout Pro, verified payment and integrity boundary through `paid` |
 
 ---
 

@@ -1,5 +1,7 @@
 # 31_THREAT_MODEL_AND_ABUSE_CASES.md
 
+> Phase 8 threat update: forged/replayed webhooks, price tampering, cross-Customer access, duplicate approvals, late approvals, environment/account mismatch, unsafe redirects and uncertain preference creation are handled through signature validation, authoritative fetch, exact server totals, RLS, deduplication, allowlists and `requires_review`. Residual sandbox/account-correlation evidence is tracked in document 76.
+
 ## 1. Purpose
 
 This document defines the formal threat model for MPHO.

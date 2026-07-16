@@ -1,5 +1,7 @@
 # 64_CENTRAL_ADMIN_PWA_UX_AND_SCREEN_SPEC.md
 
+> Phase 8 implementation note: `/pagos` and `/pagos/[attemptId]` provide the minimal integrity queue/detail and audited provider requery. There is no mark-paid, money edit, provider-ID entry, refund or approved-payment cancellation action.
+
 ## 1. Purpose
 
 This document defines MPHO Central, the restricted operations and administration PWA.

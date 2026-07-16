@@ -2,11 +2,11 @@
 
 ## 1. Purpose and evidence date
 
-This document records what is actually implemented in MPHO through Phase 7. It separates working foundations from prototypes and future production work.
+This document records what is actually implemented in MPHO through Phase 8. It separates working foundations from prototypes and future production work.
 
 - Evidence date: 2026-07-16.
 - Base commit: `4d0bce2` (Phase 7 merged into `origin/main`).
-- Completed boundary: Phase 7 — controlled operational review and final pre-payment quote.
+- Completed code boundary: Phase 8 — Checkout Pro and provider-verified integrity through `paid`; database/sandbox acceptance remains pending.
 - Production status: blocked; local validation is not production approval.
 
 For the cross-product capability matrix and recommended execution sequence, see `docs/75_PRODUCT_COMPLETION_GAPS_AND_CAPABILITY_ROADMAP.md`.
@@ -107,7 +107,7 @@ Full Phase 4.1 decisions and evidence are in `docs/71_CATALOG_SECURITY_TYPES_AND
 | Cart | IMPLEMENTED | Customer-owned, persistent, versioned and server-authoritative |
 | Draft orders | IMPLEMENTED | Atomic quote revalidation, immutable snapshots, idempotency and owner-only retrieval |
 | Operational review | IMPLEMENTED | `draft → quote_pending → quoted`, expiring checks, audit and controlled regressions |
-| Checkout and payment | BLOCKED | No payment intent, provider, verified webhook, approved payment or reconciliation |
+| Checkout and payment | PARTIAL | Checkout Pro, private attempts, verified webhook, controlled requery and atomic `paid`; sandbox/production acceptance remains blocked |
 | HADIA | PLANNED | Visual entry only; no AI execution, grounding, memory or tools |
 | MPHORA | BLOCKED | Candidate flag exists without operational eligibility; Customer “Entrega hoy” mapping is not verified |
 | Partner app | PARTIAL | Compiling shell only; operational workflows are not implemented |

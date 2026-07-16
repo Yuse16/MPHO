@@ -1,5 +1,7 @@
 # 22_PAYMENTS_AND_PAYOUTS.md
 
+> Phase 8 implementation note (2026-07-16): Mercado Pago Checkout Pro is implemented only through provider-verified `paid`. Refunds, ledger, earnings and payouts remain unimplemented and blocked. Exact integrity, duplicate and review rules are in document 76.
+
 ## 1. Purpose
 
 This document defines the payment, refund, earnings, settlement, reconciliation, and partner payout model for MPHO.

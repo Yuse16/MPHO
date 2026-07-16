@@ -1,5 +1,7 @@
 # 62_CUSTOMER_CHECKOUT_TRACKING_RETENTION_AND_INSTALL_UX.md
 
+> Phase 8 implementation note: Customer now has a server-created Checkout Pro redirect, neutral result page, confirmation/review states, safe reopening and cooldown requery. It never trusts provider return parameters or displays provider IDs, and `paid` messaging makes no assignment/preparation claim.
+
 ## 1. Purpose
 
 This document defines customer cart, checkout, order tracking, account retention, reminders, and contextual PWA installation.
