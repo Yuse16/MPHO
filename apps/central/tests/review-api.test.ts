@@ -1,0 +1,7 @@
+import {beforeEach,describe,expect,it,vi} from 'vitest'
+const commandReview=vi.hoisted(()=>vi.fn())
+vi.mock('@/lib/reviews',()=>({commandReview}))
+import {POST} from '@/app/api/reviews/[orderId]/route'
+const context={params:Promise.resolve({orderId:'81000000-0000-4000-8000-000000000001'})}
+const headers={'Content-Type':'application/json','Origin':'http://localhost','Host':'localhost','Idempotency-Key':'central-key-123'}
+describe('Central review API',()=>{beforeEach(()=>vi.clearAllMocks());it('rejects cross-origin commands',async()=>{const response=await POST(new Request('http://localhost',{method:'POST',headers:{...headers,Origin:'https://attacker.test'},body:'{}'}),context);expect(response.status).toBe(403);expect(commandReview).not.toHaveBeenCalled()});it('passes controlled command envelope and private caching',async()=>{commandReview.mockResolvedValue({ok:true,value:{orderId:'order'}});const response=await POST(new Request('http://localhost',{method:'POST',headers,body:JSON.stringify({action:'run_checks',expectedVersion:2})}),context);expect(response.status).toBe(200);expect(response.headers.get('cache-control')).toContain('private');expect(commandReview).toHaveBeenCalledWith('81000000-0000-4000-8000-000000000001','run_checks',{},2,'central-key-123')});it('rejects unknown fields',async()=>{const response=await POST(new Request('http://localhost',{method:'POST',headers,body:JSON.stringify({action:'run_checks',expectedVersion:2,partnerId:'forbidden'})}),context);expect(response.status).toBe(400);expect(commandReview).not.toHaveBeenCalled()})})

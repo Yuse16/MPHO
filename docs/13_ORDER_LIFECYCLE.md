@@ -242,6 +242,8 @@ draft → cancelled
 
 The system is validating availability, price, zone, timing, and delivery.
 
+For the Phase 7 pilot this validation may include temporary, expiring evidence confirmed manually by Central with an establishment. That evidence is not a partner assignment, acceptance, stock reservation, capacity reservation, or authorization to prepare. Formal assignment remains after verified payment.
+
 ### Required validations
 
 - Product source.
@@ -271,6 +273,8 @@ quote_pending → draft
 ### Meaning
 
 A valid customer total and estimated timing exist.
+
+In Phase 7, `quoted` is the final pre-payment boundary. The only implemented main transitions are `draft → quote_pending → quoted`, plus the controlled regressions `quote_pending → draft` and `quoted → quote_pending`. `pending_payment` and every later state remain unimplemented.
 
 ### Required data
 
