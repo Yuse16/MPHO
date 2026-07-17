@@ -7,7 +7,7 @@
 
 -- ─── Categories ──────────────────────────────────────────────────────────────
 CREATE TABLE IF NOT EXISTS categories (
-  id          uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id          uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   parent_id   uuid REFERENCES categories(id) ON DELETE SET NULL,
   name        text NOT NULL,
   slug        text NOT NULL,
@@ -29,7 +29,7 @@ CREATE TRIGGER categories_set_updated_at BEFORE UPDATE ON categories FOR EACH RO
 
 -- ─── Tags ────────────────────────────────────────────────────────────────────
 CREATE TABLE IF NOT EXISTS tags (
-  id         uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id         uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   name       text NOT NULL,
   slug       text NOT NULL,
   type       tag_type NOT NULL,
@@ -43,7 +43,7 @@ CREATE INDEX IF NOT EXISTS idx_tags_status ON tags(status);
 
 -- ─── Products ────────────────────────────────────────────────────────────────
 CREATE TABLE IF NOT EXISTS products (
-  id             uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id             uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   name           text NOT NULL,
   slug           text NOT NULL,
   description    text,
@@ -78,7 +78,7 @@ CREATE TABLE IF NOT EXISTS product_tags (
 
 -- ─── Listings ────────────────────────────────────────────────────────────────
 CREATE TABLE IF NOT EXISTS listings (
-  id                        uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id                        uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   product_id                uuid NOT NULL REFERENCES products(id) ON DELETE CASCADE,
   partner_id                uuid REFERENCES partners(id) ON DELETE SET NULL,
   source_type               listing_source_type NOT NULL,
@@ -123,7 +123,7 @@ CREATE TABLE IF NOT EXISTS listing_zones (
 
 -- ─── Listing Variants ────────────────────────────────────────────────────────
 CREATE TABLE IF NOT EXISTS listing_variants (
-  id                                uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id                                uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   listing_id                        uuid NOT NULL REFERENCES listings(id) ON DELETE CASCADE,
   name                              text NOT NULL,
   sku                               text,
@@ -141,7 +141,7 @@ CREATE TRIGGER listing_variants_set_updated_at BEFORE UPDATE ON listing_variants
 
 -- ─── Listing Options ─────────────────────────────────────────────────────────
 CREATE TABLE IF NOT EXISTS listing_options (
-  id                                uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id                                uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   listing_id                        uuid NOT NULL REFERENCES listings(id) ON DELETE CASCADE,
   option_type                       text NOT NULL,
   label                             text NOT NULL,
@@ -158,7 +158,7 @@ CREATE INDEX IF NOT EXISTS idx_listing_options_listing ON listing_options(listin
 
 -- ─── Media Assets ────────────────────────────────────────────────────────────
 CREATE TABLE IF NOT EXISTS media_assets (
-  id              uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id              uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   owner_type      text NOT NULL,
   owner_id        uuid NOT NULL,
   storage_bucket  text NOT NULL DEFAULT 'public',
