@@ -1,6 +1,11 @@
 import { renderToString } from 'react-dom/server'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
+vi.mock('next/navigation', () => ({
+  usePathname: () => '/',
+  useRouter: () => ({ push: vi.fn(), replace: vi.fn(), refresh: vi.fn() }),
+}))
+
 describe('public rendering without Supabase configuration', () => {
   afterEach(() => {
     vi.unstubAllEnvs()

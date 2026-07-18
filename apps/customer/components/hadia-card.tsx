@@ -1,19 +1,14 @@
 'use client'
 
 import { ArrowRight, Sparkles } from 'lucide-react'
+import Link from 'next/link'
 import { HadiaSphere } from './hadia-sphere'
 
 export function HadiaCard() {
-  function goToHadia() {
-    // Navegación a la experiencia HADIA (aún sin backend).
-    console.log('[v0] Navegando a /hadia')
-  }
-
   return (
     <section aria-label="HADIA, inteligencia de regalos" className="px-4 lg:px-8">
-      <button
-        type="button"
-        onClick={goToHadia}
+      <Link
+        href="/hadia"
         aria-label="Abrir HADIA, la inteligencia de regalos"
         className="group relative mx-auto flex w-full max-w-7xl items-center gap-4 overflow-hidden rounded-2xl border border-[color:var(--color-border-cyan)] p-4 text-left transition-all duration-200 hover:-translate-y-0.5 active:scale-[0.99] lg:gap-6 lg:p-6"
         style={{
@@ -48,7 +43,7 @@ export function HadiaCard() {
         >
           <ArrowRight className="size-5 transition-transform duration-200 group-hover:translate-x-0.5" />
         </span>
-      </button>
+      </Link>
     </section>
   )
 }

@@ -3,7 +3,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 const auth=vi.hoisted(()=>({user:{id:'customer'},loading:false,push:vi.fn()}))
 vi.mock('@/lib/auth-context',()=>({useAuth:()=>({user:auth.user,loading:auth.loading})}))
-vi.mock('next/navigation',()=>({useRouter:()=>({push:auth.push})}))
+vi.mock('next/navigation',()=>({usePathname:()=>'/producto/regalo',useRouter:()=>({push:auth.push})}))
 import { CartProvider,useCart } from '@/lib/cart-context'
 
 const empty={id:'71000000-0000-4000-8000-000000000001',status:'active',version:1,requestedDeliveryAt:null,convertedOrderId:null,items:[],recipient:null,address:null}

@@ -279,7 +279,7 @@ Customer preview must not create real payment or delivery.
 
 ```text
 /
-/regalos
+/explorar
 /ocasiones
 /hadia
 /mphora

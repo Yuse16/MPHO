@@ -2,12 +2,12 @@ import { describe, expect, it } from 'vitest'
 import { getSafeRedirect, isProtectedRoute, isPublicRoute } from '@/lib/routes'
 
 describe('customer route classification', () => {
-  it.each(['/', '/regalos', '/categoria/flores', '/producto/rosas', '/ocasiones/cumpleanos', '/mphora', '/login', '/signup', '/callback', '/callback/email'])('%s is public', (route) => {
+  it.each(['/', '/regalos', '/explorar', '/hadia', '/pedidos', '/perfil', '/categoria/flores', '/producto/rosas', '/ocasiones/cumpleanos', '/mphora', '/login', '/signup', '/callback', '/callback/email'])('%s is public', (route) => {
     expect(isPublicRoute(route)).toBe(true)
     expect(isProtectedRoute(route)).toBe(false)
   })
 
-  it.each(['/profile', '/pedidos', '/pedidos/MPHO-1', '/direcciones', '/personas', '/ocasiones-guardadas'])('%s is protected', (route) => {
+  it.each(['/profile', '/pedidos/MPHO-1', '/carrito', '/direcciones', '/personas', '/ocasiones-guardadas'])('%s is protected', (route) => {
     expect(isProtectedRoute(route)).toBe(true)
   })
 

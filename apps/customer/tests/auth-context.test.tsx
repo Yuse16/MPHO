@@ -17,6 +17,10 @@ vi.mock('@/lib/supabase/browser', () => ({
   createBrowserSupabaseClient: authMocks.createBrowserSupabaseClient,
 }))
 
+vi.mock('next/navigation', () => ({
+  useRouter: () => ({ replace: vi.fn(), refresh: vi.fn() }),
+}))
+
 describe('AuthProvider', () => {
   it('keeps one client and one auth subscription across rerenders', async () => {
     const view = render(<AuthProvider><span>contenido</span></AuthProvider>)

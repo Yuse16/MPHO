@@ -2,6 +2,7 @@ import { Zap, ChevronRight } from 'lucide-react'
 import { ProductCarousel } from './product-carousel'
 import { getFeaturedListings } from '@/lib/catalog'
 import type { Product } from '@/lib/data'
+import Link from 'next/link'
 
 export async function MphoraSection() {
   const result = await getFeaturedListings(5)
@@ -11,6 +12,7 @@ export async function MphoraSection() {
 
   const products: Product[] = listings.map((item) => ({
     id: item.listingId,
+    slug: item.slug,
     name: item.name,
     description: item.shortDescription?.slice(0, 60) ?? item.fullDescription?.slice(0, 60) ?? '',
     price: item.price,
@@ -37,13 +39,13 @@ export async function MphoraSection() {
           </p>
         </div>
 
-        <button
-          type="button"
+        <Link
+          href="/hadia"
           className="flex shrink-0 items-center gap-1 text-sm font-medium text-muted-foreground transition-colors hover:text-[color:var(--color-mphora)]"
         >
           Ver más
           <ChevronRight className="size-4" />
-        </button>
+        </Link>
       </div>
 
       {result.status !== 'SUCCESS_WITH_DATA' && result.status !== 'SUCCESS_EMPTY' ? (

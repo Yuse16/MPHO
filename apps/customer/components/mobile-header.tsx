@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { Menu } from 'lucide-react'
+import Link from 'next/link'
 import { MphoLogo } from './mpho-logo'
 import { LocationSelector } from './location-selector'
 import { CartButton } from './cart-button'
@@ -27,18 +28,20 @@ export function MobileHeader() {
       )}
       style={{ paddingTop: 'env(safe-area-inset-top)' }}
     >
-      <MphoLogo className={cn('transition-all duration-300', scrolled ? 'text-xl' : 'text-2xl')} />
+      <Link href="/" aria-label="Ir al inicio de MPHO">
+        <MphoLogo className={cn('transition-all duration-300', scrolled ? 'text-xl' : 'text-2xl')} />
+      </Link>
 
       <div className="ml-auto flex items-center gap-2">
         <LocationSelector />
         <CartButton />
-        <button
-          type="button"
-          aria-label="Abrir menú"
+        <Link
+          href="/perfil"
+          aria-label="Abrir perfil y opciones"
           className="glass hidden size-11 items-center justify-center rounded-full transition-transform active:scale-95 min-[420px]:flex"
         >
           <Menu className="size-5 text-foreground" />
-        </button>
+        </Link>
       </div>
     </header>
   )

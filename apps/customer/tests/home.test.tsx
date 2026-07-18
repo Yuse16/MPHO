@@ -9,6 +9,11 @@ vi.mock('@/components/mphora-section', () => ({
   ),
 }))
 
+vi.mock('next/navigation', () => ({
+  usePathname: () => '/',
+  useRouter: () => ({ push: vi.fn(), replace: vi.fn(), refresh: vi.fn() }),
+}))
+
 import Home from '../app/page'
 import { CartProvider } from '@/lib/cart-context'
 

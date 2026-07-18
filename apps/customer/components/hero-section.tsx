@@ -1,6 +1,7 @@
 'use client'
 
 import { Sparkles, Gift } from 'lucide-react'
+import Link from 'next/link'
 import { cn } from '@/lib/utils'
 import { HeroCarousel } from '@/components/hero-carousel'
 
@@ -38,20 +39,20 @@ function Particles() {
 function HeroButtons({ className }: { className?: string }) {
   return (
     <div className={cn('flex flex-col gap-3 sm:flex-row', className)}>
-      <button
-        type="button"
+      <Link
+        href="/hadia"
         className="glow-lime flex h-13 min-h-[52px] items-center justify-center gap-2 rounded-full bg-[color:var(--color-lime)] px-6 text-base font-bold text-[color:var(--color-primary-foreground)] transition-all duration-200 hover:bg-[color:var(--color-lime-intense)] active:scale-[0.97]"
       >
         <Sparkles className="size-5" />
         Encontrar mi regalo
-      </button>
-      <button
-        type="button"
+      </Link>
+      <Link
+        href="/explorar"
         className="glass flex h-13 min-h-[52px] items-center justify-center gap-2 rounded-full border-[color:var(--color-border-lime)] px-6 text-base font-semibold text-foreground transition-all duration-200 hover:bg-white/5 active:scale-[0.97]"
       >
         <Gift className="size-5 text-[color:var(--color-lime)]" />
         Explorar regalos
-      </button>
+      </Link>
     </div>
   )
 }

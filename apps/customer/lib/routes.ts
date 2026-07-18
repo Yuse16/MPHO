@@ -1,9 +1,7 @@
-const publicExactRoutes = new Set(['/', '/regalos', '/mphora', '/login', '/signup', '/callback'])
+const publicExactRoutes = new Set(['/', '/regalos', '/explorar', '/hadia', '/mphora', '/pedidos', '/perfil', '/login', '/signup', '/callback'])
 const publicRoutePrefixes = ['/categoria/', '/producto/', '/ocasiones/', '/ocasion/', '/callback/']
 const protectedExactRoutes = new Set([
   '/profile',
-  '/perfil',
-  '/pedidos',
   '/direcciones',
   '/personas',
   '/carrito',
