@@ -3,6 +3,11 @@ import { afterEach, describe, expect, it, vi } from 'vitest'
 import { QuoteCalculator } from '@/components/quote-calculator'
 import { CartProvider } from '@/lib/cart-context'
 
+vi.mock('next/navigation', () => ({
+  usePathname: () => '/producto/regalo',
+  useRouter: () => ({ push: vi.fn(), replace: vi.fn(), refresh: vi.fn() }),
+}))
+
 const configuration = { variants: [], options: [], zones: [{ id: 'z', name: 'Centro', city: 'Saltillo' }] }
 afterEach(() => vi.unstubAllGlobals())
 describe('quote calculator', () => {

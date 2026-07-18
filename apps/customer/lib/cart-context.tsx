@@ -1,6 +1,7 @@
 'use client'
 
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react'
+import { usePathname, useRouter } from 'next/navigation'
 import { useAuth } from './auth-context'
 import type { CartPersonalization, CustomerCart } from './cart'
 
@@ -14,6 +15,8 @@ export function CartProvider({
 }: {
   children: React.ReactNode
 }) {
+  const pathname = usePathname()
+  const router = useRouter()
   const { user, loading: authLoading } = useAuth()
   const [cart, setCart] = useState<CustomerCart | null>(null)
   const [lastAddedId, setLastAddedId] = useState<string | null>(null)
@@ -39,10 +42,10 @@ export function CartProvider({
   },[authLoading,user])
 
   const addItem = useCallback(async (selection:AddSelection) => {
-    if(!user){window.location.href=`/login?redirect=${encodeURIComponent(window.location.pathname)}`;return false}
+    if(!user){router.push(`/login?redirect=${encodeURIComponent(pathname)}`);return false}
     setLoading(true);setError(null)
     try{const response=await fetch('/api/cart/items',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({expectedVersion:cart?.version??0,listingId:selection.listingId,variantId:selection.variantId??null,optionIds:selection.optionIds??[],quantity:selection.quantity??1,personalization:selection.personalization??null})});const body=await response.json() as {cart?:CustomerCart;error?:{code?:string;message?:string}};if(!response.ok){if(body.error?.code==='VERSION_CONFLICT')await refresh();throw new Error(body.error?.message??'No fue posible agregar el regalo.')}setCart(body.cart??null);setLastAddedId(selection.listingId);window.setTimeout(()=>setLastAddedId((current)=>current===selection.listingId?null:current),1200);return true}catch(cause){setError(cause instanceof Error?cause.message:'No fue posible agregar el regalo.');return false}finally{setLoading(false)}
-  },[cart,refresh,user])
+  },[cart,pathname,refresh,router,user])
 
   const removeItem=useCallback(async(id:string)=>{if(!cart)return false;setLoading(true);setError(null);try{const response=await fetch(`/api/cart/items/${id}`,{method:'DELETE',headers:{'Content-Type':'application/json'},body:JSON.stringify({expectedVersion:cart.version})});const body=await response.json() as {cart?:CustomerCart;error?:{code?:string;message?:string}};if(!response.ok){if(body.error?.code==='VERSION_CONFLICT')await refresh();throw new Error(body.error?.message??'No fue posible eliminar el artículo.')}if(body.cart)setCart(body.cart);return true}catch(cause){setError(cause instanceof Error?cause.message:'No fue posible eliminar el artículo.');return false}finally{setLoading(false)}},[cart,refresh])
 

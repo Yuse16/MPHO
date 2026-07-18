@@ -9,6 +9,7 @@ import type { Money } from '@mpho/types'
 
 export type Product = {
   id: string
+  slug: string
   name: string
   description: string
   price: Money

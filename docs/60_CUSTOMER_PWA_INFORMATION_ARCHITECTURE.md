@@ -69,7 +69,7 @@ Do not add “Tiendas” or partner directory.
 
 ```text
 /
-├── /regalos
+├── /explorar
 │   ├── /categoria/[slug]
 │   ├── /ocasion/[slug]
 │   ├── /para/[slug]

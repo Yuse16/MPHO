@@ -5,6 +5,7 @@ import { ChevronRight, Heart, Flower2, Briefcase, Users, Gift, Cake, GraduationC
 import { GlassPanel } from './glass-panel'
 import { cn } from '@/lib/utils'
 import type { LucideIcon } from 'lucide-react'
+import Link from 'next/link'
 
 type RecipientItem = {
   id: string
@@ -36,17 +37,17 @@ export function RecipientSelector() {
   const [selected, setSelected] = useState<string | null>(null)
 
   return (
-    <section id="ocasiones" aria-label="Para quién buscas un regalo" className="px-4 lg:px-8">
+    <section id="ocasiones" aria-label="Para quién buscas un regalo" className="scroll-mt-20 px-4 lg:scroll-mt-24 lg:px-8">
       <GlassPanel className="mx-auto max-w-7xl p-4 lg:p-6">
         <div className="mb-4 flex items-center justify-between gap-3">
           <h2 className="text-base font-bold lg:text-lg">¿Para quién buscas un regalo?</h2>
-          <button
-            type="button"
+          <Link
+            href="/explorar"
             className="flex shrink-0 items-center gap-1 text-sm font-medium text-muted-foreground transition-colors hover:text-[color:var(--color-lime)]"
           >
             Ver todos
             <ChevronRight className="size-4" />
-          </button>
+          </Link>
         </div>
 
         <div className="no-scrollbar -mx-1 flex gap-2.5 overflow-x-auto px-1 pb-1 lg:flex-wrap lg:overflow-visible">

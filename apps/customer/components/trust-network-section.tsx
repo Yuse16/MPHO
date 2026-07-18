@@ -9,7 +9,7 @@ const BENEFITS = [
 
 export function TrustNetworkSection() {
   return (
-    <section id="como-funciona" aria-label="Preparado cerca, coordinado por MPHO" className="px-4 lg:px-8">
+    <section id="como-funciona" aria-label="Preparado cerca, coordinado por MPHO" className="scroll-mt-20 px-4 lg:scroll-mt-24 lg:px-8">
       <GlassPanel className="mx-auto flex max-w-7xl flex-col gap-5 p-5 lg:flex-row lg:items-center lg:gap-8 lg:p-7">
         <div className="flex items-center gap-4 lg:shrink-0">
           {/* radar */}

@@ -1,14 +1,31 @@
 import { MphoLogo } from './mpho-logo'
+import Link from 'next/link'
 
 const COLUMNS = [
-  { title: 'Regalos', links: ['Para pareja', 'Para mamá', 'Para papá', 'Amistad', 'Cumpleaños'] },
-  { title: 'MPHO', links: ['Cómo funciona', 'MPHORA', 'HADIA', 'Ocasiones'] },
-  { title: 'Ayuda', links: ['Centro de ayuda', 'Seguimiento de pedido', 'Contacto', 'Mi cuenta'] },
+  { title: 'Regalos', links: [
+    { label: 'Para pareja', href: '/explorar' },
+    { label: 'Para mamá', href: '/explorar' },
+    { label: 'Para papá', href: '/explorar' },
+    { label: 'Amistad', href: '/explorar' },
+    { label: 'Cumpleaños', href: '/#ocasiones' },
+  ] },
+  { title: 'MPHO', links: [
+    { label: 'Cómo funciona', href: '/#como-funciona' },
+    { label: 'MPHORA', href: '/hadia' },
+    { label: 'HADIA', href: '/hadia' },
+    { label: 'Ocasiones', href: '/#ocasiones' },
+  ] },
+  { title: 'Ayuda', links: [
+    { label: 'Centro de ayuda', href: '/#ayuda' },
+    { label: 'Seguimiento de pedido', href: '/pedidos' },
+    { label: 'Contacto', href: '/#ayuda' },
+    { label: 'Mi cuenta', href: '/perfil' },
+  ] },
 ]
 
 export function SiteFooter() {
   return (
-    <footer id="ayuda" className="mt-4 border-t border-[color:var(--color-border-soft)] px-4 pb-8 pt-10 lg:px-8">
+    <footer id="ayuda" className="mt-4 scroll-mt-20 border-t border-[color:var(--color-border-soft)] px-4 pb-8 pt-10 lg:scroll-mt-24 lg:px-8">
       <div className="mx-auto grid max-w-7xl gap-8 lg:grid-cols-[1.5fr_1fr_1fr_1fr]">
         <div>
           <MphoLogo />
@@ -21,14 +38,14 @@ export function SiteFooter() {
           <nav key={col.title} aria-label={col.title}>
             <h3 className="text-sm font-bold text-foreground">{col.title}</h3>
             <ul className="mt-3 space-y-2">
-              {col.links.map((l) => (
-                <li key={l}>
-                  <a
-                    href="#"
+              {col.links.map((link) => (
+                <li key={link.label}>
+                  <Link
+                    href={link.href}
                     className="text-sm text-muted-foreground transition-colors hover:text-[color:var(--color-lime)]"
                   >
-                    {l}
-                  </a>
+                    {link.label}
+                  </Link>
                 </li>
               ))}
             </ul>
