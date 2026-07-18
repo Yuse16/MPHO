@@ -3,9 +3,9 @@ import './globals.css'
 import { Providers } from '@/lib/providers'
 
 export const metadata: Metadata = {
-  title: 'MPHO Aliados · Panel del socio',
+  title: 'MPHO Aliados · Acceso operativo',
   description:
-    'MPHO Aliados es la plataforma para socios que participan en la red de regalos MPHO. Gestiona pedidos, productos, preparación y entregas.',
+    'Acceso seguro a la aplicación operativa de MPHO Aliados.',
 }
 
 export const viewport: Viewport = {

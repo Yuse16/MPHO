@@ -1,171 +1,32 @@
-'use client'
-
-import { useState, type FormEvent } from 'react'
-import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { Mail, Lock, Eye, EyeOff } from 'lucide-react'
-import { createBrowserSupabaseClient } from '@/lib/supabase/browser'
+import { ShieldCheck } from 'lucide-react'
 
 export default function SignupPage() {
-  const router = useRouter()
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [confirmPassword, setConfirmPassword] = useState('')
-  const [showPassword, setShowPassword] = useState(false)
-  const [error, setError] = useState('')
-  const [success, setSuccess] = useState('')
-  const [loading, setLoading] = useState(false)
-
-  async function handleSubmit(e: FormEvent) {
-    e.preventDefault()
-    setError('')
-    setSuccess('')
-
-    if (password !== confirmPassword) {
-      setError('Las contrasenas no coinciden.')
-      return
-    }
-
-    if (password.length < 6) {
-      setError('La contrasena debe tener al menos 6 caracteres.')
-      return
-    }
-
-    setLoading(true)
-
-    const supabase = createBrowserSupabaseClient()
-    const { error: authError } = await supabase.auth.signUp({
-      email,
-      password,
-    })
-
-    if (authError) {
-      setError(
-        authError.message.includes('already registered')
-          ? 'Este correo ya esta registrado.'
-          : 'Error al crear la cuenta. Intenta de nuevo.',
-      )
-      setLoading(false)
-      return
-    }
-
-    setSuccess('Cuenta creada. Revisa tu correo para confirmar tu cuenta.')
-    setTimeout(() => router.push('/login'), 2000)
-  }
-
   return (
-    <div className="glass p-8 rounded-[var(--radius-xl)]">
-      <div className="mb-8 text-center">
-        <h1 className="text-2xl font-bold text-[color:var(--color-foreground)]">
-          Crear cuenta
-        </h1>
-        <p className="mt-2 text-sm text-[color:var(--color-muted-foreground)]">
-          Registrate como socio en MPHO Aliados
-        </p>
+    <div className="glass rounded-[var(--radius-xl)] p-8 text-center">
+      <div className="mx-auto flex size-12 items-center justify-center rounded-full bg-[color:var(--color-lime)]/10">
+        <ShieldCheck
+          aria-hidden="true"
+          className="size-6 text-[color:var(--color-lime)]"
+        />
       </div>
-
-      {error && (
-        <div className="mb-4 rounded-lg bg-[color:var(--color-destructive)]/10 border border-[color:var(--color-destructive)]/30 p-3 text-sm text-[color:var(--color-destructive)]">
-          {error}
-        </div>
-      )}
-
-      {success && (
-        <div className="mb-4 rounded-lg bg-[color:var(--color-lime)]/10 border border-[color:var(--color-lime)]/30 p-3 text-sm text-[color:var(--color-lime)]">
-          {success}
-        </div>
-      )}
-
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div>
-          <label
-            htmlFor="email"
-            className="mb-1.5 block text-sm font-medium text-[color:var(--color-muted-foreground)]"
-          >
-            Correo electronico
-          </label>
-          <div className="relative">
-            <Mail className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[color:var(--color-faint)]" />
-            <input
-              id="email"
-              type="email"
-              required
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="tu@correo.com"
-              className="w-full rounded-[var(--radius-md)] border border-[color:var(--color-border-soft)] bg-[color:var(--color-surface)] py-2.5 pl-10 pr-4 text-[color:var(--color-foreground)] placeholder:text-[color:var(--color-faint)] focus:border-[color:var(--color-border-lime)] focus:outline-none focus:ring-1 focus:ring-[color:var(--color-border-lime)] transition-colors"
-            />
-          </div>
-        </div>
-
-        <div>
-          <label
-            htmlFor="password"
-            className="mb-1.5 block text-sm font-medium text-[color:var(--color-muted-foreground)]"
-          >
-            Contrasena
-          </label>
-          <div className="relative">
-            <Lock className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[color:var(--color-faint)]" />
-            <input
-              id="password"
-              type={showPassword ? 'text' : 'password'}
-              required
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="Minimo 6 caracteres"
-              className="w-full rounded-[var(--radius-md)] border border-[color:var(--color-border-soft)] bg-[color:var(--color-surface)] py-2.5 pl-10 pr-10 text-[color:var(--color-foreground)] placeholder:text-[color:var(--color-faint)] focus:border-[color:var(--color-border-lime)] focus:outline-none focus:ring-1 focus:ring-[color:var(--color-border-lime)] transition-colors"
-            />
-            <button
-              type="button"
-              onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-[color:var(--color-faint)] hover:text-[color:var(--color-muted-foreground)] transition-colors"
-              aria-label={showPassword ? 'Ocultar contrasena' : 'Mostrar contrasena'}
-            >
-              {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-            </button>
-          </div>
-        </div>
-
-        <div>
-          <label
-            htmlFor="confirmPassword"
-            className="mb-1.5 block text-sm font-medium text-[color:var(--color-muted-foreground)]"
-          >
-            Confirmar contrasena
-          </label>
-          <div className="relative">
-            <Lock className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[color:var(--color-faint)]" />
-            <input
-              id="confirmPassword"
-              type={showPassword ? 'text' : 'password'}
-              required
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              placeholder="Repite tu contrasena"
-              className="w-full rounded-[var(--radius-md)] border border-[color:var(--color-border-soft)] bg-[color:var(--color-surface)] py-2.5 pl-10 pr-10 text-[color:var(--color-foreground)] placeholder:text-[color:var(--color-faint)] focus:border-[color:var(--color-border-lime)] focus:outline-none focus:ring-1 focus:ring-[color:var(--color-border-lime)] transition-colors"
-            />
-          </div>
-        </div>
-
-        <button
-          type="submit"
-          disabled={loading}
-          className="w-full rounded-[var(--radius-md)] bg-[color:var(--color-lime)] px-4 py-2.5 text-sm font-semibold text-[color:var(--color-primary-foreground)] transition-all hover:bg-[color:var(--color-lime-intense)] disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          {loading ? 'Creando cuenta...' : 'Crear cuenta'}
-        </button>
-      </form>
-
-      <p className="mt-6 text-center text-sm text-[color:var(--color-muted-foreground)]">
-        Ya tienes cuenta?{' '}
-        <Link
-          href="/login"
-          className="font-medium text-[color:var(--color-lime)] hover:underline"
-        >
-          Iniciar sesion
-        </Link>
+      <h1 className="mt-5 text-2xl font-bold text-[color:var(--color-foreground)]">
+        Acceso por invitación
+      </h1>
+      <p className="mt-3 text-sm leading-6 text-[color:var(--color-muted-foreground)]">
+        Las cuentas de MPHO Aliados se habilitan después de que MPHO valida al
+        Punto y asigna un rol autorizado. Esta pantalla no crea cuentas ni activa
+        operaciones.
       </p>
+      <p className="mt-3 text-sm leading-6 text-[color:var(--color-muted-foreground)]">
+        Si ya recibiste acceso, inicia sesión con el correo registrado.
+      </p>
+      <Link
+        href="/login"
+        className="mt-6 inline-flex min-h-11 items-center justify-center rounded-[var(--radius-md)] bg-[color:var(--color-lime)] px-5 py-2.5 text-sm font-semibold text-[color:var(--color-primary-foreground)] transition-colors hover:bg-[color:var(--color-lime-intense)]"
+      >
+        Ir a iniciar sesión
+      </Link>
     </div>
   )
 }

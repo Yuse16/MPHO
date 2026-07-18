@@ -25,7 +25,7 @@ const NAV_ITEMS = [
 
 export function PartnerSidebar() {
   const pathname = usePathname()
-  const { signOut } = useAuth()
+  const { error, signOut } = useAuth()
 
   const isActive = (href: string) =>
     href === '/inicio'
@@ -57,7 +57,7 @@ export function PartnerSidebar() {
                   : 'text-[color:var(--color-muted-foreground)] hover:bg-white/5 hover:text-[color:var(--color-foreground)]',
               )}
             >
-              <Icon className="size-5" />
+              <Icon aria-hidden="true" className="size-5" />
               {item.label}
             </Link>
           )
@@ -65,12 +65,21 @@ export function PartnerSidebar() {
       </nav>
 
       <div className="border-t border-[color:var(--color-border-soft)] p-3">
+        {error && (
+          <p
+            role="alert"
+            className="mb-2 rounded-[var(--radius-md)] bg-[color:var(--color-destructive)]/10 p-2 text-xs text-[color:var(--color-destructive)]"
+          >
+            {error}
+          </p>
+        )}
         <button
-          onClick={signOut}
+          type="button"
+          onClick={() => void signOut()}
           className="flex w-full items-center gap-3 rounded-[var(--radius-md)] px-3 py-2.5 text-sm font-medium text-[color:var(--color-muted-foreground)] transition-colors hover:bg-white/5 hover:text-[color:var(--color-foreground)]"
         >
-          <LogOut className="size-5" />
-          Cerrar sesion
+          <LogOut aria-hidden="true" className="size-5" />
+          Cerrar sesión
         </button>
       </div>
     </aside>

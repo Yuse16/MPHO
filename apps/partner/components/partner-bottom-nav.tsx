@@ -9,7 +9,6 @@ import {
   MoreHorizontal,
 } from 'lucide-react'
 import Link from 'next/link'
-import { useAuth } from '@/lib/auth-context'
 import { cn } from '@/lib/utils'
 
 const ITEMS = [
@@ -17,12 +16,11 @@ const ITEMS = [
   { id: 'pedidos', label: 'Pedidos', href: '/pedidos', icon: ShoppingBag },
   { id: 'paquetes', label: 'Paquetes', href: '/paquetes', icon: Package },
   { id: 'ganancias', label: 'Ganancias', href: '/ganancias', icon: DollarSign },
-  { id: 'mas', label: 'Mas', href: '/perfil', icon: MoreHorizontal },
+  { id: 'mas', label: 'Más', href: '/perfil', icon: MoreHorizontal },
 ]
 
 export function PartnerBottomNav() {
   const pathname = usePathname()
-  const { signOut } = useAuth()
 
   const isActive = (href: string) =>
     href === '/inicio'
@@ -39,24 +37,6 @@ export function PartnerBottomNav() {
         {ITEMS.map((item) => {
           const Icon = item.icon
           const active = isActive(item.href)
-          const isLogout = item.id === 'mas'
-
-          if (isLogout) {
-            return (
-              <button
-                key={item.id}
-                onClick={signOut}
-                className="flex min-h-11 w-16 flex-col items-center justify-center gap-1 transition-colors"
-                aria-label="Cerrar sesion"
-              >
-                <Icon className="size-5 text-[color:var(--color-faint)]" />
-                <span className="text-[11px] font-medium text-[color:var(--color-faint)]">
-                  {item.label}
-                </span>
-              </button>
-            )
-          }
-
           return (
             <Link
               key={item.id}
@@ -65,6 +45,7 @@ export function PartnerBottomNav() {
               className="flex min-h-11 w-16 flex-col items-center justify-center gap-1 transition-colors"
             >
               <Icon
+                aria-hidden="true"
                 className={cn(
                   'size-5',
                   active

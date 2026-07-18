@@ -10,7 +10,13 @@
   --color-surface: rgba(12, 18, 16, 0.72);
   --color-surface-elevated: rgba(18, 26, 23, 0.84);
   --color-lime: #c8ff35;
+  --color-lime-intense: #b5f500;
+  --color-primary-foreground: #05110a;
+  --color-destructive: #ff7070;
   --color-border-soft: rgba(255, 255, 255, 0.12);
+  --color-border-lime: rgba(200, 255, 53, 0.55);
+  --radius-md: 0.75rem;
+  --radius-xl: 1.5rem;
   --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
 }
 
@@ -25,5 +31,14 @@
   :focus-visible {
     outline: 2px solid var(--color-lime);
     outline-offset: 2px;
+  }
+}
+
+@layer components {
+  .glass {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border-soft);
+    box-shadow: 0 18px 48px rgba(0, 0, 0, 0.24);
+    backdrop-filter: blur(18px);
   }
 }

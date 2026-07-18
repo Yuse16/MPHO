@@ -8,7 +8,7 @@ export default function PedidoDetailPage() {
         href="/pedidos"
         className="inline-flex items-center gap-2 text-sm text-[color:var(--color-muted-foreground)] hover:text-[color:var(--color-foreground)] transition-colors"
       >
-        <ArrowLeft className="size-4" />
+        <ArrowLeft aria-hidden="true" className="size-4" />
         Volver a pedidos
       </Link>
 
@@ -17,7 +17,9 @@ export default function PedidoDetailPage() {
           Detalle de pedido
         </h2>
         <p className="mt-1 text-sm text-[color:var(--color-muted-foreground)]">
-          Pedido no encontrado o sin acceso.
+          El detalle operativo todavía no está disponible. Esta versión no
+          consulta el identificador ni muestra datos de pedidos sin una fuente
+          autorizada y permisos verificados en el servidor.
         </p>
       </div>
     </div>

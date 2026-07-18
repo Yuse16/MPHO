@@ -1,7 +1,6 @@
 'use client'
 
 import { usePathname } from 'next/navigation'
-import { Menu } from 'lucide-react'
 import Link from 'next/link'
 import { useAuth } from '@/lib/auth-context'
 
@@ -24,8 +23,14 @@ export function PartnerHeader() {
 
   return (
     <header className="glass sticky top-0 z-30 flex h-16 items-center justify-between px-4 lg:hidden">
-      <div className="flex items-center gap-3">
-        <Menu className="size-5 text-[color:var(--color-muted-foreground)]" />
+      <div className="flex min-w-0 items-center gap-3">
+        <Link
+          href="/inicio"
+          aria-label="Ir al inicio de MPHO Aliados"
+          className="shrink-0 text-sm font-bold text-[color:var(--color-foreground)]"
+        >
+          MPHO <span className="text-[color:var(--color-lime)]">Aliados</span>
+        </Link>
         <h1 className="text-base font-semibold text-[color:var(--color-foreground)]">
           {title}
         </h1>

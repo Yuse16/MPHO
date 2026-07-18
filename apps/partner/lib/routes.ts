@@ -1,4 +1,4 @@
-const publicExactRoutes = new Set(['/', '/login', '/signup', '/callback'])
+const publicExactRoutes = new Set(['/', '/login', '/signup', '/callback', '/acceso'])
 const protectedExactRoutes = new Set([
   '/inicio',
   '/pedidos',
@@ -25,9 +25,13 @@ export function getSafeRedirect(value: string | null) {
   if (!value || !value.startsWith('/') || value.startsWith('//')) return '/inicio'
   try {
     const parsed = new URL(value, 'https://aliados.mpho.invalid')
-    return parsed.origin === 'https://aliados.mpho.invalid'
-      ? `${parsed.pathname}${parsed.search}${parsed.hash}`
-      : '/inicio'
+    if (
+      parsed.origin !== 'https://aliados.mpho.invalid' ||
+      !isProtectedRoute(parsed.pathname)
+    ) {
+      return '/inicio'
+    }
+    return `${parsed.pathname}${parsed.search}${parsed.hash}`
   } catch {
     return '/inicio'
   }

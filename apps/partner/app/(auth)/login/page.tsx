@@ -14,7 +14,16 @@ function LoginForm() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
-  const [error, setError] = useState('')
+  const [error, setError] = useState(() => {
+    const reason = searchParams.get('error')
+    if (reason === 'auth_callback_failed') {
+      return 'No fue posible completar el acceso. Intenta iniciar sesión de nuevo.'
+    }
+    if (reason === 'service_unavailable') {
+      return 'El servicio de acceso no está disponible en este momento.'
+    }
+    return ''
+  })
   const [loading, setLoading] = useState(false)
 
   async function handleSubmit(e: FormEvent) {
@@ -22,31 +31,36 @@ function LoginForm() {
     setError('')
     setLoading(true)
 
-    const supabase = createBrowserSupabaseClient()
-    const { error: authError } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    })
+    try {
+      const supabase = createBrowserSupabaseClient()
+      const { error: authError } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      })
 
-    if (authError) {
-      setError(
-        authError.message.includes('Invalid login')
-          ? 'Correo o contrasena incorrectos.'
-          : 'Error al iniciar sesion. Intenta de nuevo.',
-      )
+      if (authError) {
+        setError(
+          authError.message.includes('Invalid login')
+            ? 'Correo o contraseña incorrectos.'
+            : 'No fue posible iniciar sesión. Intenta de nuevo.',
+        )
+        return
+      }
+
+      router.push(redirect)
+      router.refresh()
+    } catch {
+      setError('No fue posible iniciar sesión. Intenta de nuevo.')
+    } finally {
       setLoading(false)
-      return
     }
-
-    router.push(redirect)
-    router.refresh()
   }
 
   return (
     <div className="glass p-8 rounded-[var(--radius-xl)]">
       <div className="mb-8 text-center">
         <h1 className="text-2xl font-bold text-[color:var(--color-foreground)]">
-          Iniciar sesion
+          Iniciar sesión
         </h1>
         <p className="mt-2 text-sm text-[color:var(--color-muted-foreground)]">
           Panel de MPHO Aliados
@@ -54,7 +68,7 @@ function LoginForm() {
       </div>
 
       {error && (
-        <div className="mb-4 rounded-lg bg-[color:var(--color-destructive)]/10 border border-[color:var(--color-destructive)]/30 p-3 text-sm text-[color:var(--color-destructive)]">
+        <div role="alert" className="mb-4 rounded-lg bg-[color:var(--color-destructive)]/10 border border-[color:var(--color-destructive)]/30 p-3 text-sm text-[color:var(--color-destructive)]">
           {error}
         </div>
       )}
@@ -65,10 +79,10 @@ function LoginForm() {
             htmlFor="email"
             className="mb-1.5 block text-sm font-medium text-[color:var(--color-muted-foreground)]"
           >
-            Correo electronico
+            Correo electrónico
           </label>
           <div className="relative">
-            <Mail className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[color:var(--color-faint)]" />
+            <Mail aria-hidden="true" className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[color:var(--color-faint)]" />
             <input
               id="email"
               type="email"
@@ -86,10 +100,10 @@ function LoginForm() {
             htmlFor="password"
             className="mb-1.5 block text-sm font-medium text-[color:var(--color-muted-foreground)]"
           >
-            Contrasena
+            Contraseña
           </label>
           <div className="relative">
-            <Lock className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[color:var(--color-faint)]" />
+            <Lock aria-hidden="true" className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[color:var(--color-faint)]" />
             <input
               id="password"
               type={showPassword ? 'text' : 'password'}
@@ -102,8 +116,8 @@ function LoginForm() {
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-[color:var(--color-faint)] hover:text-[color:var(--color-muted-foreground)] transition-colors"
-              aria-label={showPassword ? 'Ocultar contrasena' : 'Mostrar contrasena'}
+              className="absolute right-0 top-1/2 flex size-11 -translate-y-1/2 items-center justify-center text-[color:var(--color-faint)] transition-colors hover:text-[color:var(--color-muted-foreground)]"
+              aria-label={showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'}
             >
               {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
             </button>
@@ -120,12 +134,12 @@ function LoginForm() {
       </form>
 
       <p className="mt-6 text-center text-sm text-[color:var(--color-muted-foreground)]">
-        No tienes cuenta?{' '}
+        ¿Necesitas acceso?{' '}
         <Link
           href="/signup"
           className="font-medium text-[color:var(--color-lime)] hover:underline"
         >
-          Crear cuenta
+          Conoce el proceso
         </Link>
       </p>
     </div>
