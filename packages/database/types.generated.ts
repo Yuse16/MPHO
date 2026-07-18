@@ -2422,6 +2422,10 @@ export type Database = {
         Args: { p_listing_id: string }
         Returns: Json
       }
+      has_active_partner_membership: {
+        Args: { p_partner_id: string; p_require_admin: boolean }
+        Returns: boolean
+      }
       has_role: {
         Args: { check_role: Database["public"]["Enums"]["user_role"] }
         Returns: boolean
