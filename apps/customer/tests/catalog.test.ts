@@ -9,10 +9,12 @@ vi.mock('@/lib/supabase/public', () => ({
 }))
 
 import {
+  filterCatalogListings,
   getCatalogCategories,
   getCatalogListingBySlug,
   getCatalogListings,
   mapListingRows,
+  normalizeCatalogSearch,
 } from '@/lib/catalog'
 
 const validRow: PublicCatalogRow = {
@@ -103,5 +105,32 @@ describe('public catalog contract', () => {
     const result = await getCatalogCategories()
     expect(result.status).toBe('SUCCESS_WITH_DATA')
     if (result.status === 'SUCCESS_WITH_DATA') expect(result.data[0]?.listingCount).toBe(3)
+  })
+
+  it('searches only public name, description and category fields', () => {
+    const mapped = mapListingRows([
+      validRow,
+      {
+        ...validRow,
+        listing_id: 'f1000000-0000-0000-0000-000000000002',
+        product_id: 'e1000000-0000-0000-0000-000000000002',
+        slug: 'caja-dulce',
+        name: 'Caja dulce',
+        short_description: 'Selección de chocolates',
+        category_slug: 'chocolates',
+        category_name: 'Chocolates',
+      },
+    ])
+    expect(mapped.status).toBe('SUCCESS_WITH_DATA')
+    if (mapped.status !== 'SUCCESS_WITH_DATA') return
+
+    expect(filterCatalogListings(mapped.data, '  ROSAS   descripción ')).toHaveLength(1)
+    expect(filterCatalogListings(mapped.data, 'chocolates')[0]?.slug).toBe('caja-dulce')
+    expect(Object.keys(mapped.data[0] ?? {})).not.toContain('partnerId')
+  })
+
+  it('normalizes and limits a shareable search query', () => {
+    expect(normalizeCatalogSearch('  regalo   especial  ')).toBe('regalo especial')
+    expect(normalizeCatalogSearch('x'.repeat(100))).toHaveLength(80)
   })
 })

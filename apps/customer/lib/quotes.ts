@@ -31,11 +31,11 @@ export function parseQuoteSelection(input: unknown): QuoteResult<QuoteSelection>
     const item = value as Record<string, unknown>
     if (Object.keys(item).some((key) => forbidden.has(key))) return failure('INVALID_REQUEST', 'Client-supplied prices or partner data are not accepted.')
     if (Object.keys(item).some((key) => !itemFields.has(key))) return failure('INVALID_REQUEST', 'An item contains unsupported fields.')
-    if (typeof item.listingId !== 'string' || !uuid.test(item.listingId) || !Number.isSafeInteger(item.quantity) || (item.quantity as number) <= 0) return failure('INVALID_QUANTITY', 'Listing and positive integer quantity are required.')
+    if (typeof item.listingId !== 'string' || !uuid.test(item.listingId) || !Number.isSafeInteger(item.quantity) || (item.quantity as number) < 1 || (item.quantity as number) > 20) return failure('INVALID_QUANTITY', 'Listing and a quantity between 1 and 20 are required.')
     const variantId = item.variantId == null || item.variantId === '' ? null : item.variantId
     if (variantId !== null && (typeof variantId !== 'string' || !uuid.test(variantId))) return failure('VARIANT_INVALID', 'The selected variant is invalid.')
-    if (!Array.isArray(item.optionIds) || item.optionIds.some((id) => typeof id !== 'string' || !uuid.test(id))) return failure('OPTION_INVALID', 'A selected option is invalid.')
-    items.push({ listingId: item.listingId, variantId, optionIds: [...new Set(item.optionIds as string[])], quantity: item.quantity as number })
+    if (!Array.isArray(item.optionIds) || item.optionIds.length > 20 || item.optionIds.some((id) => typeof id !== 'string' || !uuid.test(id)) || new Set(item.optionIds).size !== item.optionIds.length) return failure('OPTION_INVALID', 'A selected option is invalid.')
+    items.push({ listingId: item.listingId, variantId, optionIds: item.optionIds as string[], quantity: item.quantity as number })
   }
   const zoneId = object.zoneId == null || object.zoneId === '' ? null : object.zoneId
   if (zoneId !== null && (typeof zoneId !== 'string' || !uuid.test(zoneId))) return failure('ZONE_UNAVAILABLE', 'The selected zone is invalid.')
@@ -72,7 +72,15 @@ export async function getQuote(id: string): Promise<QuoteResult<PublicQuote>> {
 
 export async function getQuoteConfiguration(listingId: string): Promise<QuoteConfiguration | null> {
   const { data, error } = await createPublicSupabaseClient().rpc('get_public_quote_configuration', { p_listing_id: listingId })
-  return error || !data ? null : data as unknown as QuoteConfiguration
+  return error ? null : parseQuoteConfiguration(data)
+}
+
+export function parseQuoteConfiguration(data: unknown): QuoteConfiguration | null {
+  if (!isRecord(data)) return null
+  const { variants, options, zones } = data
+  if (!Array.isArray(variants) || !Array.isArray(options) || !Array.isArray(zones)) return null
+  if (!variants.every(isVariant) || !options.every(isOption) || !zones.every(isZone)) return null
+  return { variants, options, zones }
 }
 
 function parseDatabaseResult(data: unknown): QuoteResult<PublicQuote> {
@@ -83,3 +91,19 @@ function parseDatabaseResult(data: unknown): QuoteResult<PublicQuote> {
 }
 
 function failure<T>(code: QuoteErrorCode, message: string): QuoteResult<T> { return { ok: false, error: { code, message } } }
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return Boolean(value) && typeof value === 'object' && !Array.isArray(value)
+}
+
+function isVariant(value: unknown): value is QuoteConfiguration['variants'][number] {
+  return isRecord(value) && typeof value.id === 'string' && uuid.test(value.id) && typeof value.name === 'string' && value.name.trim().length > 0
+}
+
+function isOption(value: unknown): value is QuoteConfiguration['options'][number] {
+  return isRecord(value) && typeof value.id === 'string' && uuid.test(value.id) && typeof value.label === 'string' && value.label.trim().length > 0 && typeof value.required === 'boolean'
+}
+
+function isZone(value: unknown): value is QuoteConfiguration['zones'][number] {
+  return isRecord(value) && typeof value.id === 'string' && uuid.test(value.id) && typeof value.name === 'string' && value.name.trim().length > 0 && typeof value.city === 'string' && value.city.trim().length > 0
+}

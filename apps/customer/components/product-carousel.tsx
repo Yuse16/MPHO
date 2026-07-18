@@ -10,7 +10,7 @@ export function ProductCarousel({ products }: { products: Product[] }) {
       <div className="glass mx-4 flex flex-col items-center gap-2 rounded-2xl px-6 py-10 text-center lg:mx-8">
         <PackageOpen className="size-8 text-faint" />
         <p className="text-sm font-medium text-muted-foreground">
-          Por ahora no hay regalos disponibles para entrega hoy en tu zona.
+          Por ahora no hay regalos con entrega rápida confirmada para tu zona.
         </p>
         <p className="text-xs text-faint">Vuelve a intentarlo más tarde.</p>
       </div>
