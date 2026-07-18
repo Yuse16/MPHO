@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from 'next'
 import './globals.css'
+import { Providers } from '@/lib/providers'
 
 export const metadata: Metadata = {
   title: 'MPHO Aliados · Panel del socio',
@@ -22,8 +23,8 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="es-MX" className="dark">
-      <body className="bg-[#030706] text-[#f8faf9] antialiased font-sans">
-        {children}
+      <body className="bg-[color:var(--color-background)] text-[color:var(--color-foreground)] antialiased font-sans">
+        <Providers>{children}</Providers>
       </body>
     </html>
   )
