@@ -1,7 +1,6 @@
 'use client'
 
 export default function Error({
-  error,
   reset,
 }: {
   error: Error & { digest?: string }
@@ -12,9 +11,10 @@ export default function Error({
       <div className="max-w-md text-center">
         <h1 className="text-xl font-bold mb-2">Algo salió mal</h1>
         <p className="text-sm text-[#bbc3be] mb-6">
-          {error.message || 'Ocurrió un error inesperado. Intenta de nuevo.'}
+          Ocurrió un error inesperado. Intenta de nuevo.
         </p>
         <button
+          type="button"
           onClick={reset}
           className="rounded-full bg-[#c8ff35] px-6 py-2.5 text-sm font-semibold text-[#05110a] hover:bg-[#b5f500] transition-colors"
         >
