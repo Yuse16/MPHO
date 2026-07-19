@@ -18,6 +18,9 @@ export type CatalogResult<T> =
   | { status: 'SUCCESS_EMPTY'; data: T }
   | { status: CatalogErrorCode; data: null; message: string }
 
+export const MAX_CATALOG_RESULTS = 100
+export const MAX_CATALOG_SEARCH_LENGTH = 80
+
 export async function getCatalogListings(options?: {
   categorySlug?: string
   limit?: number
@@ -90,6 +93,33 @@ export async function getCatalogCategories(): Promise<CatalogResult<PublicCatalo
 
 export function getFeaturedListings(limit = 6) {
   return getCatalogListings({ limit })
+}
+
+export function normalizeCatalogSearch(value: string | undefined): string {
+  return value?.trim().replace(/\s+/g, ' ').slice(0, MAX_CATALOG_SEARCH_LENGTH) ?? ''
+}
+
+export function filterCatalogListings(
+  listings: PublicCatalogListing[],
+  search: string,
+): PublicCatalogListing[] {
+  const normalizedSearch = normalizeSearchText(normalizeCatalogSearch(search))
+  if (!normalizedSearch) return listings
+
+  const terms = normalizedSearch.split(' ')
+  return listings.filter((listing) => {
+    const searchableText = normalizeSearchText(
+      [
+        listing.name,
+        listing.shortDescription,
+        listing.fullDescription,
+        listing.category?.name,
+      ]
+        .filter(isNonEmptyString)
+        .join(' '),
+    )
+    return terms.every((term) => searchableText.includes(term))
+  })
 }
 
 export function mapListingRows(rows: PublicCatalogRow[]): CatalogResult<PublicCatalogListing[]> {
@@ -199,6 +229,13 @@ function invalidResponse(message: string): CatalogResult<never> {
 
 function isNonEmptyString(value: unknown): value is string {
   return typeof value === 'string' && value.trim().length > 0
+}
+
+function normalizeSearchText(value: string): string {
+  return value
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLocaleLowerCase('es-MX')
 }
 
 export function formatPrice(money: PublicCatalogListing['price']): string {

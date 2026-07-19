@@ -16,9 +16,10 @@ export async function MphoraSection() {
     name: item.name,
     description: item.shortDescription?.slice(0, 60) ?? item.fullDescription?.slice(0, 60) ?? '',
     price: item.price,
-    image: item.image?.url ?? '/placeholder.svg',
-    tag: 'Entrega hoy',
+    image: item.image?.url ?? null,
+    tag: 'Rapidez por confirmar',
     alt: item.image?.alt ?? item.name,
+    requiresConfiguration: item.personalizationAvailable,
   }))
 
   return (
@@ -35,7 +36,7 @@ export async function MphoraSection() {
             </h2>
           </div>
           <p className="mt-1 hidden text-sm text-muted-foreground sm:block">
-            Regalos disponibles para preparación y entrega rápida en tu zona.
+            Opciones candidatas a entrega rápida. Siempre confirmaremos zona, horario y disponibilidad.
           </p>
         </div>
 

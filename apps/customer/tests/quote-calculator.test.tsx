@@ -24,7 +24,104 @@ describe('quote calculator', () => {
     vi.stubGlobal('fetch', vi.fn().mockRejectedValue(new Error('Sin red')))
     render(<CartProvider><QuoteCalculator listingId="listing" configuration={configuration} /></CartProvider>)
     fireEvent.click(screen.getByRole('button', { name: 'Calcular cotización' }))
-    await waitFor(() => expect(screen.getByRole('alert')).toHaveTextContent('Sin red'))
+    await waitFor(() => expect(screen.getByRole('alert')).toHaveTextContent('No fue posible calcular la cotización'))
+    expect(screen.getByRole('alert')).not.toHaveTextContent('Sin red')
     expect(screen.queryByText('$0')).not.toBeInTheDocument()
+  })
+  it('rejects a malformed quote response without crashing the interface', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockResolvedValue(
+        new Response(
+          JSON.stringify({
+            quote: {
+              availabilityStatus: 'eligible',
+              subtotal: { amountMinor: '129000', currency: 'MXN' },
+              pendingComponents: [],
+            },
+          }),
+          { status: 200 },
+        ),
+      ),
+    )
+    render(
+      <CartProvider>
+        <QuoteCalculator listingId="listing" configuration={configuration} />
+      </CartProvider>,
+    )
+    fireEvent.click(screen.getByRole('button', { name: 'Calcular cotización' }))
+    await waitFor(() =>
+      expect(screen.getByRole('alert')).toHaveTextContent('No fue posible calcular la cotización'),
+    )
+    expect(screen.queryByText('$1,290')).not.toBeInTheDocument()
+  })
+  it('validates quantity and required options before requesting a quote', async () => {
+    const fetch = vi.fn()
+    vi.stubGlobal('fetch', fetch)
+    render(
+      <CartProvider>
+        <QuoteCalculator
+          listingId="listing"
+          configuration={{
+            variants: [],
+            zones: [],
+            options: [{ id: 'option', label: 'Tarjeta', required: true }],
+          }}
+        />
+      </CartProvider>,
+    )
+    fireEvent.change(screen.getByLabelText('Cantidad'), { target: { value: '0' } })
+    fireEvent.click(screen.getByRole('button', { name: 'Calcular cotización' }))
+    expect(screen.getByRole('alert')).toHaveTextContent('entre 1 y 20')
+    expect(fetch).not.toHaveBeenCalled()
+
+    fireEvent.change(screen.getByLabelText('Cantidad'), { target: { value: '1' } })
+    fireEvent.click(screen.getByRole('button', { name: 'Calcular cotización' }))
+    expect(screen.getByRole('alert')).toHaveTextContent('opciones requeridas')
+    expect(fetch).not.toHaveBeenCalled()
+  })
+
+  it('does not present an unavailable quote as validated', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockResolvedValue(
+        new Response(
+          JSON.stringify({
+            quote: {
+              status: 'requires_review',
+              availabilityStatus: 'unavailable',
+              currency: 'MXN',
+              items: [],
+              subtotal: { amountMinor: 129000, currency: 'MXN' },
+              delivery: null,
+              service: null,
+              discount: { amountMinor: 0, currency: 'MXN' },
+              totalKnown: { amountMinor: 129000, currency: 'MXN' },
+              totalIsFinal: false,
+              pendingComponents: ['operational_availability'],
+              expiresAt: null,
+            },
+          }),
+          { status: 200 },
+        ),
+      ),
+    )
+    render(
+      <CartProvider>
+        <QuoteCalculator listingId="listing" configuration={configuration} />
+      </CartProvider>,
+    )
+
+    fireEvent.click(screen.getByRole('button', { name: 'Calcular cotización' }))
+    await waitFor(() =>
+      expect(screen.getByText(/no disponible para esta selección/)).toBeInTheDocument(),
+    )
+    expect(screen.queryByText(/validada para esta cotización/)).not.toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Selección no disponible' })).toBeDisabled()
+    expect(screen.getByText(/validación operativa/)).toBeInTheDocument()
+
+    fireEvent.change(screen.getByLabelText('Cantidad'), { target: { value: '2' } })
+    expect(screen.queryByText(/no disponible para esta selección/)).not.toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Agregar selección al carrito' })).toBeEnabled()
   })
 })

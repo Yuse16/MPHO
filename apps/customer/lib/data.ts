@@ -13,9 +13,10 @@ export type Product = {
   name: string
   description: string
   price: Money
-  image: string
+  image: string | null
   tag?: string
   alt: string
+  requiresConfiguration?: boolean
 }
 
 export type Recipient = {
