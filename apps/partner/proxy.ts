@@ -1,15 +1,36 @@
 import { type NextRequest, NextResponse } from 'next/server'
 import { refreshSession } from '@/lib/supabase/proxy'
-import { isProtectedRoute, getSafeRedirect } from '@/lib/routes'
+import {
+  getSafeRedirect,
+  isProtectedRoute,
+  shouldBypassProxy,
+} from '@/lib/routes'
+
+function isApiRoute(pathname: string) {
+  return pathname === '/api' || pathname.startsWith('/api/')
+}
 
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl
+
+  if (shouldBypassProxy(pathname)) {
+    return NextResponse.next()
+  }
+
+  const protectedRoute = isProtectedRoute(pathname)
+  const apiRoute = isApiRoute(pathname)
 
   let session: Awaited<ReturnType<typeof refreshSession>>
   try {
     session = await refreshSession(request)
   } catch {
-    if (isProtectedRoute(pathname)) {
+    if (protectedRoute) {
+      if (apiRoute) {
+        return NextResponse.json(
+          { error: 'service_unavailable' },
+          { status: 503 },
+        )
+      }
       return NextResponse.redirect(
         new URL('/login?error=service_unavailable', request.url),
       )
@@ -19,13 +40,19 @@ export async function proxy(request: NextRequest) {
 
   const { response, user, partnerAccess } = session
 
-  if (isProtectedRoute(pathname) && !user) {
+  if (protectedRoute && !user) {
+    if (apiRoute) {
+      return NextResponse.json({ error: 'unauthorized' }, { status: 401 })
+    }
     const loginUrl = new URL('/login', request.url)
     loginUrl.searchParams.set('redirect', `${pathname}${request.nextUrl.search}`)
     return Response.redirect(loginUrl)
   }
 
-  if (isProtectedRoute(pathname) && partnerAccess?.status !== 'authorized') {
+  if (protectedRoute && partnerAccess?.status !== 'authorized') {
+    if (apiRoute) {
+      return NextResponse.json({ error: 'forbidden' }, { status: 403 })
+    }
     return Response.redirect(new URL('/acceso', request.url))
   }
 
@@ -45,7 +72,5 @@ export async function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: [
-    '/((?!_next/static|_next/image|favicon.ico|manifest.json|sw.js|icons/).*)',
-  ],
+  matcher: ['/((?!_next/|favicon.ico|manifest.json|sw.js|icons/).*)'],
 }

@@ -1,13 +1,29 @@
 import { describe, expect, it } from 'vitest'
-import { getSafeRedirect, isProtectedRoute, isPublicRoute } from '@/lib/routes'
+import {
+  getSafeRedirect,
+  isProtectedRoute,
+  isPublicRoute,
+  shouldBypassProxy,
+} from '@/lib/routes'
 
 describe('partner routes', () => {
-  it('recognizes public and protected routes', () => {
-    expect(isPublicRoute('/login')).toBe(true)
-    expect(isPublicRoute('/acceso')).toBe(true)
-    expect(isProtectedRoute('/inicio')).toBe(true)
-    expect(isProtectedRoute('/pedidos/order-id')).toBe(true)
-    expect(isProtectedRoute('/login')).toBe(false)
+  it.each(['/login', '/callback', '/acceso'])('keeps %s public', (pathname) => {
+    expect(isPublicRoute(pathname)).toBe(true)
+    expect(isProtectedRoute(pathname)).toBe(false)
+  })
+
+  it.each(['/inicio', '/pedidos', '/pedidos/order-id', '/ruta-nueva-no-clasificada'])(
+    'protects %s',
+    (pathname) => {
+      expect(isPublicRoute(pathname)).toBe(false)
+      expect(isProtectedRoute(pathname)).toBe(true)
+    },
+  )
+
+  it('bypasses Next.js internals without classifying them as public pages', () => {
+    expect(shouldBypassProxy('/_next/static/chunks/app.js')).toBe(true)
+    expect(isPublicRoute('/_next/static/chunks/app.js')).toBe(false)
+    expect(isProtectedRoute('/_next/static/chunks/app.js')).toBe(false)
   })
 
   it.each([

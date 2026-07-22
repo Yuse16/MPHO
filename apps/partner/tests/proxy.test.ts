@@ -36,6 +36,20 @@ describe('partner route proxy', () => {
     )
   })
 
+  it('protects an unclassified route by default', async () => {
+    refreshSession.mockResolvedValue({
+      response: NextResponse.next(),
+      user: null,
+      partnerAccess: null,
+    })
+
+    const response = await proxy(request('/ruta-nueva-no-clasificada'))
+
+    expect(response.headers.get('location')).toBe(
+      'https://aliados.example/login?redirect=%2Fruta-nueva-no-clasificada',
+    )
+  })
+
   it('denies a signed-in account without Partner authorization', async () => {
     refreshSession.mockResolvedValue({
       response: NextResponse.next(),
@@ -46,6 +60,19 @@ describe('partner route proxy', () => {
     const response = await proxy(request('/inicio'))
 
     expect(response.headers.get('location')).toBe('https://aliados.example/acceso')
+  })
+
+  it('returns an API authorization error instead of redirecting to HTML', async () => {
+    refreshSession.mockResolvedValue({
+      response: NextResponse.next(),
+      user: null,
+      partnerAccess: null,
+    })
+
+    const response = await proxy(request('/api/pedidos'))
+
+    expect(response.status).toBe(401)
+    await expect(response.json()).resolves.toEqual({ error: 'unauthorized' })
   })
 
   it('allows a protected route for an authorized Partner account', async () => {
@@ -91,5 +118,12 @@ describe('partner route proxy', () => {
     expect(response.headers.get('location')).toBe(
       'https://aliados.example/login?error=service_unavailable',
     )
+  })
+
+  it('does not run session checks for internal Next.js resources', async () => {
+    const response = await proxy(request('/_next/static/chunks/app.js'))
+
+    expect(response.status).toBe(200)
+    expect(refreshSession).not.toHaveBeenCalled()
   })
 })

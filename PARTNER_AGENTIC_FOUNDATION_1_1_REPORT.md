@@ -12,7 +12,7 @@ Rama supervisora: `feat/partner-agentic-foundation`
 
 La misión produjo una base verificable para desarrollo asistido por agentes sin implementar funciones operativas de Partner. El revisor independiente emitió primero **APROBADO CON CORRECCIONES** por dos afirmaciones documentales demasiado amplias y por dependencias locales enlazadas a otro worktree. Las afirmaciones se corrigieron, las dependencias se materializaron localmente con lockfile congelado y los gates se repitieron desde la rama supervisora.
 
-La suite completa presenta una sensibilidad de rendimiento que debe corregirse antes de usarla como gate estable: el test de render de login pasa aislado, pero excedió el timeout de 5 segundos en ejecuciones completas paralelas y en la repetición serial del revisor independiente. Una ejecución serial previa pasó 40/40, pero ese resultado no fue reproducible. El gate completo queda **inestable/no verde**. No se modificaron pruebas porque esta misión lo prohíbe.
+Los dos hallazgos de la revisión posterior quedaron corregidos en `feat/partner-agentic-foundation`: la suite Partner ahora termina de forma determinista sin aumentar timeouts y el proxy aplica autorización segura por defecto. Las tres ejecuciones completas requeridas pasaron con 8/8 archivos y 51/51 pruebas. El gate local Partner queda **verde y reproducible** para el alcance actual; los bloqueadores de producción documentados en seguridad, operación, legal, datos y PWA permanecen abiertos.
 
 ## 2. Objetivo
 
@@ -74,7 +74,7 @@ No se reutilizó un worktree previo ni se trabajó en `main`.
 - MPHO Aliados era una aplicación web responsive con password login, callback PKCE, proxy y gate de autorización Partner.
 - Pedidos, detalle, paquetes, configuración, ganancias y perfil operativo no estaban conectados a contratos de negocio.
 - No había manifest, iconos instalables, service worker, instalación, offline, push ni actualización PWA.
-- Existían 8 archivos Vitest con 40 pruebas del shell, autenticación, autorización simulada, navegación y estados honestos.
+- Existían 8 archivos Vitest con 40 pruebas del shell, autenticación, autorización simulada, navegación y estados honestos antes de corregir los hallazgos. La suite actual contiene 51 pruebas.
 
 ## 8. Documentos creados
 
@@ -140,10 +140,10 @@ No se eligió silenciosamente entre reglas incompatibles.
 ## 13. Hallazgos de calidad
 
 - El shell pasa lint, typecheck y build.
-- La suite contiene 40 pruebas en 8 archivos, sin reporte de cobertura.
+- La suite contiene 51 pruebas en 8 archivos, sin reporte de cobertura.
 - Los tests acreditan shell/auth/redirects/mocks, no operaciones Partner ni RLS integrado.
 - Faltan pruebas de pedidos, estados, horarios end-to-end, cross-Partner operacional, errores backend, doble acción, sesión vencida, suspensión durante sesión, PWA, responsive completo y accesibilidad.
-- El test de render de login es sensible a contención: pasa aislado, pero excedió el timeout en suites completas paralelas y en la reauditoría serial. Un PASS serial 40/40 no se reprodujo.
+- La inestabilidad del test de login quedó corregida sin modificar el timeout: los módulos de página se cargan antes del periodo medido, cada test limpia DOM y mocks, y Vitest ejecuta los archivos jsdom sin competencia entre workers.
 
 ## 14. Hallazgos de seguridad
 
@@ -156,70 +156,76 @@ No se eligió silenciosamente entre reglas incompatibles.
 - MFA, recovery, step-up, timeouts, rate limiting, headers, auditoría/alertas y evidencia de secretos por ambiente siguen ausentes o no verificados.
 - La aplicación no está aprobada para producción.
 
-## 15. Validaciones ejecutadas
+## 15. Corrección de los hallazgos de revisión
 
-Desde la rama supervisora consolidada:
+### Hallazgo 1 — prueba inestable
+
+**Causa raíz:** `apps/partner/tests/pages.test.tsx` hacía un `import()` dinámico dentro de cada `it`. En la primera prueba, Vitest contabilizaba dentro del timeout la transformación y evaluación inicial de la página de login y sus dependencias. Cuando los ocho archivos jsdom competían en paralelo por CPU, ese trabajo de inicialización ocasionalmente consumía los 5 segundos aunque el render y las aserciones fueran correctos. El aislamiento eliminaba la contención y explicaba por qué el test pasaba individualmente.
+
+**Cambios realizados:** las páginas se importan al cargar el archivo de pruebas, fuera del periodo medido por cada caso; los tests de render son síncronos; `cleanup()` y `vi.clearAllMocks()` se ejecutan después de cada prueba; y `fileParallelism: false` evita competencia no determinista entre entornos jsdom. No se aumentó ningún timeout.
+
+**Pruebas modificadas:** se preservaron las siete verificaciones de páginas. La prueba focalizada pasó en 245 ms para `pages.test.tsx`, y las tres suites completas mantuvieron ese archivo entre 247 y 275 ms.
+
+### Hallazgo 2 — autorización segura por defecto
+
+**Causa raíz:** `isProtectedRoute()` era una lista positiva de rutas conocidas. Toda ruta nueva, renombrada u olvidada devolvía `false` y el proxy la trataba como pública.
+
+**Cambios realizados:** `isPublicRoute()` conserva una lista explícita de entradas públicas necesarias (`/`, `/login`, `/signup`, `/callback`, `/acceso`) y toda ruta restante queda protegida por defecto. Los destinos post-login siguen una lista separada para no convertir una ruta desconocida en una redirección aceptada. Recursos `/_next/*`, favicon, manifest, service worker e iconos tienen un bypass explícito; el matcher excluye todo `/_next/*`. Las rutas `/api` quedan protegidas por defecto y responden 401, 403 o 503 en vez de redirigir a HTML. Se conserva la validación de sesión, perfil, rol Partner vigente, asociación y estado Partner permitido.
+
+**Pruebas agregadas o ampliadas:** clasificación pública de `/login`, `/callback` y `/acceso`; protección de `/inicio`, `/pedidos` y `/ruta-nueva-no-clasificada`; redirección de una ruta desconocida no autenticada; rechazo de Customer sin rol Partner; rechazo de Partner suspendido; respuesta API no autenticada; y bypass de un recurso interno de Next.js sin consultar sesión.
+
+## 16. Validaciones ejecutadas
+
+Desde `feat/partner-agentic-foundation`, después de corregir los hallazgos:
 
 ```text
-git status --short
-git diff --check agent/opencode-partner-night...HEAD
+git diff --check
 pnpm --filter @mpho/partner lint
 pnpm --filter @mpho/partner typecheck
+pnpm --filter @mpho/partner test
+pnpm --filter @mpho/partner test
 pnpm --filter @mpho/partner test
 pnpm --filter @mpho/partner build
 ```
 
-Además:
+También se ejecutó una prueba focalizada de `pages.test.tsx`, `routes.test.ts`, `proxy.test.ts` y `partner-access.test.ts`, con resultado PASS de 40/40, y se revisó que no hubiera cambios en Customer, Central, Supabase ni migraciones. Un revisor independiente, en modo de sólo lectura, volvió a ejecutar esos cuatro archivos y `git diff --check`: obtuvo 40/40 y no encontró hallazgos accionables.
 
-- auditoría de alcance por rama;
-- revisión de limpieza de todos los worktrees y `main`;
-- `pnpm security:check` en el worktree de seguridad;
-- reejecución aislada de `tests/pages.test.tsx`;
-- reejecución controlada con `VITEST_MAX_THREADS=1` para caracterizar la inestabilidad.
-
-## 16. Resultados exactos
+## 17. Resultados exactos
 
 | Validación | Resultado |
 | --- | --- |
-| `git status --short` antes del reporte | PASS; salida vacía |
-| `git diff --check agent/opencode-partner-night...HEAD` antes del reporte | PASS; salida vacía |
-| lint | PASS; exit 0; ESLint sin salida de error |
+| `git diff --check` | PASS; salida vacía |
+| lint | PASS; exit 0; ESLint sin errores |
 | typecheck | PASS; exit 0; `tsc --noEmit` |
-| test, primera ejecución paralela final | FAIL; 38/40; timeouts en navegación y login |
-| test, segunda/tercera ejecución paralela | FAIL; 39/40; timeout de 5 s en render de login |
-| `tests/pages.test.tsx` aislado | PASS; 7/7; login en 2.314 s |
-| test con `VITEST_MAX_THREADS=1`, primera ejecución | PASS; 8/8 archivos, 40/40 pruebas; exit 0 |
-| test con `VITEST_MAX_THREADS=1`, reauditoría independiente | FAIL; 7/8 archivos, 39/40 pruebas; timeout de 5 s en render de login; suite 97.75 s |
-| build final | PASS; exit 0; compilación en 44 s; TypeScript en 33.7 s; 13/13 páginas |
-| `pnpm security:check` del agente de seguridad | PASS |
+| test completo, ejecución 1 | PASS; 8/8 archivos, 51/51 pruebas; 14.80 s; `pages.test.tsx` 264 ms |
+| test completo, ejecución 2 | PASS; 8/8 archivos, 51/51 pruebas; 13.96 s; `pages.test.tsx` 247 ms |
+| test completo, ejecución 3 | PASS; 8/8 archivos, 51/51 pruebas; 14.26 s; `pages.test.tsx` 275 ms |
+| build final | PASS; exit 0; compilación en 6.5 s; TypeScript en 4.9 s; 13/13 páginas |
+| revisión independiente del diff | PASS; sin hallazgos accionables; prueba focalizada 40/40; `git diff --check` limpio |
 
-El primer intento del revisor en el supervisor falló por symlinks de dependencias hacia el worktree QA. Se ejecutó `CI=true pnpm install --offline --frozen-lockfile`; reutilizó 691 paquetes, terminó con exit 0 y no cambió manifests ni lockfile. El build final posterior pasó desde `MPHO-OPENCODE`.
+La evidencia histórica previa a la corrección fue 38/40 y 39/40 en ejecuciones completas, con timeout de 5 segundos en el primer test que cargaba páginas. El test pasaba aislado. Esa diferencia permitió localizar la contención de carga de módulos dentro del periodo medido; no se alteró `testTimeout`.
 
-## 17. Cambios rechazados
+## 18. Cambios rechazados
 
-- No se aceptó ninguna modificación fuera de las rutas autorizadas.
-- No se modificaron ni debilitaron pruebas para ocultar el timeout.
-- No se implementaron endpoints, pantallas operativas, SQL, RLS ni migraciones nuevas.
-- No se aceptó describir el aislamiento RLS transversal como totalmente implementado; se estrechó el claim y se registró `PSR-001`.
-- No se aceptó clasificar producción como una simple decisión pendiente; ahora se declara **NO APROBADO PARA PRODUCCIÓN**.
-- No se conservaron symlinks externos de dependencias como evidencia final; se materializaron dependencias locales sin cambiar el lockfile.
-- No se resolvieron por inferencia comisiones, payouts, SLA, cancelaciones, disputas ni responsabilidades.
+- No se aceptó ninguna modificación fuera de Partner y este reporte.
+- No se aumentaron timeouts ni se eliminaron aserciones para ocultar la inestabilidad.
+- No se implementaron endpoints operativos, pantallas operativas, SQL, RLS ni migraciones nuevas.
+- No se resolvieron por inferencia reglas comerciales, comisiones, payouts, SLA, cancelaciones, disputas ni responsabilidades.
 
-Ninguna rama completa fue rechazada después de corregir los dos defectos documentales demostrables.
-
-## 18. Riesgos pendientes
+## 19. Riesgos pendientes
 
 - Revocación incompleta en políticas heredadas de catálogo (`PSR-001`).
 - Administración privilegiada sin una operación Central de negocio acotada.
 - MFA, recovery, sesiones, rate limiting y controles de producción incompletos.
 - Modelo post-`paid` y ownership de pedidos inexistentes.
 - Matriz de permisos y estados no aprobada.
-- Suite completa sensible al timeout bajo concurrencia en el entorno actual.
-- Sin RLS/pgTAP reejecutado en esta misión desde la rama supervisora.
+- `fileParallelism: false` prioriza estabilidad y aislamiento jsdom sobre velocidad; si la suite crece, convendrá separar pruebas Node/jsdom o perfilar workers antes de reactivar paralelismo.
+- El listado explícito de recursos públicos debe revisarse cuando se agreguen nuevos activos raíz; una omisión fallará cerrada y puede impedir cargar el activo, no exponer una página privada.
+- Sin RLS/pgTAP reejecutado en esta corrección.
 - Sin E2E, dispositivos, instalación PWA, offline, push o accesibilidad completa.
 - Sin evidencia de CI remoto, despliegue, sandbox productivo o aceptación legal/operativa.
 
-## 19. Recomendación de revisión humana
+## 20. Recomendación de revisión humana
 
 Revisar y aprobar primero:
 
@@ -230,9 +236,9 @@ Revisar y aprobar primero:
 5. Contrato mínimo post-`paid` con un solo Punto MPHO responsable.
 6. Alcance real del piloto.
 
-Antes de convertir esta base en un gate CI estable, medir y corregir el timeout del test de login sin debilitar la cobertura. El gate completo no debe reportarse verde hasta obtener ejecuciones reproducibles. Antes de producción o un piloto real, cerrar los bloqueadores de seguridad, orden, legal, operación y PWA aplicables con evidencia.
+El gate local Partner ya es reproducible en tres ejecuciones completas. Antes de producción o un piloto real, cerrar los bloqueadores de seguridad, orden, legal, operación y PWA aplicables con evidencia.
 
-## 20. Confirmación de acciones no realizadas
+## 21. Confirmación de acciones no realizadas
 
 - Push: **no realizado**.
 - Merge a `main`: **no realizado**.
@@ -245,3 +251,5 @@ Antes de convertir esta base en un gate CI estable, medir y corregir el timeout 
 - Cambio de Customer o Central: **no realizado**.
 - Cambio de Supabase, migraciones, variables, `package.json` o `pnpm-lock.yaml`: **no realizado**.
 - Secretos añadidos: **ninguno identificado**.
+
+Veredicto final de esta corrección: **HALLAZGOS 1 Y 2 CORREGIDOS; VALIDACIÓN LOCAL VERDE; SIN MERGE A `main`, SIN PUSH Y SIN DEPLOY.**

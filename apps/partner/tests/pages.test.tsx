@@ -1,5 +1,12 @@
-import { describe, it, expect, vi } from 'vitest'
-import { render, screen } from '@testing-library/react'
+import { afterEach, describe, it, expect, vi } from 'vitest'
+import { cleanup, render, screen } from '@testing-library/react'
+import LoginPage from '@/app/(auth)/login/page'
+import SignupPage from '@/app/(auth)/signup/page'
+import InicioPage from '@/app/(protected)/inicio/page'
+import PedidosPage from '@/app/(protected)/pedidos/page'
+import GananciasPage from '@/app/(protected)/ganancias/page'
+import PaquetesPage from '@/app/(protected)/paquetes/page'
+import ConfiguracionPage from '@/app/(protected)/configuracion/page'
 
 vi.mock('next/navigation', () => ({
   useRouter: () => ({
@@ -26,16 +33,19 @@ vi.mock('@/lib/supabase/browser', () => ({
   }),
 }))
 
+afterEach(() => {
+  cleanup()
+  vi.clearAllMocks()
+})
+
 describe('Partner app pages', () => {
-  it('renders the login page', async () => {
-    const { default: LoginPage } = await import('@/app/(auth)/login/page')
+  it('renders the login page', () => {
     render(<LoginPage />)
     expect(screen.getByRole('heading', { name: 'Iniciar sesión' })).toBeInTheDocument()
     expect(screen.getByLabelText('Correo electrónico')).toBeInTheDocument()
   })
 
-  it('renders the signup page', async () => {
-    const { default: SignupPage } = await import('@/app/(auth)/signup/page')
+  it('renders the signup page', () => {
     render(<SignupPage />)
     expect(screen.getByRole('heading', { name: 'Acceso por invitación' })).toBeInTheDocument()
     expect(screen.getByRole('link', { name: 'Ir a iniciar sesión' })).toHaveAttribute(
@@ -45,39 +55,34 @@ describe('Partner app pages', () => {
     expect(screen.queryByRole('button', { name: 'Crear cuenta' })).not.toBeInTheDocument()
   })
 
-  it('renders the inicio page', async () => {
-    const { default: InicioPage } = await import('@/app/(protected)/inicio/page')
+  it('renders the inicio page', () => {
     render(<InicioPage />)
     expect(screen.getByRole('heading', { name: 'Bienvenido' })).toBeInTheDocument()
     expect(screen.getByText('Resumen operativo no disponible')).toBeInTheDocument()
     expect(screen.queryByText('$0')).not.toBeInTheDocument()
   })
 
-  it('renders the pedidos page', async () => {
-    const { default: PedidosPage } = await import('@/app/(protected)/pedidos/page')
+  it('renders the pedidos page', () => {
     render(<PedidosPage />)
     expect(screen.getByRole('heading', { name: 'Pedidos' })).toBeInTheDocument()
     expect(screen.getByText('Pedidos no disponibles')).toBeInTheDocument()
     expect(screen.queryByRole('button')).not.toBeInTheDocument()
   })
 
-  it('renders the ganancias page', async () => {
-    const { default: GananciasPage } = await import('@/app/(protected)/ganancias/page')
+  it('renders the ganancias page', () => {
     render(<GananciasPage />)
     expect(screen.getByRole('heading', { name: 'Ganancias' })).toBeInTheDocument()
     expect(screen.getByText('Información financiera no disponible')).toBeInTheDocument()
     expect(screen.queryByText('$0')).not.toBeInTheDocument()
   })
 
-  it('renders the paquetes page', async () => {
-    const { default: PaquetesPage } = await import('@/app/(protected)/paquetes/page')
+  it('renders the paquetes page', () => {
     render(<PaquetesPage />)
     expect(screen.getByRole('heading', { name: 'Paquetes' })).toBeInTheDocument()
     expect(screen.getByText('Paquetes no disponibles')).toBeInTheDocument()
   })
 
-  it('renders the configuracion page', async () => {
-    const { default: ConfiguracionPage } = await import('@/app/(protected)/configuracion/page')
+  it('renders the configuracion page', () => {
     render(<ConfiguracionPage />)
     expect(screen.getByRole('heading', { name: 'Configuración' })).toBeInTheDocument()
     expect(screen.getByText('Configuración no disponible')).toBeInTheDocument()

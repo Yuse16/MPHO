@@ -1,5 +1,5 @@
 const publicExactRoutes = new Set(['/', '/login', '/signup', '/callback', '/acceso'])
-const protectedExactRoutes = new Set([
+const safeRedirectExactRoutes = new Set([
   '/inicio',
   '/pedidos',
   '/ganancias',
@@ -8,16 +8,33 @@ const protectedExactRoutes = new Set([
   '/perfil',
   '/equipo',
 ])
-const protectedRoutePrefixes = ['/pedidos/', '/paquetes/', '/equipo/']
+const safeRedirectRoutePrefixes = ['/pedidos/', '/paquetes/', '/equipo/']
+const proxyBypassExactRoutes = new Set([
+  '/favicon.ico',
+  '/manifest.json',
+  '/sw.js',
+])
+const proxyBypassRoutePrefixes = ['/_next/', '/icons/']
 
 export function isPublicRoute(pathname: string) {
   return publicExactRoutes.has(pathname)
 }
 
-export function isProtectedRoute(pathname: string) {
+export function shouldBypassProxy(pathname: string) {
   return (
-    protectedExactRoutes.has(pathname) ||
-    protectedRoutePrefixes.some((prefix) => pathname.startsWith(prefix))
+    proxyBypassExactRoutes.has(pathname) ||
+    proxyBypassRoutePrefixes.some((prefix) => pathname.startsWith(prefix))
+  )
+}
+
+export function isProtectedRoute(pathname: string) {
+  return !isPublicRoute(pathname) && !shouldBypassProxy(pathname)
+}
+
+function isSafeRedirectDestination(pathname: string) {
+  return (
+    safeRedirectExactRoutes.has(pathname) ||
+    safeRedirectRoutePrefixes.some((prefix) => pathname.startsWith(prefix))
   )
 }
 
@@ -27,7 +44,7 @@ export function getSafeRedirect(value: string | null) {
     const parsed = new URL(value, 'https://aliados.mpho.invalid')
     if (
       parsed.origin !== 'https://aliados.mpho.invalid' ||
-      !isProtectedRoute(parsed.pathname)
+      !isSafeRedirectDestination(parsed.pathname)
     ) {
       return '/inicio'
     }

@@ -1,6 +1,6 @@
 // @vitest-environment node
 
-import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { NextRequest } from 'next/server'
 import { refreshSession } from '@/lib/supabase/proxy'
 
@@ -65,6 +65,10 @@ describe('Partner authorization lookup', () => {
     vi.stubEnv('NEXT_PUBLIC_SUPABASE_ANON_KEY', 'public-anon-key')
   })
 
+  afterEach(() => {
+    vi.unstubAllEnvs()
+  })
+
   it('authorizes only an active Partner role assigned to an accessible Punto', async () => {
     const queries = installClient({
       profile: { data: { id: 'profile-id', status: 'active' }, error: null },
@@ -102,6 +106,28 @@ describe('Partner authorization lookup', () => {
       profile: { data: { id: 'profile-id', status: 'active' }, error: null },
       role: { data: null, error: null },
       partner: { data: { id: 'partner-id', status: 'active' }, error: null },
+    })
+
+    const result = await refreshSession(
+      new NextRequest('https://aliados.example/inicio'),
+    )
+
+    expect(result.partnerAccess).toEqual({ status: 'unauthorized' })
+  })
+
+  it('denies access when the assigned Partner is suspended', async () => {
+    installClient({
+      profile: { data: { id: 'profile-id', status: 'active' }, error: null },
+      role: {
+        data: {
+          role: 'partner_operator',
+          partner_id: 'partner-id',
+          status: 'active',
+          revoked_at: null,
+        },
+        error: null,
+      },
+      partner: { data: { id: 'partner-id', status: 'suspended' }, error: null },
     })
 
     const result = await refreshSession(
