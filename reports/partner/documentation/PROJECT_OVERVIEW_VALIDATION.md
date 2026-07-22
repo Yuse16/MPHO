@@ -101,6 +101,8 @@ No se modificó código, esquema, migraciones, configuración, pruebas ni docume
 - `docs/75_PRODUCT_COMPLETION_GAPS_AND_CAPABILITY_ROADMAP.md`
 - `CODEX_PARTNER_AUDIT_REPORT.md`
 - `CODEX_IDENTITY_SECURITY_REPORT.md`
+- `reports/partner/security/SECURITY_BASELINE.md`, hallazgo de aislamiento y revocación transversal.
+- `reports/partner/security/PERMISSIONS_RISK_REGISTER.md`, riesgo crítico `PSR-001`.
 - Rutas, páginas, contrato de autorización y pruebas existentes bajo `apps/partner`.
 - Historial reciente de Git y estado de la rama.
 
@@ -122,11 +124,14 @@ No se modificó código, esquema, migraciones, configuración, pruebas ni docume
 - Existe una aplicación Next.js Partner separada.
 - Las rutas protegidas validan sesión y autorización Partner en servidor.
 - La autorización exige perfil activo, rol Partner vigente, `partner_id` y Partner con estado permitido.
+- Las políticas endurecidas y sus pruebas aíslan las tablas maestras cubiertas: Partner, capacidades, horarios, excepciones de horario, capacidad, dirección y zonas.
+- La revocación no es transversal todavía: las políticas Partner heredadas de listados y media de catálogo omiten perfil activo, `revoked_at` y estado operativo del Partner. El control es **PARCIALMENTE IMPLEMENTADO** y el riesgo crítico `PSR-001` permanece abierto.
 - El callback completa PKCE en servidor.
 - Las pantallas protegidas actuales muestran estados honestos de indisponibilidad en vez de datos inventados.
 - No existe cola operativa conectada de pedidos, recepción de paquetes, preparación, evidencia, earnings o payouts.
 - No existe PWA instalable completa: faltan validaciones de manifest, iconos, instalación, service worker, actualización, offline y dispositivos.
 - Las pruebas existentes sustentan acceso, redirects, callback, navegación, cierre de sesión y estados honestos; no sustentan flujos de fulfillment.
+- MPHO Aliados está **NO APROBADO PARA PRODUCCIÓN**: además de decisiones humanas pendientes, faltan controles verificables y permanecen riesgos abiertos de RLS transversal, privilegios, MFA/recuperación, cabeceras/caché, rate limits, auditoría, alertas y autorización operativa.
 
 ## 7. Contradicciones y tensiones documentales
 
@@ -172,6 +177,12 @@ No se modificó código, esquema, migraciones, configuración, pruebas ni docume
 - Esta misión propone primero un alcance de producto más estrecho para Aliados.
 - Resolución aplicada: ambos son propuestas de capas distintas; ninguno autoriza pedidos reales. El overview limita su propuesta al núcleo indicado y remite los gates de lanzamiento a los runbooks.
 
+### C-08 — Aislamiento positivo de tablas maestras frente a revocación transversal incompleta
+
+- La migración de endurecimiento y sus pruebas demuestran aislamiento para `partners`, capacidades, horarios, excepciones de horario, capacidad, dirección y zonas Partner.
+- Las políticas heredadas `listings_select_partner_own` y `media_assets_select_partner_own` conservan un predicado más débil y pueden permitir lectura posterior a una revocación o suspensión mediante PostgREST directo.
+- Resolución aplicada: el overview conserva **IMPLEMENTADO** para las tablas maestras probadas y clasifica el aislamiento transversal como **PARCIALMENTE IMPLEMENTADO**, con referencia al riesgo crítico abierto `PSR-001`.
+
 ## 8. Decisiones pendientes consolidadas
 
 1. Permisos exactos de `partner_operator` y `partner_admin`.
@@ -194,6 +205,7 @@ Estas decisiones no bloquean la creación de la base documental. Sí bloquean co
 - Los documentos generales anteriores pueden leerse como afirmaciones de capacidad actual si no se consulta la fecha de evidencia.
 - Las palabras “PWA”, “administra personal”, “earnings” y “payout” requieren etiqueta de estado al reutilizarse.
 - La lista de estados Partner no es uniforme entre especificaciones antiguas y el contrato actual del esquema.
+- Las políticas Partner no comparten todavía un único predicado de membresía y revocación; `PSR-001` bloquea producción hasta corregir y probar las políticas heredadas de catálogo.
 - Las propuestas de permisos deben consolidarse en un documento futuro aprobado antes de desarrollo operativo.
 - Los ejemplos numéricos de wireframes y pricing no son valores productivos.
 

@@ -200,7 +200,8 @@ Fecha de evidencia: 2026-07-21. Base inspeccionada: commit `5ca06c1`, que incorp
 | Diseño responsive | **IMPLEMENTADO** | La auditoría registró validación en `390x844` y `1440x900` sin overflow horizontal. |
 | Autenticación y callback PKCE | **IMPLEMENTADO** | Supabase Auth, renovación de sesión y `exchangeCodeForSession` en servidor. |
 | Autorización de entrada Partner | **IMPLEMENTADO** | Verificación cerrada de perfil, rol vigente, `partner_id` y estado del Partner antes de rutas protegidas. |
-| Aislamiento RLS de identidad y Partner | **IMPLEMENTADO** | La migración de endurecimiento y sus pruebas restringen lectura y mutación entre Partners para las tablas cubiertas. No equivale a un contrato operativo completo de pedidos. |
+| Aislamiento RLS en tablas maestras Partner cubiertas | **IMPLEMENTADO** | El helper endurecido, las políticas y las pruebas aíslan `partners`, capacidades, horarios, excepciones de horario, capacidad, dirección y zonas Partner. Este control positivo se limita expresamente a esas tablas. |
+| Aislamiento transversal y revocación consistente | **PARCIALMENTE IMPLEMENTADO** | Las políticas heredadas `listings_select_partner_own` y `media_assets_select_partner_own` de catálogo no exigen perfil activo, `revoked_at IS NULL` ni estado operativo del Partner. El proxy protege el shell, pero no cubre llamadas PostgREST directas. El riesgo crítico abierto `PSR-001` exige inventario y corrección de todas las políticas Partner; pedidos, tareas, evidencia, ganancias y payouts aún no tienen contratos cuyo aislamiento pueda acreditarse. |
 | Cuenta propia y cierre de sesión | **PARCIALMENTE IMPLEMENTADO** | Se muestra el correo de la sesión y se confirma el cierre con el proveedor; preferencias, recuperación y controles productivos completos no están terminados. |
 | Inicio, Pedidos, Paquetes, Ganancias y Configuración | **PARCIALMENTE IMPLEMENTADO** | Existen rutas y estados honestos de “no disponible”, pero no consultan contratos operativos autorizados. |
 | Recepción y detalle real de pedidos | **ESPECIFICADO NO IMPLEMENTADO** | No existe cola ni detalle conectado a pedidos asignados. |
@@ -211,7 +212,7 @@ Fecha de evidencia: 2026-07-21. Base inspeccionada: commit `5ca06c1`, que incorp
 | Catálogo, inventario y disponibilidad | **ESPECIFICADO NO IMPLEMENTADO** | No hay flujo Partner conectado; la disponibilidad real no puede inferirse del catálogo publicado. |
 | Ganancias y payouts | **ESPECIFICADO NO IMPLEMENTADO** | La pantalla evita totales ficticios; no existe ledger Partner o payout conciliado expuesto por Aliados. |
 | PWA instalable completa | **ESPECIFICADO NO IMPLEMENTADO** | No se verificaron manifest, iconos instalables, instalación, service worker, actualización, offline ni dispositivos objetivo. Hoy debe describirse como aplicación web responsive. |
-| Preparación para producción | **DECISIÓN PENDIENTE** | Los bloqueadores de seguridad, legal, operación y lanzamiento deben cerrarse con evidencia y aprobación humana. |
+| Preparación para producción | **PARCIALMENTE IMPLEMENTADO** | **NO APROBADO PARA PRODUCCIÓN.** Existen controles locales positivos, pero permanecen controles ausentes y riesgos abiertos de RLS transversal, administración privilegiada, MFA y recuperación, cabeceras y caché, rate limits, auditoría, alertas y autorización operativa. Además de cerrar esas brechas con evidencia, siguen pendientes decisiones y aprobaciones humanas de seguridad, legal, operación y lanzamiento. |
 
 La suite Partner auditada registró 40 pruebas en 8 archivos y resultados satisfactorios de lint, typecheck, test y build. Estas pruebas sustentan el shell y su frontera de acceso; no prueban flujos operativos que todavía no existen.
 
