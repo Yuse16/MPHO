@@ -69,7 +69,7 @@ Son obligatorias para este alcance:
 
 ### 2.5 Evidencia técnica actual
 
-La fotografía ejecutable usada por este documento es `HEAD 95467b8` de la rama `docs/partner-scope-business-rules`. Se inspeccionaron, sin modificarlos:
+La fotografía ejecutable usada por este documento es la base técnica auditada `95467b8` de la rama `docs/partner-scope-business-rules`. Se inspeccionaron, sin modificarlos:
 
 - `apps/partner/**`.
 - `packages/database/**`.
@@ -130,7 +130,7 @@ La separación requiere:
 - **NO IMPLEMENTADO:** no existe evidencia ejecutable suficiente de la capacidad en MPHO Aliados.
 - **DECISIÓN PENDIENTE:** falta una aprobación de producto, negocio, seguridad, operación, legal o finanzas y no puede inferirse.
 
-### 5.2 Matriz verificable en `HEAD 95467b8`
+### 5.2 Matriz verificable en la base técnica auditada `95467b8`
 
 | Capacidad | Estado | Evidencia y límite |
 | --- | --- | --- |
@@ -165,7 +165,7 @@ La separación requiere:
 | Matriz exacta operator/admin | **DECISIÓN PENDIENTE** | Los roles existen; sus permisos operativos definitivos y el mínimo inicial requieren aprobación. |
 | Preparación para producción | **PARCIALMENTE IMPLEMENTADO** | Existen controles locales útiles, pero los gates de seguridad, legal, operación, pagos, recuperación, incidentes y lanzamiento no están satisfechos con evidencia completa. **NO APROBADO PARA PRODUCCIÓN.** |
 
-La suite Partner del `HEAD` base auditado contiene 51 pruebas en 8 archivos. Sustenta el shell, autenticación, autorización, redirects, navegación y estados honestos; no prueba los flujos operativos marcados como no implementados.
+La suite Partner de la base técnica auditada contiene 51 pruebas en 8 archivos. Sustenta el shell, autenticación, autorización, redirects, navegación y estados honestos; no prueba los flujos operativos marcados como no implementados.
 
 ## 6. Propuesta de alcance del piloto
 
@@ -498,7 +498,7 @@ Una capacidad financiera, de entrega, evidencia o producción requiere además r
 
 ## 17. Fuera de alcance actual
 
-En `HEAD 95467b8` están fuera del alcance ejecutable actual:
+En la base técnica auditada `95467b8` están fuera del alcance ejecutable actual:
 
 - Pedidos Partner reales y vínculo de asignación.
 - Ofertas y transiciones operativas.
@@ -544,6 +544,9 @@ También quedan fuera de este documento la aprobación de tarifas, importes, SLA
 | PS-DP-21 | Invariante rol Partner→`partner_id`, unicidad y selección explícita del contexto cuando existan varias asignaciones | Producto + Identidad + Seguridad + Datos | Contexto Partner determinista |
 | PS-DP-22 | Autoridad, campos y workflow permitidos para direcciones propias | Producto + Operación + Privacidad + Seguridad | Gestión de ubicación/contacto Partner |
 | PS-DP-23 | Host canónico y allowlist de origin para redirects absolutos | Plataforma + Seguridad | Exposición pública de autenticación |
+| PS-DP-24 | Modelo autoritativo de capacidad, facultades de mutación y comportamiento cuando no existe capacidad verificada | Producto + Operación + Datos + Seguridad | Asignación y elegibilidad MPHORA |
+| PS-DP-25 | Campos de catálogo/inventario editables, variantes, publicación y tratamiento de precios sugeridos | Producto + Catálogo + Finanzas + Seguridad | Catálogo Partner |
+| PS-DP-26 | Matriz exacta de acciones permitidas y prohibidas cuando un Partner está `paused` | Producto + Operación + Seguridad | Acceso y comandos operativos durante pausa |
 
 Mientras una decisión permanezca pendiente, la aplicación debe fallar cerrada, omitir la acción o mostrar la información como no disponible.
 
@@ -595,7 +598,7 @@ Mientras una decisión permanezca pendiente, la aplicación debe fallar cerrada,
 
 ### 19.4 Evidencia actual e histórica
 
-- `apps/partner/**` en `HEAD 95467b8`.
+- `apps/partner/**` en la base técnica auditada `95467b8`.
 - Migraciones y pruebas Supabase de identidad/Partner vigentes en ese commit.
 - `docs/partner/01_PROJECT_OVERVIEW.md`.
 - `PARTNER_AGENTIC_FOUNDATION_1_1_REPORT.md`.

@@ -669,27 +669,29 @@ Una regla **CONFIRMADA** puede estar técnicamente no implementada. Por ello cad
 
 ## 19. Matriz de decisiones pendientes
 
-| ID | Decisión pendiente | Fuentes | Dueños requeridos | Bloquea |
-| --- | --- | --- | --- | --- |
-| DP-BR-001 | Tipos definitivos de aliado y capacidades asociadas. | Pack 02, decisión 12; `docs/08` como objetivo. | Producto, Operaciones, Legal. | Onboarding y asignación. |
-| DP-BR-002 | Matriz final `partner_operator`/`partner_admin` y mínimo por defecto. | Pack 02, decisiones 5, 6 y 12. | Producto, Identidad, Seguridad. | Toda mutación Partner. |
-| DP-BR-003 | Frontera para invitar, asignar, elevar y revocar personal Partner. | CT-02/PSR-014. | Producto, Central, Seguridad. | Gestión de equipo. |
-| DP-BR-004 | Invariante rol Partner→`partner_id`, unicidad y selección explícita ante múltiples asignaciones activas. | PSR-002/PSR-003. | Producto, Identidad, Seguridad, Datos. | Contexto Partner determinista. |
-| DP-BR-005 | Acciones permitidas a Partner `paused`. | PSR-013; enum/proxy actual. | Producto, Operaciones, Seguridad. | Comandos operativos. |
-| DP-BR-006 | Contrato post-`paid`: asignación, oferta, aceptación/rechazo, caducidad e historia. | Partner Overview §13; Pack 02. | Producto, Órdenes, Operaciones. | Piloto de pedidos. |
-| DP-BR-007 | Campos editables de horario, bootstrap, excepciones y timezone. | BG-03; propuesta de piloto. | Producto, Operaciones. | Gestión de horarios. |
-| DP-BR-008 | Modelo de capacidad y conducta cuando no hay capacidad. | CT capacidad; Pack 02 decisión 12. | Producto, Operaciones. | Asignación y MPHORA. |
-| DP-BR-009 | Campos de catálogo/inventario editables y tratamiento de precios sugeridos. | Partner Overview §13; PSR-001. | Producto, Catálogo, Finanzas, Seguridad. | Catálogo Partner. |
-| DP-BR-010 | Evidencia obligatoria por operación, categoría y riesgo. | Pack 02 decisión 12; SOP 50/51. | Operaciones, Seguridad, Legal. | Paquetes, preparación, entrega. |
-| DP-BR-011 | Proveedor logístico, modos, verificación, pruebas y responsabilidades. | Pack 02 decisión 12. | Operaciones, Legal, Finanzas. | Entregas. |
-| DP-BR-012 | SLA, deadlines, cutoffs, escalamiento y consecuencias. | Pack 02 decisión 12. | Producto, Operaciones, Legal. | Promesas y timeouts. |
-| DP-BR-013 | Cancelaciones, devoluciones, refunds, disputas y responsabilidad económica. | `docs/42` draft; Pack 02. | Legal, Finanzas, Operaciones. | Flujos afectados y publicación. |
-| DP-BR-014 | Comisiones, earnings, saldos, liberación, payouts y penalizaciones. | Pack 02 decisión 12. | Finanzas, Legal, Producto. | Módulo financiero. |
-| DP-BR-015 | Canales, proveedores, eventos y destinatarios de notificación. | Pack 02 decisión 12. | Producto, Operaciones, Privacidad. | Notificaciones. |
-| DP-BR-016 | Métricas de desempeño y consecuencias por incumplimiento. | Pack 02 decisión 12. | Producto, Operaciones, Legal. | Performance/scoring. |
-| DP-BR-017 | Alcance definitivo, participantes y autorización del piloto. | Pack 02 decisión 11. | Product owner, Seguridad, Operaciones, Legal. | Pedidos reales. |
-| DP-BR-018 | Autoridad, campos, validación y workflow para insertar o gestionar direcciones propias. | Grants/RLS vigentes; Pack 02. | Producto, Operaciones, Privacidad, Seguridad. | Gestión de ubicación/contacto Partner. |
-| DP-BR-019 | Host canónico y allowlist de origin para redirects absolutos. | PSR-006. | Plataforma, Seguridad. | Exposición pública de autenticación. |
+Los IDs `PS-DP-*` de Product Scope son el registro canónico de decisiones pendientes. Los IDs `DP-BR-*` son referencias locales de reglas y deben resolverse, cerrarse o modificarse junto con su equivalencia canónica; no constituyen una segunda decisión independiente.
+
+| ID local | ID canónico | Decisión pendiente | Fuentes | Dueños requeridos | Bloquea |
+| --- | --- | --- | --- | --- | --- |
+| DP-BR-001 | PS-DP-04 | Tipos definitivos de aliado y capacidades asociadas. | Pack 02, decisión 12; `docs/08` como objetivo. | Producto, Operaciones, Legal. | Onboarding y asignación. |
+| DP-BR-002 | PS-DP-02 | Matriz final `partner_operator`/`partner_admin` y mínimo por defecto. | Pack 02, decisiones 5, 6 y 12. | Producto, Identidad, Seguridad. | Toda mutación Partner. |
+| DP-BR-003 | PS-DP-03 | Frontera para invitar, asignar, elevar y revocar personal Partner. | CT-02/PSR-014. | Producto, Central, Seguridad. | Gestión de equipo. |
+| DP-BR-004 | PS-DP-21 | Invariante rol Partner→`partner_id`, unicidad y selección explícita ante múltiples asignaciones activas. | PSR-002/PSR-003. | Producto, Identidad, Seguridad, Datos. | Contexto Partner determinista. |
+| DP-BR-005 | PS-DP-26 | Acciones permitidas a Partner `paused`. | PSR-013; enum/proxy actual. | Producto, Operaciones, Seguridad. | Comandos operativos. |
+| DP-BR-006 | PS-DP-06, PS-DP-07 | Contrato post-`paid`: asignación, oferta, aceptación/rechazo, caducidad e historia. | Partner Overview §13; Pack 02. | Producto, Órdenes, Operaciones. | Piloto de pedidos. |
+| DP-BR-007 | PS-DP-08 | Campos editables de horario, bootstrap, excepciones y timezone. | BG-03; propuesta de piloto. | Producto, Operaciones. | Gestión de horarios. |
+| DP-BR-008 | PS-DP-24 | Modelo de capacidad y conducta cuando no hay capacidad. | CT capacidad; Pack 02 decisión 12. | Producto, Operaciones. | Asignación y MPHORA. |
+| DP-BR-009 | PS-DP-25, PS-DP-19 | Campos de catálogo/inventario editables y tratamiento de precios sugeridos. | Partner Overview §13; PSR-001. | Producto, Catálogo, Finanzas, Seguridad. | Catálogo Partner. |
+| DP-BR-010 | PS-DP-10 | Evidencia obligatoria por operación, categoría y riesgo. | Pack 02 decisión 12; SOP 50/51. | Operaciones, Seguridad, Legal. | Paquetes, preparación, entrega. |
+| DP-BR-011 | PS-DP-14, PS-DP-15 | Proveedor logístico, modos, verificación, pruebas y responsabilidades. | Pack 02 decisión 12. | Operaciones, Legal, Finanzas. | Entregas. |
+| DP-BR-012 | PS-DP-12 | SLA, deadlines, cutoffs, escalamiento y consecuencias. | Pack 02 decisión 12. | Producto, Operaciones, Legal. | Promesas y timeouts. |
+| DP-BR-013 | PS-DP-13, PS-DP-14 | Cancelaciones, devoluciones, refunds, disputas y responsabilidad económica. | `docs/42` draft; Pack 02. | Legal, Finanzas, Operaciones. | Flujos afectados y publicación. |
+| DP-BR-014 | PS-DP-11 | Comisiones, earnings, saldos, liberación, payouts y penalizaciones. | Pack 02 decisión 12. | Finanzas, Legal, Producto. | Módulo financiero. |
+| DP-BR-015 | PS-DP-16 | Canales, proveedores, eventos y destinatarios de notificación. | Pack 02 decisión 12. | Producto, Operaciones, Privacidad. | Notificaciones. |
+| DP-BR-016 | PS-DP-17 | Métricas de desempeño y consecuencias por incumplimiento. | Pack 02 decisión 12. | Producto, Operaciones, Legal. | Performance/scoring. |
+| DP-BR-017 | PS-DP-01, PS-DP-20 | Alcance definitivo, participantes y autorización del piloto. | Pack 02 decisión 11. | Product owner, Seguridad, Operaciones, Legal. | Pedidos reales. |
+| DP-BR-018 | PS-DP-22 | Autoridad, campos, validación y workflow para insertar o gestionar direcciones propias. | Grants/RLS vigentes; Pack 02. | Producto, Operaciones, Privacidad, Seguridad. | Gestión de ubicación/contacto Partner. |
+| DP-BR-019 | PS-DP-23 | Host canónico y allowlist de origin para redirects absolutos. | PSR-006. | Plataforma, Seguridad. | Exposición pública de autenticación. |
 
 Contradicciones que no deben resolverse por inferencia:
 
@@ -702,6 +704,13 @@ Contradicciones que no deben resolverse por inferencia:
 7. Las políticas heredadas de catálogo no aplican por completo el predicado endurecido de revocación (`PSR-001`).
 
 ## 20. Trazabilidad entre reglas y pruebas
+
+La columna **Prioridad** es una propuesta de QA/riesgo, no una decisión comercial, un SLA ni una secuencia de entrega aprobada:
+
+- **P0:** prueba necesaria antes de habilitar la ruta afectada cuando protege seguridad, dinero, integridad del pedido, privacidad o aislamiento; sigue el orden de prioridad de `AGENTS.md`, §23.
+- **P1:** prueba necesaria antes de declarar terminada la función, pero que no constituye por sí sola el gate primario P0 de la ruta.
+
+La prioridad debe revisarse si cambia el riesgo o el alcance aprobado.
 
 | ID de regla | Estado | Fuente principal | Implementación actual | Prueba existente | Prueba requerida | Prioridad |
 | --- | --- | --- | --- | --- | --- | --- |
